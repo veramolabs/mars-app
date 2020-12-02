@@ -1,0 +1,59 @@
+{
+  "name": "i227-react-app",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@auth0/auth0-spa-js": "^1.7.0",
+    "@material-ui/core": "^4.11.0",
+    "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "^4.0.0-alpha.56",
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^9.3.2",
+    "@testing-library/user-event": "^7.1.2",
+    "@types/jest": "^24.0.0",
+    "@types/node": "^12.0.0",
+    "@types/react": "^16.9.0",
+    "@types/react-dom": "^16.9.0",
+    "@types/react-router-dom": "^5.1.5",
+    "daf-core": "^7.0.0-beta.52",
+    "daf-rest": "^7.0.0-beta.52",
+    "daf-typeorm": "^7.0.0-beta.52",
+    "daf-w3c": "^7.0.0-beta.52",
+    "date-fns": "^2.12.0",
+    "graphql": "^15.0.0",
+    "notistack": "^0.9.11",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-router-dom": "^5.1.2",
+    "react-scripts": "3.4.1",
+    "serve": "^11.3.2",
+    "shortid": "^2.2.15",
+    "typescript": "~3.7.2"
+  },
+  "scripts": {
+    "start": "serve -s build -p $PORT",
+    "dev": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "upgrade-daf": "yarn add daf-core@beta daf-w3c@beta daf-typeorm@beta daf-rest@beta"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@types/shortid": "^0.0.29"
+  }
+}

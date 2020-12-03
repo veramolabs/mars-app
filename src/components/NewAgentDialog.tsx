@@ -83,7 +83,7 @@ function NewAgentDialog(props: Props) {
             color="primary"
             autoFocus
           >
-            Sign
+            Save
           </Button>
         </DialogActions>
       </Dialog>

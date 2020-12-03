@@ -1,7 +1,23 @@
 {
-  "name": "i227-react-app",
+  "name": "mars-app",
+  "description": "Mars app",
+  "author": "Simonas Karuzas <simonas@not.cat>",
   "version": "0.1.0",
   "private": true,
+  "main": "build/electron.js",
+  "build": {
+    "appId": "io.veramolabs.mars",
+    "mac": {
+      "category": "your.app.category.type"
+    },
+    "files": [
+      "build/**/*",
+      "node_modules/**/*"
+    ],
+    "directories": {
+      "buildResources": "assets"
+    }
+  },
   "dependencies": {
     "@auth0/auth0-spa-js": "^1.7.0",
     "@material-ui/core": "^4.11.0",
@@ -37,7 +53,11 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "upgrade-daf": "yarn add daf-core@beta daf-w3c@beta daf-typeorm@beta daf-rest@beta"
+    "upgrade-daf": "yarn add daf-core@beta daf-w3c@beta daf-typeorm@beta daf-rest@beta",
+    "build-electron": "cross-env PUBLIC_URL=./ react-scripts build",
+    "electron": "electron .",
+    "electron-dev": "cross-env ELECTRON_START_URL=http://localhost:3000 electron .",
+    "electron-dist": "electron-builder"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -56,6 +76,9 @@
   },
   "devDependencies": {
     "@types/shortid": "^0.0.29",
-    "@types/url-parse": "^1.4.3"
+    "@types/url-parse": "^1.4.3",
+    "cross-env": "^7.0.3",
+    "electron": "^11.0.3",
+    "electron-builder": "^22.9.1"
   }
 }

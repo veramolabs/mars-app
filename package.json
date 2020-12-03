@@ -28,7 +28,8 @@
     "react-scripts": "3.4.1",
     "serve": "^11.3.2",
     "shortid": "^2.2.15",
-    "typescript": "~3.7.2"
+    "typescript": "~3.7.2",
+    "url-parse": "^1.4.7"
   },
   "scripts": {
     "start": "serve -s build -p $PORT",
@@ -54,6 +55,7 @@
     ]
   },
   "devDependencies": {
-    "@types/shortid": "^0.0.29"
+    "@types/shortid": "^0.0.29",
+    "@types/url-parse": "^1.4.3"
   }
 }

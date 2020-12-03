@@ -40,6 +40,10 @@ const useStyles = makeStyles((theme) => ({
   expandOpen: {
     transform: 'rotate(180deg)',
   },
+
+  container: {
+    paddingTop: theme.spacing(6)
+  }
 }));
 
 function Identity(props: any) {
@@ -102,7 +106,7 @@ function Identity(props: any) {
         </Tabs>
       </AppBar>
       {loading && <LinearProgress />}
-      <Grid container spacing={2} justify="center">
+      <Grid container spacing={2} justify="center" className={classes.container}>
       <Grid item xs={12}>
           <Card variant='outlined'>
             <CardContent className={classes.header}>

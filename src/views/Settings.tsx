@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import Container from '@material-ui/core/Container';
 import AppBar from "../components/Nav/AppBar";
 import { useAgent } from '../agent'
-import { Button, Grid, IconButton, List, ListItem, ListItemSecondaryAction, ListItemText, ListSubheader, makeStyles, TextField } from "@material-ui/core";
+import { Box, Button, Grid, IconButton, List, ListItem, ListItemSecondaryAction, ListItemText, ListSubheader, makeStyles, TextField } from "@material-ui/core";
 import DeleteIcon from '@material-ui/icons/Delete';
 import { AgentConnection } from "../types";
-
+import { useHistory } from "react-router-dom";
 const useStyles = makeStyles((theme) => ({
   margin: {
     margin: theme.spacing(1),
@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme) => ({
 
 function Settings(props: any) {
   const classes = useStyles();
-
+  const history = useHistory()
   const { 
     setConnection,
     connection,
@@ -28,6 +28,10 @@ function Settings(props: any) {
   const handleAddConnection = () => {
     const connection = { url, token }
     setConnections([...connections, connection])
+    if (connections.length === 0) {
+      console.log('here')
+      history.push('/credentials/')
+    }
     setConnection(connection)
   }
 
@@ -46,9 +50,11 @@ function Settings(props: any) {
           <Grid item xs={12}>
           <List
             subheader={
-              <ListSubheader component="div" id="nested-list-subheader">
+              connections.length > 0 
+              ? <ListSubheader component="div" id="nested-list-subheader">
                 Cloud Agents
               </ListSubheader>
+              : <Box/>
             }
           >
             {connections.map(item => (

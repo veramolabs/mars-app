@@ -9,9 +9,12 @@ import ListItemText from '@material-ui/core/ListItemText';
 import PeopleIcon from '@material-ui/icons/People';
 import RecentActorsIcon from '@material-ui/icons/RecentActors';
 import SettingsIcon from '@material-ui/icons/Settings';
+import AddIcon from '@material-ui/icons/Add';
 import VerifiedUserIcon from '@material-ui/icons/VerifiedUser';
 import { useMobile } from './components/Nav/MobileProvider';
-import { useAgent } from './agent';
+import NewAgentModal from "./components/NewAgentDialog"
+import parse from 'url-parse'
+
 
 import { makeStyles, useTheme, Theme, createStyles } from '@material-ui/core/styles';
 import {
@@ -28,8 +31,12 @@ import Identity from './views/Identity'
 import Credential from './views/Credential'
 import Settings from './views/Settings'
 import ListItemLink from './components/Nav/ListItemLink'
+import { Avatar, Box, IconButton, ListSubheader, useMediaQuery } from '@material-ui/core';
+import { useAgent } from "./agent";
+import { AgentConnection } from './types';
+import { deepOrange } from '@material-ui/core/colors';
 
-const drawerWidth = 240;
+const drawerWidth = 312;
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -50,7 +57,7 @@ const useStyles = makeStyles((theme: Theme) =>
     appBar: {
       [theme.breakpoints.up('sm')]: {
         width: `calc(100% - ${drawerWidth}px)`,
-        marginLeft: drawerWidth,
+        marginLeft: drawerWidth + 100,
       },
     },
     menuButton: {
@@ -65,12 +72,47 @@ const useStyles = makeStyles((theme: Theme) =>
       width: drawerWidth,
     },
     list: {
-      paddingTop: 0,
+      marginTop: -48,
     },
     content: {
       flexGrow: 1,
       paddingTop: theme.spacing(2),
     },
+    sideBar: {
+      display: 'flex',
+      flexDirection: 'column',
+      // paddingLeft: theme.spacing(1),
+      width: '72px',
+      backgroundColor: '#202020',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    mainDrawerContent: {
+      flexGrow: 1,
+    },
+    drawerWrapper: {
+      flexGrow: 1,
+      display: 'flex',
+      flexDirection: 'row'
+    },
+    orange: {
+      color: theme.palette.getContrastText(deepOrange[500]),
+      backgroundColor: deepOrange[500],
+    },
+    purple: {
+      // color: theme.palette.getContrastText(deepPurple[500]),
+      // backgroundColor: deepPurple[500],
+    },    
+    connectionButton: {
+      // paddingLeft: theme.spacing(1),
+    },
+    settings: {
+      flexGrow: 1,
+      display: 'flex',
+      alignItems: 'flex-end',
+      paddingBottom: theme.spacing(1),
+
+    }
   }),
 );
 
@@ -78,58 +120,111 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function ResponsiveDrawer() {
   const classes = useStyles();
   const theme = useTheme();
-  const { connection } = useAgent()
+  const { connection, connections, setConnection, setConnections } = useAgent()
   const { mobileOpen, setMobileOpen } = useMobile();
   const credentialsMatch = useRouteMatch("/credentials");
   const identitiesMatch = useRouteMatch("/identifiers");
   const managedIdentitiesMatch = useRouteMatch("/managed-identities");
   const settingsMatch = useRouteMatch("/settings");
   const identityMatch = useRouteMatch("/identity/:did");
+
+  const fullScreen = useMediaQuery(theme.breakpoints.down('xs'));
+  const [openNewAgentModal, setOpenNewAgentModal] = React.useState(false);
+
+  const saveConnection = ( connection: AgentConnection) => {
+    setConnections([...connections, connection])
+    setConnection(connection)
+    setOpenNewAgentModal(false)
+  }
+
+  const handleOpenNewAgentModal = () => {
+    setOpenNewAgentModal(true);
+  };
+
+  const handleCloseNewAgentModal = () => {
+    setOpenNewAgentModal(false);
+  };
+
   
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
 
   const drawer = (
-    <div>
-      <div className={classes.toolbar} />
-      <List className={classes.list}>
-      <Divider />
-        
-        <ListItemLink to={'/credentials'} 
-          selected={credentialsMatch !== null}
-          >
-          <ListItemIcon><VerifiedUserIcon /></ListItemIcon>
-          <ListItemText primary={'Credentials'} />
-        </ListItemLink>
-        <ListItemLink
-          to={'/identifiers'}
-          selected={identitiesMatch !== null || identityMatch !== null}
-          >
-          <ListItemIcon><RecentActorsIcon /></ListItemIcon>
-          <ListItemText primary={'Known identifiers'} />
-        </ListItemLink>
-        <ListItemLink
-          to={'/managed-identities'}
-          selected={managedIdentitiesMatch !== null}
-          >
-          <ListItemIcon><PeopleIcon /></ListItemIcon>
-          <ListItemText primary={'Managed identities'} />
-        </ListItemLink>
-        <ListItemLink
-          to={'/settings'}
-          selected={settingsMatch !== null}
-          >
-          <ListItemIcon><SettingsIcon /></ListItemIcon>
-          <ListItemText primary={'Settings'} />
-        </ListItemLink>
+    <Box className={classes.drawerWrapper}>
+      <Box className={classes.sideBar}>
+      {connections.map((item: AgentConnection) => (
+        <IconButton 
+          className={classes.connectionButton}
+          color="inherit"
+          onClick={() => {setConnection(item);}}
+          key={item.url}
+        >
+          <Avatar
+            className={connection?.url === item.url && connection?.token === item.token ? classes.orange : classes.purple}
+          >{item.url.substr(8,2)}</Avatar>
+        </IconButton>
+      ))}
 
-      </List>
-    </div>
+      <IconButton 
+          className={classes.connectionButton}
+          color="inherit"
+          onClick={handleOpenNewAgentModal}
+      >
+        <AddIcon />
+      </IconButton>
+
+      <Box className={classes.settings}>
+      <ListItemLink
+            to={'/settings'}
+            selected={settingsMatch !== null}
+            >
+          <SettingsIcon />
+            
+        </ListItemLink>
+      </Box>
+
+      </Box>
+      <Box className={classes.mainDrawerContent}>
+        <div className={classes.toolbar} />
+        <List 
+          className={classes.list}
+          subheader={
+            <ListSubheader component="div" id="nested-list-subheader">
+              {parse(connection?.url || '').hostname}
+            </ListSubheader>
+          }
+
+        >          
+          <Divider/>
+          <ListItemLink to={'/credentials'} 
+            selected={credentialsMatch !== null}
+            >
+            <ListItemIcon><VerifiedUserIcon /></ListItemIcon>
+            <ListItemText primary={'Credentials'} />
+          </ListItemLink>
+          <ListItemLink
+            to={'/identifiers'}
+            selected={identitiesMatch !== null || identityMatch !== null}
+            >
+            <ListItemIcon><RecentActorsIcon /></ListItemIcon>
+            <ListItemText primary={'Known identifiers'} />
+          </ListItemLink>
+          <ListItemLink
+            to={'/managed-identities'}
+            selected={managedIdentitiesMatch !== null}
+            >
+            <ListItemIcon><PeopleIcon /></ListItemIcon>
+            <ListItemText primary={'Managed identities'} />
+          </ListItemLink>
+
+        </List>
+      </Box>
+    </Box>
   );
 
   const container = window.document.body
-  console.log({connection})
+
   if (!connection) {
     return <Settings />
   }
@@ -171,7 +266,13 @@ export default function ResponsiveDrawer() {
       </nav>
       <main className={classes.content}>
         <div className={classes.toolbar} />
-        
+        <NewAgentModal
+          fullScreen={fullScreen}
+          open={openNewAgentModal}
+          onClose={handleCloseNewAgentModal}
+          saveConnection={saveConnection}
+        />
+
         <Switch>
           <Route exact path="/" render={() => <Redirect to="/credentials" />} />
           <Route path={'/credentials'} component={Credentials} />
@@ -182,6 +283,7 @@ export default function ResponsiveDrawer() {
           <Route path={'/c/:id'} component={Credential} />
         </Switch>
       </main>
+      
     </div>
   );
 }

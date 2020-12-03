@@ -47,6 +47,7 @@ function ProfileDialog(props: Props) {
   const [nickname, setNickname] = useState<string|undefined>('')
 
   const saveProfileInfo = async () => {
+    if (!agent) throw Error('Agent not configured')
     try {
       if (!authenticatedDid) throw Error('Not authenticated')
 

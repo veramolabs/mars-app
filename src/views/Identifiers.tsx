@@ -13,15 +13,17 @@ function Identities(props: any) {
   const [ identities, setIdentities ] = useState<Array<Partial<IIdentity>>>([])
 
   useEffect(() => {
-    setLoading(true)
-    agent.dataStoreORMGetIdentities()
-    .then(setIdentities)
-    .finally(() => setLoading(false))
+    if (agent) {
+      setLoading(true)
+      agent.dataStoreORMGetIdentities()
+      .then(setIdentities)
+      .finally(() => setLoading(false))
+    }
   }, [agent])
 
   return (
     <Container maxWidth="sm">
-      <AppBar title='Connections' />
+      <AppBar title='Known identifiers' />
       {loading && <LinearProgress />}
       <List >
         {identities.map(identity => (

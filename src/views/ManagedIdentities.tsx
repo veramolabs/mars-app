@@ -13,10 +13,12 @@ function ManagedIdentities(props: any) {
   const [ identities, setIdentities ] = useState<Array<IIdentity>>([])
 
   useEffect(() => {
-    setLoading(true)
-    agent.identityManagerGetIdentities()
-    .then(setIdentities)
-    .finally(() => setLoading(false))
+    if (agent) {
+      setLoading(true)
+      agent.identityManagerGetIdentities()
+      .then(setIdentities)
+      .finally(() => setLoading(false))
+    }
   }, [agent])
 
   return (

@@ -3,10 +3,8 @@ import { createAgent, TAgent, IDataStore, IIdentityManager, IKeyManager, IResolv
 import { ICredentialIssuer } from 'daf-w3c'
 import { IDataStoreORM } from 'daf-typeorm'
 import { AgentRestClient } from 'daf-rest'
-import { IdentityProfile } from './types'
+import { IdentityProfile, AgentConnection } from './types'
 
-const url = `${process.env.REACT_APP_AGENT_URL}`
-const apiKey = `${process.env.REACT_APP_AGENT_API_KEY}`
 const enabledMethods = [
   'keyManagerGetKeyManagementSystems',
   'keyManagerCreateKey',
@@ -53,66 +51,60 @@ const enabledMethods = [
 
 type Agent = IDataStore & IDataStoreORM & ICredentialIssuer & IIdentityManager & IKeyManager & IResolver
 
+
+
 interface Context {
-  agent: TAgent<Agent>,
-  authenticatedDid: string | null,
-  url: string
-  apiKey: string
-  setUrl: (url: string) => void
-  setApiKey: (apiKey: string) => void
+  agent?: TAgent<Agent>,
+  authenticatedDid?: string | null,
+  connection?: AgentConnection
+  setConnection: (connection: AgentConnection) => void
+  setConnections: (connections: Array<AgentConnection>) => void
+  connections: Array<AgentConnection>
   getIdentityProfile:(did?: string) => Promise<IdentityProfile>
 }
 
-const defaultAgent = createAgent<Agent>({
-  plugins: [ new AgentRestClient({ url, enabledMethods, headers: { Authorization: 'Bearer ' + apiKey} })],
-})
-
-
 export const AgentContext = React.createContext<Context>({
-  agent: defaultAgent,
-  authenticatedDid: null,
-  setApiKey: (key: string) => {},
-  setUrl: (url: string) => {},
+  connections: [],
+  setConnections: (connections: Array<AgentConnection>) => {},
+  setConnection: (connection: AgentConnection) => {},
   getIdentityProfile: (did?: string) => Promise.reject(),
-  url: '',
-  apiKey: ''
 });
 export const useAgent = () => useContext(AgentContext);
 
 const AgentProvider: React.FC = ({children}) => {
 
   const [authenticatedDid] = useState<string|null>(null)
-  const [agent, setAgent] = useState<TAgent<Agent>>(defaultAgent)
-  const [url, setUrl] = useState<string>(`${process.env.REACT_APP_AGENT_URL}`)
-  const [apiKey, setApiKey] = useState<string>(`${process.env.REACT_APP_AGENT_API_KEY}`)
+  const [agent, setAgent] = useState<TAgent<Agent>|undefined>(undefined)
+  const [connections, setConnections] = useState<Array<AgentConnection>>(
+    JSON.parse(localStorage.getItem('connections') || '[]')
+  )
+  const [connection, setConnection] = useState<AgentConnection|undefined>(connections[0])
+
+  useEffect(() => {
+    localStorage.setItem('connections', JSON.stringify(connections));
+  }, [connections]);
 
 
   useEffect(() => {
-    const configureAgent = async () => {
+    if (connection) {
       const agent = createAgent<Agent>({
         plugins: [
           new AgentRestClient({
-            url, 
+            url: connection.url, 
             enabledMethods,
             headers: {
-              'Authorization': 'Bearer ' + apiKey
+              'Authorization': 'Bearer ' + connection.token
             },
           }),
         ],
       })
       setAgent(agent)  
-
     }
-    if (url) {
-      configureAgent()
-    }
-  
-
-  }, [url, apiKey])
+  }, [connection])
 
 
   const getIdentityProfile = async (did?: string): Promise<IdentityProfile> => {
-    if (!did) return Promise.reject()
+    if (!did || !agent) return Promise.reject()
     const result = await agent.dataStoreORMGetVerifiableCredentials({
       where: [
         { column: 'type', value: ['VerifiableCredential,Profile']},
@@ -134,10 +126,10 @@ const AgentProvider: React.FC = ({children}) => {
     agent,
     getIdentityProfile,
     authenticatedDid,
-    setUrl,
-    setApiKey,
-    url,
-    apiKey
+    connection,
+    setConnection,
+    connections,
+    setConnections,
   }}>
     {children}
   </AgentContext.Provider>)

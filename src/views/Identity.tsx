@@ -76,14 +76,16 @@ function Identity(props: any) {
   }, [agent, getIdentityProfile, did])
 
   useEffect(() => {
-    setLoading(true)
-    agent.dataStoreORMGetVerifiableCredentials({      
-      where: [ 
-        { column: value === 0 ? 'issuer' : 'subject', value: [did] },
-      ]
-    })
-    .then(setCredentials)
-    .finally(() => setLoading(false))
+    if (agent) {
+      setLoading(true)
+      agent.dataStoreORMGetVerifiableCredentials({      
+        where: [ 
+          { column: value === 0 ? 'issuer' : 'subject', value: [did] },
+        ]
+      })
+      .then(setCredentials)
+      .finally(() => setLoading(false))
+    }
   }, [agent, getIdentityProfile, value, did])
 
   return (

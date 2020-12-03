@@ -13,14 +13,16 @@ function Credentials(props: any) {
   const [ credentials, setCredentials ] = useState<Array<UniqueVerifiableCredential>>([])
 
   useEffect(() => {
-    setLoading(true)
-    agent.dataStoreORMGetVerifiableCredentials({
-      order: [
-        { column: 'issuanceDate', direction: 'DESC' }
-      ]
-    })
-    .then(setCredentials)
-    .finally(() => setLoading(false))
+    if (agent) {
+      setLoading(true)
+      agent.dataStoreORMGetVerifiableCredentials({
+        order: [
+          { column: 'issuanceDate', direction: 'DESC' }
+        ]
+      })
+      .then(setCredentials)
+      .finally(() => setLoading(false))
+    }
   }, [agent])
   
   return (

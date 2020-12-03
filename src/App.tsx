@@ -7,9 +7,11 @@ import List from '@material-ui/core/List';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import PeopleIcon from '@material-ui/icons/People';
+import RecentActorsIcon from '@material-ui/icons/RecentActors';
 import SettingsIcon from '@material-ui/icons/Settings';
-import DashboardIcon from '@material-ui/icons/Dashboard';
+import VerifiedUserIcon from '@material-ui/icons/VerifiedUser';
 import { useMobile } from './components/Nav/MobileProvider';
+import { useAgent } from './agent';
 
 import { makeStyles, useTheme, Theme, createStyles } from '@material-ui/core/styles';
 import {
@@ -20,7 +22,7 @@ import {
 } from 'react-router-dom' 
 
 import Credentials from './views/Credentials'
-import Identities from './views/Identities'
+import Identifiers from './views/Identifiers'
 import ManagedIdentities from './views/ManagedIdentities'
 import Identity from './views/Identity'
 import Credential from './views/Credential'
@@ -62,9 +64,12 @@ const useStyles = makeStyles((theme: Theme) =>
     drawerPaper: {
       width: drawerWidth,
     },
+    list: {
+      paddingTop: 0,
+    },
     content: {
       flexGrow: 1,
-      paddingTop: theme.spacing(8),
+      paddingTop: theme.spacing(2),
     },
   }),
 );
@@ -73,13 +78,13 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function ResponsiveDrawer() {
   const classes = useStyles();
   const theme = useTheme();
+  const { connection } = useAgent()
   const { mobileOpen, setMobileOpen } = useMobile();
   const credentialsMatch = useRouteMatch("/credentials");
-  const identitiesMatch = useRouteMatch("/identities");
+  const identitiesMatch = useRouteMatch("/identifiers");
   const managedIdentitiesMatch = useRouteMatch("/managed-identities");
   const settingsMatch = useRouteMatch("/settings");
   const identityMatch = useRouteMatch("/identity/:did");
-
   
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -88,21 +93,21 @@ export default function ResponsiveDrawer() {
   const drawer = (
     <div>
       <div className={classes.toolbar} />
-      <List>
+      <List className={classes.list}>
       <Divider />
         
         <ListItemLink to={'/credentials'} 
           selected={credentialsMatch !== null}
           >
-          <ListItemIcon><DashboardIcon /></ListItemIcon>
+          <ListItemIcon><VerifiedUserIcon /></ListItemIcon>
           <ListItemText primary={'Credentials'} />
         </ListItemLink>
         <ListItemLink
-          to={'/identities'}
+          to={'/identifiers'}
           selected={identitiesMatch !== null || identityMatch !== null}
           >
-          <ListItemIcon><PeopleIcon /></ListItemIcon>
-          <ListItemText primary={'Connections'} />
+          <ListItemIcon><RecentActorsIcon /></ListItemIcon>
+          <ListItemText primary={'Known identifiers'} />
         </ListItemLink>
         <ListItemLink
           to={'/managed-identities'}
@@ -124,6 +129,10 @@ export default function ResponsiveDrawer() {
   );
 
   const container = window.document.body
+  console.log({connection})
+  if (!connection) {
+    return <Settings />
+  }
 
   return (
     <div className={classes.root}>
@@ -167,7 +176,7 @@ export default function ResponsiveDrawer() {
           <Route exact path="/" render={() => <Redirect to="/credentials" />} />
           <Route path={'/credentials'} component={Credentials} />
           <Route path={'/settings'} component={Settings} />
-          <Route path={'/identities'} component={Identities} />
+          <Route path={'/identifiers'} component={Identifiers} />
           <Route path={'/managed-identities'} component={ManagedIdentities} />
           <Route path={'/identity/:did'} component={Identity} />
           <Route path={'/c/:id'} component={Credential} />

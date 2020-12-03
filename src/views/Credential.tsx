@@ -15,12 +15,14 @@ function Credential(props: any) {
   const [ loading, setLoading ] = useState(false)
   const [ credentials, setCredentials ] = useState<Array<UniqueVerifiableCredential>>([])
   useEffect(() => {
-    setLoading(true)
-    agent.dataStoreORMGetVerifiableCredentials({      
-      where: [ { column: 'id', value: [process.env.REACT_APP_HOST + '/c/' + id]}]
-    })
-    .then(setCredentials)
-    .finally(() => setLoading(false))
+    if (agent) {
+      setLoading(true)
+      agent.dataStoreORMGetVerifiableCredentials({      
+        where: [ { column: 'id', value: [process.env.REACT_APP_HOST + '/c/' + id]}]
+      })
+      .then(setCredentials)
+      .finally(() => setLoading(false))
+    }
   }, [agent, id])
 
   return (

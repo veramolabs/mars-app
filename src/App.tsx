@@ -14,7 +14,7 @@ import VerifiedUserIcon from '@material-ui/icons/VerifiedUser';
 import { useMobile } from './components/Nav/MobileProvider';
 import NewAgentModal from "./components/NewAgentDialog"
 import parse from 'url-parse'
-
+import DescriptionIcon from '@material-ui/icons/Description';
 
 import { makeStyles, useTheme, Theme, createStyles } from '@material-ui/core/styles';
 import {
@@ -24,6 +24,7 @@ import {
   useRouteMatch
 } from 'react-router-dom' 
 
+import Resolver from './views/Resolver'
 import Credentials from './views/Credentials'
 import Identifiers from './views/Identifiers'
 import ManagedIdentities from './views/ManagedIdentities'
@@ -122,6 +123,7 @@ export default function ResponsiveDrawer() {
   const theme = useTheme();
   const { connection, connections, setConnection, setConnections } = useAgent()
   const { mobileOpen, setMobileOpen } = useMobile();
+  const resolverMatch = useRouteMatch("/resolver");
   const credentialsMatch = useRouteMatch("/credentials");
   const identitiesMatch = useRouteMatch("/identifiers");
   const managedIdentitiesMatch = useRouteMatch("/managed-identities");
@@ -175,12 +177,11 @@ export default function ResponsiveDrawer() {
       </IconButton>
 
       <Box className={classes.settings}>
-      <ListItemLink
-            to={'/settings'}
-            selected={settingsMatch !== null}
-            >
+        <ListItemLink
+          to={'/settings'}
+          selected={settingsMatch !== null}
+        >
           <SettingsIcon />
-            
         </ListItemLink>
       </Box>
 
@@ -216,6 +217,13 @@ export default function ResponsiveDrawer() {
             >
             <ListItemIcon><PeopleIcon /></ListItemIcon>
             <ListItemText primary={'Managed identities'} />
+          </ListItemLink>
+          <ListItemLink
+            to={'/resolver'}
+            selected={resolverMatch !== null}
+            >
+            <ListItemIcon><DescriptionIcon /></ListItemIcon>
+            <ListItemText primary={'Resolver'} />
           </ListItemLink>
 
         </List>
@@ -275,6 +283,7 @@ export default function ResponsiveDrawer() {
 
         <Switch>
           <Route exact path="/" render={() => <Redirect to="/credentials" />} />
+          <Route path={'/resolver'} component={Resolver} />
           <Route path={'/credentials'} component={Credentials} />
           <Route path={'/settings'} component={Settings} />
           <Route path={'/identifiers'} component={Identifiers} />

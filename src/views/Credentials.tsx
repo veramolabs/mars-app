@@ -32,7 +32,7 @@ function Credentials(props: any) {
       <Grid container spacing={2} justify="center">
         {credentials.map(credential => (
           <Grid item key={credential.hash} xs={12}>
-            <CredentialCard credential={credential.verifiableCredential} type={'summary'}/>
+            <CredentialCard credential={credential} type={'summary'}/>
           </Grid>
         ))}
       </Grid>

@@ -1,12 +1,11 @@
 import React from "react";
 import { Typography, CardContent, Link, makeStyles } from "@material-ui/core";
 import Avatar from '@material-ui/core/Avatar';
-import { VerifiableCredential } from "daf-core";
+import { UniqueVerifiableCredential } from "daf-typeorm";
 import { IdentityProfile } from "../../types";
 
-
 interface Props {
-  credential: VerifiableCredential
+  credential: UniqueVerifiableCredential
   issuer: IdentityProfile
   subject?: IdentityProfile
   type: 'summary' | 'details'
@@ -24,17 +23,17 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function PostCredential(props: Props) {
-  const { credential, issuer, subject } = props
+  const { credential: { verifiableCredential }, issuer, subject } = props
   const classes = useStyles();
   
   return (
     <CardContent>
-      {credential.credentialSubject.comment && 
+      {verifiableCredential.credentialSubject.comment && 
         <Typography variant='body1' color='textPrimary'>
           {subject && issuer.did !== subject.did && <Link href={'/identity/' + subject.did} className={classes.link}>
             <Avatar variant='rounded' src={subject.picture} className={classes.avatar}/> {subject.nickname}
             </Link>}
-          {credential.credentialSubject.comment}
+          {verifiableCredential.credentialSubject.comment}
         </Typography>}
         
     </CardContent>    

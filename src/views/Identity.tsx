@@ -146,7 +146,7 @@ function Identity(props: any) {
 
         {credentials.map(credential => (
           <Grid item key={credential.hash} xs={12}>
-            <CredentialCard credential={credential.verifiableCredential} type='summary' />
+            <CredentialCard credential={credential} type='summary' />
           </Grid>
         ))}
       </Grid>

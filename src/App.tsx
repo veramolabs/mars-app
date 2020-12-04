@@ -280,7 +280,7 @@ export default function ResponsiveDrawer() {
           <Route path={'/identifiers'} component={Identifiers} />
           <Route path={'/managed-identities'} component={ManagedIdentities} />
           <Route path={'/identity/:did'} component={Identity} />
-          <Route path={'/c/:id'} component={Credential} />
+          <Route path={'/credential/:hash'} component={Credential} />
         </Switch>
       </main>
       

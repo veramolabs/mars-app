@@ -1,22 +1,22 @@
 import React from "react";
 import { Typography, CardContent } from "@material-ui/core";
-import { VerifiableCredential } from "daf-core";
+import { UniqueVerifiableCredential } from "daf-typeorm";
 import { IdentityProfile } from "../../types";
 
 interface Props {
-  credential: VerifiableCredential
+  credential: UniqueVerifiableCredential
   issuer: IdentityProfile
   subject?: IdentityProfile
   type: 'summary' | 'details'
 }
 
 function MessageCredential(props: Props) {
-  const { credential } = props  
+  const { credential: { verifiableCredential } } = props  
   return (
     <CardContent>
-      {credential.credentialSubject.content && 
+      {verifiableCredential.credentialSubject.content && 
         <Typography variant='body1' color='textPrimary'>
-          {credential.credentialSubject.content}
+          {verifiableCredential.credentialSubject.content}
         </Typography>}
     </CardContent>    
   )

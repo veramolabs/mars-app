@@ -29,6 +29,7 @@ const enabledMethods = [
   'resolveDid',
   'dataStoreSaveMessage',
   'dataStoreSaveVerifiableCredential',
+  'dataStoreGetVerifiableCredential',
   'dataStoreSaveVerifiablePresentation',
   'dataStoreORMGetIdentities',
   'dataStoreORMGetIdentitiesCount',

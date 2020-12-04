@@ -2,16 +2,11 @@ import React, { useState } from "react";
 import Container from '@material-ui/core/Container';
 import AppBar from "../components/Nav/AppBar";
 import { useAgent } from '../agent'
-import { Button, Card, CardActions, CardContent, Grid, LinearProgress, makeStyles, TextField, Typography } from "@material-ui/core";
+import { Button, Card, CardActions, CardContent, Grid, LinearProgress, TextField, Typography } from "@material-ui/core";
 import { DIDDocument } from 'daf-core'
-const useStyles = makeStyles((theme) => ({
-  margin: {
-    margin: theme.spacing(1),
-  },
-}));
 
 function Resolver(props: any) {
-  const classes = useStyles();
+
   const { agent } = useAgent()
   const [ loading, setLoading ] = useState(false)
   const [ didUrl, setDidUrl ] = useState<string>('')

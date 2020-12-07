@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import Container from '@material-ui/core/Container';
-import AppBar from "../components/Nav/AppBar";
-import { useAgent } from '../agent'
+import AppBar from "../../components/Nav/AppBar";
+import { useAgent } from '../../agent'
 import { Box, Button, Grid, IconButton, List, ListItem, ListItemSecondaryAction, ListItemText, ListSubheader, makeStyles, TextField } from "@material-ui/core";
 import DeleteIcon from '@material-ui/icons/Delete';
-import { AgentConnection } from "../types";
+import { AgentConnection } from "../../types";
 import { useHistory } from "react-router-dom";
 const useStyles = makeStyles((theme) => ({
   margin: {
@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function Settings(props: any) {
+function CloudAgentsView(props: any) {
   const classes = useStyles();
   const history = useHistory()
   const { 
@@ -30,7 +30,7 @@ function Settings(props: any) {
     setConnections([...connections, connection])
     if (connections.length === 0) {
       console.log('here')
-      history.push('/credentials/')
+      history.push('/agent/messages/')
     }
     setConnection(connection)
   }
@@ -45,7 +45,7 @@ function Settings(props: any) {
 
   return (
     <Container maxWidth="sm">
-      {connection && <AppBar title='Settings' />}
+      <AppBar title='Cloud agents' />
       <Grid container spacing={2} justify="center">
           <Grid item xs={12}>
           <List
@@ -59,9 +59,9 @@ function Settings(props: any) {
           >
             {connections.map(item => (
               <ListItem 
-                role={undefined} dense button onClick={() => setConnection(item)}
+                role={undefined} dense 
                 key={item.token} 
-                selected={item.url === connection?.url && item.token === connection?.token }>
+                >
                 <ListItemText primary={item.url} />
                 <ListItemSecondaryAction onClick={() => handleDeleteConnection(item)}>
                   <IconButton edge="end" aria-label="Delete">
@@ -102,4 +102,4 @@ function Settings(props: any) {
   );
 }
 
-export default Settings;
+export default CloudAgentsView;

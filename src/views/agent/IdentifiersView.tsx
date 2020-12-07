@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 import { List } from "@material-ui/core";
 import Container from '@material-ui/core/Container';
 import LinearProgress from '@material-ui/core/LinearProgress';
-import AppBar from "../components/Nav/AppBar";
-import { useAgent } from '../agent'
+import AppBar from "../../components/Nav/AppBar";
+import { useAgent } from '../../agent'
 import { IIdentity } from "daf-core";
-import Identity from '../components/Identity'
+import Identity from '../../components/Identity'
 
-function Identities(props: any) {
+function IdentitiesView(props: any) {
   const { agent } = useAgent()
   const [ loading, setLoading ] = useState(false)
   const [ identities, setIdentities ] = useState<Array<Partial<IIdentity>>>([])
@@ -38,4 +38,4 @@ function Identities(props: any) {
   )
 }
 
-export default Identities;
+export default IdentitiesView;

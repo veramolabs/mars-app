@@ -10,6 +10,7 @@ import PeopleIcon from '@material-ui/icons/People';
 import RecentActorsIcon from '@material-ui/icons/RecentActors';
 import SettingsIcon from '@material-ui/icons/Settings';
 import AddIcon from '@material-ui/icons/Add';
+import MessageIcon from '@material-ui/icons/Message';
 import VerifiedUserIcon from '@material-ui/icons/VerifiedUser';
 import { useMobile } from './components/Nav/MobileProvider';
 import NewAgentModal from "./components/NewAgentDialog"
@@ -24,6 +25,7 @@ import {
   useRouteMatch
 } from 'react-router-dom' 
 
+import Messages from './views/Messages'
 import Resolver from './views/Resolver'
 import Credentials from './views/Credentials'
 import Identifiers from './views/Identifiers'
@@ -123,6 +125,7 @@ export default function ResponsiveDrawer() {
   const theme = useTheme();
   const { connection, connections, setConnection, setConnections } = useAgent()
   const { mobileOpen, setMobileOpen } = useMobile();
+  const messagesMatch = useRouteMatch("/messages");
   const resolverMatch = useRouteMatch("/resolver");
   const credentialsMatch = useRouteMatch("/credentials");
   const identitiesMatch = useRouteMatch("/identifiers");
@@ -198,6 +201,12 @@ export default function ResponsiveDrawer() {
 
         >          
           <Divider/>
+          <ListItemLink to={'/messages'} 
+            selected={messagesMatch !== null}
+            >
+            <ListItemIcon><MessageIcon /></ListItemIcon>
+            <ListItemText primary={'Messages'} />
+          </ListItemLink>
           <ListItemLink to={'/credentials'} 
             selected={credentialsMatch !== null}
             >
@@ -283,6 +292,7 @@ export default function ResponsiveDrawer() {
 
         <Switch>
           <Route exact path="/" render={() => <Redirect to="/credentials" />} />
+          <Route path={'/messages'} component={Messages} />
           <Route path={'/resolver'} component={Resolver} />
           <Route path={'/credentials'} component={Credentials} />
           <Route path={'/settings'} component={Settings} />

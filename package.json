@@ -31,11 +31,13 @@
     "@types/react": "^16.9.0",
     "@types/react-dom": "^16.9.0",
     "@types/react-router-dom": "^5.1.5",
-    "daf-core": "^7.0.0-beta.52",
-    "daf-rest": "^7.0.0-beta.52",
-    "daf-typeorm": "^7.0.0-beta.52",
-    "daf-w3c": "^7.0.0-beta.52",
+    "daf-cli": "^7.0.0-beta.52",
+    "daf-core": "^7.0.0-beta.53",
+    "daf-rest": "^7.0.0-beta.53",
+    "daf-typeorm": "^7.0.0-beta.53",
+    "daf-w3c": "^7.0.0-beta.53",
     "date-fns": "^2.12.0",
+    "get-port": "^5.1.1",
     "graphql": "^15.0.0",
     "notistack": "^0.9.11",
     "react": "^16.13.1",
@@ -53,7 +55,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "upgrade-daf": "yarn add daf-core@beta daf-w3c@beta daf-typeorm@beta daf-rest@beta",
+    "upgrade-daf": "yarn add daf-core@beta daf-w3c@beta daf-typeorm@beta daf-rest@beta daf-cli@beta",
     "build-electron": "cross-env PUBLIC_URL=./ react-scripts build",
     "electron": "electron .",
     "electron-dev": "cross-env ELECTRON_START_URL=http://localhost:3000 electron .",
@@ -79,6 +81,7 @@
     "@types/url-parse": "^1.4.3",
     "cross-env": "^7.0.3",
     "electron": "^11.0.3",
-    "electron-builder": "^22.9.1"
+    "electron-builder": "^22.9.1",
+    "electron-rebuild": "^2.3.4"
   }
 }

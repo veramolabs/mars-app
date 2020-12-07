@@ -1,58 +1,9 @@
 import React, { useContext, useState, useEffect } from "react";
-import { createAgent, TAgent, IDataStore, IIdentityManager, IKeyManager, IResolver } from 'daf-core'
-import { ICredentialIssuer } from 'daf-w3c'
-import { IDataStoreORM } from 'daf-typeorm'
+import { createAgent, TAgent } from 'daf-core'
 import { AgentRestClient } from 'daf-rest'
-import { IdentityProfile, AgentConnection } from './types'
-
-const enabledMethods = [
-  'keyManagerGetKeyManagementSystems',
-  'keyManagerCreateKey',
-  'keyManagerGetKey',
-  'keyManagerDeleteKey',
-  'keyManagerImportKey',
-  'keyManagerEncryptJWE',
-  'keyManagerDecryptJWE',
-  'keyManagerSignJWT',
-  'keyManagerSignEthTX',
-  'identityManagerGetProviders',
-  'identityManagerGetIdentities',
-  'identityManagerGetIdentity',
-  'identityManagerCreateIdentity',
-  'identityManagerGetOrCreateIdentity',
-  'identityManagerImportIdentity',
-  'identityManagerDeleteIdentity',
-  'identityManagerAddKey',
-  'identityManagerRemoveKey',
-  'identityManagerAddService',
-  'identityManagerRemoveService',
-  'resolveDid',
-  'dataStoreSaveMessage',
-  'dataStoreSaveVerifiableCredential',
-  'dataStoreGetVerifiableCredential',
-  'dataStoreSaveVerifiablePresentation',
-  'dataStoreORMGetIdentities',
-  'dataStoreORMGetIdentitiesCount',
-  'dataStoreORMGetMessages',
-  'dataStoreORMGetMessagesCount',
-  'dataStoreORMGetVerifiableCredentialsByClaims',
-  'dataStoreORMGetVerifiableCredentialsByClaimsCount',
-  'dataStoreORMGetVerifiableCredentials',
-  'dataStoreORMGetVerifiableCredentialsCount',
-  'dataStoreORMGetVerifiablePresentations',
-  'dataStoreORMGetVerifiablePresentationsCount',
-  'handleMessage',
-  'sendMessageDIDCommAlpha1',
-  'createVerifiablePresentation',
-  'createVerifiableCredential',
-  'createSelectiveDisclosureRequest',
-  'getVerifiableCredentialsForSdr',
-  'validatePresentationAgainstSdr',
-]
-
-type Agent = IDataStore & IDataStoreORM & ICredentialIssuer & IIdentityManager & IKeyManager & IResolver
-
-
+import { IdentityProfile, AgentConnection } from '../types'
+import { useElectronDefaultConnection } from './electron'
+import { Agent, enabledMethods } from './config'
 
 interface Context {
   agent?: TAgent<Agent>,
@@ -80,6 +31,7 @@ const AgentProvider: React.FC = ({children}) => {
     JSON.parse(localStorage.getItem('connections') || '[]')
   )
   const [connection, setConnection] = useState<AgentConnection|undefined>(connections[0])
+  const defaultConnection = useElectronDefaultConnection()
 
   useEffect(() => {
     localStorage.setItem('connections', JSON.stringify(connections));
@@ -103,6 +55,18 @@ const AgentProvider: React.FC = ({children}) => {
     }
   }, [connection])
 
+
+  useEffect(() => {
+    if (defaultConnection) {
+        const exists = connections.find(item => item.url === defaultConnection.url && item.token === defaultConnection.token )
+
+        if (!exists) {
+          const filtered = connections.filter(i => !i.url.match('localhost'))
+          setConnections(c => filtered.concat([defaultConnection]))
+          setConnection(c => defaultConnection)
+        }
+    }
+  },[defaultConnection, connections, setConnections, setConnection])
 
   const getIdentityProfile = async (did?: string): Promise<IdentityProfile> => {
     if (!did || !agent) return Promise.reject()

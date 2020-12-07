@@ -2,16 +2,16 @@ import React, { useState, useEffect } from "react";
 import { Grid, Typography, makeStyles, Card, CardContent, CardActions, Button, IconButton, Collapse, useTheme, useMediaQuery, Box, Tabs, Tab } from "@material-ui/core";
 import { useParams } from "react-router-dom";
 import Avatar from '@material-ui/core/Avatar';
-import CredentialCard from '../components/CredentialCard'
 import clsx from 'clsx';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Container from '@material-ui/core/Container';
 import LinearProgress from '@material-ui/core/LinearProgress';
-import ProfileDialog from "../components/ProfileDialog"
-import AppBar from "../components/Nav/AppBar";
+import CredentialCard from '../../components/CredentialCard'
+import ProfileDialog from "../../components/ProfileDialog"
+import AppBar from "../../components/Nav/AppBar";
 import { UniqueVerifiableCredential } from "daf-typeorm";
-import { useAgent } from "../agent";
-import { IdentityProfile } from "../types";
+import { useAgent } from "../../agent";
+import { IdentityProfile } from "../../types";
 
 const useStyles = makeStyles((theme) => ({
   avatar: {
@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-function Identity(props: any) {
+function IdentityView(props: any) {
   const { did } = useParams<{ did: string }>()
   const classes = useStyles();
   const [expanded, setExpanded] = React.useState(false);
@@ -161,4 +161,4 @@ function Identity(props: any) {
   );
 }
 
-export default Identity;
+export default IdentityView;

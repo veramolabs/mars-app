@@ -2,15 +2,15 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Container from '@material-ui/core/Container';
 import LinearProgress from '@material-ui/core/LinearProgress';
-import CredentialCard from "../components/CredentialCard";
-import AppBar from "../components/Nav/AppBar";
-import { useAgent } from '../agent'
+import CredentialCard from "../../components/CredentialCard";
+import AppBar from "../../components/Nav/AppBar";
+import { useAgent } from '../../agent'
 import { UniqueVerifiableCredential } from 'daf-typeorm'
 import { Grid } from "@material-ui/core";
 import { VerifiableCredential } from "daf-core";
 
 
-function Credential(props: any) {
+function CredentialView(props: any) {
   const { hash } = useParams<{ hash: string }>()
   const { agent } = useAgent()
   const [ loading, setLoading ] = useState(false)
@@ -53,4 +53,4 @@ function Credential(props: any) {
   );
 }
 
-export default Credential;
+export default CredentialView;

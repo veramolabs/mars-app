@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 import { Grid } from "@material-ui/core";
 import Container from '@material-ui/core/Container';
 import LinearProgress from '@material-ui/core/LinearProgress';
-import MessageCard from '../components/MessageCard'
-import AppBar from "../components/Nav/AppBar";
-import { useAgent } from '../agent'
+import MessageCard from '../../components/MessageCard'
+import AppBar from "../../components/Nav/AppBar";
+import { useAgent } from '../../agent'
 import { IMessage } from 'daf-core'
 
-function Messages(props: any) {
+function MessagesView(props: any) {
   const { agent } = useAgent()
   const [ loading, setLoading ] = useState(false)
   const [ messages, setMessages ] = useState<Array<IMessage>>([])
@@ -40,4 +40,4 @@ function Messages(props: any) {
   );
 }
 
-export default Messages;
+export default MessagesView;

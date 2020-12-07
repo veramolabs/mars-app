@@ -1,40 +1,24 @@
 import React from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import Divider from '@material-ui/core/Divider';
 import Drawer from '@material-ui/core/Drawer';
 import Hidden from '@material-ui/core/Hidden';
-import List from '@material-ui/core/List';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import PeopleIcon from '@material-ui/icons/People';
-import RecentActorsIcon from '@material-ui/icons/RecentActors';
 import SettingsIcon from '@material-ui/icons/Settings';
 import AddIcon from '@material-ui/icons/Add';
-import MessageIcon from '@material-ui/icons/Message';
-import VerifiedUserIcon from '@material-ui/icons/VerifiedUser';
 import { useMobile } from './components/Nav/MobileProvider';
 import NewAgentModal from "./components/NewAgentDialog"
-import parse from 'url-parse'
-import DescriptionIcon from '@material-ui/icons/Description';
+import { useHistory, useRouteMatch } from "react-router-dom";
 
 import { makeStyles, useTheme, Theme, createStyles } from '@material-ui/core/styles';
 import {
   Route,
   Redirect,
-  Switch,
-  useRouteMatch
+  Switch
 } from 'react-router-dom' 
 
-import Messages from './views/Messages'
-import Resolver from './views/Resolver'
-import Credentials from './views/Credentials'
-import Identifiers from './views/Identifiers'
-import ManagedIdentities from './views/ManagedIdentities'
-import Identity from './views/Identity'
-import Credential from './views/Credential'
-import Settings from './views/Settings'
+import { AgentSwitch, AgentDrawer } from './views/agent/navigation'
+import { SettingsSwitch, SettingsDrawer } from './views/settings/navigation'
 import ListItemLink from './components/Nav/ListItemLink'
-import { Avatar, Box, IconButton, ListSubheader, useMediaQuery } from '@material-ui/core';
+import { Avatar, Box, IconButton, useMediaQuery } from '@material-ui/core';
 import { useAgent } from "./agent";
 import { AgentConnection } from './types';
 import { deepOrange } from '@material-ui/core/colors';
@@ -125,13 +109,8 @@ export default function ResponsiveDrawer() {
   const theme = useTheme();
   const { connection, connections, setConnection, setConnections } = useAgent()
   const { mobileOpen, setMobileOpen } = useMobile();
-  const messagesMatch = useRouteMatch("/messages");
-  const resolverMatch = useRouteMatch("/resolver");
-  const credentialsMatch = useRouteMatch("/credentials");
-  const identitiesMatch = useRouteMatch("/identifiers");
-  const managedIdentitiesMatch = useRouteMatch("/managed-identities");
+  const history = useHistory()
   const settingsMatch = useRouteMatch("/settings");
-  const identityMatch = useRouteMatch("/identity/:did");
 
   const fullScreen = useMediaQuery(theme.breakpoints.down('xs'));
   const [openNewAgentModal, setOpenNewAgentModal] = React.useState(false);
@@ -140,6 +119,7 @@ export default function ResponsiveDrawer() {
     setConnections([...connections, connection])
     setConnection(connection)
     setOpenNewAgentModal(false)
+    history.push('/agent')
   }
 
   const handleOpenNewAgentModal = () => {
@@ -162,7 +142,7 @@ export default function ResponsiveDrawer() {
         <IconButton 
           className={classes.connectionButton}
           color="inherit"
-          onClick={() => {setConnection(item);}}
+          onClick={() => {setConnection(item); history.push('/agent')}}
           key={item.url}
         >
           <Avatar
@@ -187,64 +167,16 @@ export default function ResponsiveDrawer() {
           <SettingsIcon />
         </ListItemLink>
       </Box>
-
       </Box>
-      <Box className={classes.mainDrawerContent}>
-        <div className={classes.toolbar} />
-        <List 
-          className={classes.list}
-          subheader={
-            <ListSubheader component="div" id="nested-list-subheader">
-              {parse(connection?.url || '').hostname}
-            </ListSubheader>
-          }
-
-        >          
-          <Divider/>
-          <ListItemLink to={'/messages'} 
-            selected={messagesMatch !== null}
-            >
-            <ListItemIcon><MessageIcon /></ListItemIcon>
-            <ListItemText primary={'Messages'} />
-          </ListItemLink>
-          <ListItemLink to={'/credentials'} 
-            selected={credentialsMatch !== null}
-            >
-            <ListItemIcon><VerifiedUserIcon /></ListItemIcon>
-            <ListItemText primary={'Credentials'} />
-          </ListItemLink>
-          <ListItemLink
-            to={'/identifiers'}
-            selected={identitiesMatch !== null || identityMatch !== null}
-            >
-            <ListItemIcon><RecentActorsIcon /></ListItemIcon>
-            <ListItemText primary={'Known identifiers'} />
-          </ListItemLink>
-          <ListItemLink
-            to={'/managed-identities'}
-            selected={managedIdentitiesMatch !== null}
-            >
-            <ListItemIcon><PeopleIcon /></ListItemIcon>
-            <ListItemText primary={'Managed identities'} />
-          </ListItemLink>
-          <ListItemLink
-            to={'/resolver'}
-            selected={resolverMatch !== null}
-            >
-            <ListItemIcon><DescriptionIcon /></ListItemIcon>
-            <ListItemText primary={'Resolver'} />
-          </ListItemLink>
-
-        </List>
-      </Box>
+      <Switch>
+        <Route path={'/agent'} component={AgentDrawer} />
+        <Route path={'/settings'} component={SettingsDrawer} />
+      </Switch>
+      
     </Box>
   );
 
   const container = window.document.body
-
-  if (!connection) {
-    return <Settings />
-  }
 
   return (
     <div className={classes.root}>
@@ -291,15 +223,9 @@ export default function ResponsiveDrawer() {
         />
 
         <Switch>
-          <Route exact path="/" render={() => <Redirect to="/credentials" />} />
-          <Route path={'/messages'} component={Messages} />
-          <Route path={'/resolver'} component={Resolver} />
-          <Route path={'/credentials'} component={Credentials} />
-          <Route path={'/settings'} component={Settings} />
-          <Route path={'/identifiers'} component={Identifiers} />
-          <Route path={'/managed-identities'} component={ManagedIdentities} />
-          <Route path={'/identity/:did'} component={Identity} />
-          <Route path={'/credential/:hash'} component={Credential} />
+          <Route exact path="/" render={() => <Redirect to={connection ? "/agent" : '/settings'} />} />
+          <Route path={'/agent'} component={AgentSwitch} />
+          <Route path={'/settings'} component={SettingsSwitch} />
         </Switch>
       </main>
       

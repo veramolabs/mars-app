@@ -93,7 +93,6 @@ function CloudAgentsView(props: any) {
             <Button
               className={classes.margin}
               color="primary" 
-              variant="contained"
               onClick={handleAddConnection}
             >Add Cloud Agent</Button>
           </Grid>

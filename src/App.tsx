@@ -110,6 +110,7 @@ export default function ResponsiveDrawer() {
   const { connection, connections, setConnection, setConnections } = useAgent()
   const { mobileOpen, setMobileOpen } = useMobile();
   const history = useHistory()
+  const agentMatch = useRouteMatch("/agent");
   const settingsMatch = useRouteMatch("/settings");
 
   const fullScreen = useMediaQuery(theme.breakpoints.down('xs'));
@@ -146,7 +147,7 @@ export default function ResponsiveDrawer() {
           key={item.url}
         >
           <Avatar
-            className={connection?.url === item.url && connection?.token === item.token ? classes.orange : classes.purple}
+            className={agentMatch !== null && connection?.url === item.url && connection?.token === item.token ? classes.orange : classes.purple}
           >{item.url.substr(8,2)}</Avatar>
         </IconButton>
       ))}
@@ -160,11 +161,10 @@ export default function ResponsiveDrawer() {
       </IconButton>
 
       <Box className={classes.settings}>
-        <ListItemLink
-          to={'/settings'}
-          selected={settingsMatch !== null}
-        >
-          <SettingsIcon />
+        <ListItemLink to={'/settings'}>
+          <SettingsIcon 
+            color={settingsMatch !== null ? 'primary' : 'inherit'}
+          />
         </ListItemLink>
       </Box>
       </Box>

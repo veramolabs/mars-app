@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import { createAgent, TAgent } from 'daf-core'
 import { AgentRestClient } from 'daf-rest'
 import { IdentityProfile, AgentConnection } from '../types'
-import { useElectronDefaultConnection } from './electron'
+import { useElectronDefaultConnection } from '../electron/default-connection'
 import { Agent, enabledMethods } from './config'
 
 interface Context {

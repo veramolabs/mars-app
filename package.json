@@ -4,7 +4,7 @@
   "author": "Simonas Karuzas <simonas@not.cat>",
   "version": "0.1.5",
   "private": true,
-  "main": "build/electron.js",
+  "main": "electron/electron.js",
   "build": {
     "appId": "io.veramolabs.mars",
     "mac": {
@@ -12,7 +12,8 @@
     },
     "files": [
       "build/**/*",
-      "node_modules/**/*"
+      "node_modules/**/*",
+      "electron/**/*"
     ],
     "directories": {
       "buildResources": "assets"

@@ -2,11 +2,11 @@
 const {app, BrowserWindow, ipcMain, nativeTheme} = require('electron')
 const path = require('path')
 const url = require('url');
-const { fork } = require('child_process');
+const { fork, spawn } = require('child_process');
 const getPort = require('get-port');
 let agentServer
 
-getPort({port: [8081, 8082, 8083, 8084]}).then(port => {
+getPort().then(port => {
 
   process.env.PORT = port;
   process.env.BASE_URL = 'http://localhost:' + port;
@@ -28,12 +28,11 @@ getPort({port: [8081, 8082, 8083, 8084]}).then(port => {
     event.sender.send('default-connection-reply', defaultConnection);
   });
 
-
   function createWindow () {
     // Create the browser window.
     const mainWindow = new BrowserWindow({
       backgroundColor: '#202020',
-      width: 1000,
+      width: 1600,
       height: 800,
       webPreferences: {
         nodeIntegration: true
@@ -53,7 +52,7 @@ getPort({port: [8081, 8082, 8083, 8084]}).then(port => {
     nativeTheme.themeSource = 'dark'
   
     // Open the DevTools.
-    // mainWindow.webContents.openDevTools()
+    mainWindow.webContents.openDevTools()
   }
   
   // This method will be called when Electron has finished

@@ -8,8 +8,6 @@ import {
 // import { useAgent } from '../../agent'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 import CloudIcon from '@material-ui/icons/Cloud';
-
-
 import CloudAgentsView from './CloudAgentsView'
 import { Box, Divider, List, ListItemIcon, ListItemText } from "@material-ui/core";
 import ListItemLink from "../../components/Nav/ListItemLink";
@@ -100,13 +98,10 @@ export function SettingsDrawer(props: any) {
           className={classes.list}
         >          
           <Divider/>
-          <ListItemLink to={'/settings/agents'} 
-            selected={cloudAgentsMatch !== null}
-            >
+          <ListItemLink to={'/settings/agents'} selected={cloudAgentsMatch !== null}>
             <ListItemIcon><CloudIcon /></ListItemIcon>
             <ListItemText primary={'Cloud agents'} />
           </ListItemLink>
-
 
         </List>
       </Box>

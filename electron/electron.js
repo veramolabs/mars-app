@@ -32,7 +32,7 @@ getPort().then(port => {
     // Create the browser window.
     const mainWindow = new BrowserWindow({
       backgroundColor: '#202020',
-      width: 1600,
+      width: 1200,
       height: 800,
       webPreferences: {
         nodeIntegration: true
@@ -52,7 +52,7 @@ getPort().then(port => {
     nativeTheme.themeSource = 'dark'
   
     // Open the DevTools.
-    mainWindow.webContents.openDevTools()
+    // mainWindow.webContents.openDevTools()
   }
   
   // This method will be called when Electron has finished

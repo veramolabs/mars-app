@@ -7,8 +7,7 @@ import {
 } from 'react-router-dom' 
 // import { useAgent } from '../../agent'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
-import parse from 'url-parse'
-import { useAgent } from '../../agent'
+import { useAgentList } from '../../agent'
 
 import PeopleIcon from '@material-ui/icons/People';
 import RecentActorsIcon from '@material-ui/icons/RecentActors';
@@ -34,7 +33,7 @@ export function AgentSwitch(props: any) {
   
   return (
     <Switch>
-      <Route exact path="/agent" render={() => <Redirect to="/agent/messages" />} />
+      <Route exact path="/agent" render={() => <Redirect to="/agent/resolver" />} />
       <Route path='/agent/messages' component={Messages} />
       <Route path='/agent/resolver' component={Resolver} />
       <Route path='/agent/credentials' component={Credentials} />
@@ -108,7 +107,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 export function AgentDrawer(props: any) {
-  const { connection } = useAgent()
+  const { agentList, activeAgentIndex } = useAgentList()
   const classes = useStyles();
 
   const messagesMatch = useRouteMatch("/agent/messages");
@@ -125,7 +124,7 @@ export function AgentDrawer(props: any) {
           className={classes.list}
           subheader={
             <ListSubheader component="div" id="nested-list-subheader">
-              {parse(connection?.url || '').hostname}
+              {agentList[activeAgentIndex].name}
             </ListSubheader>
           }
 

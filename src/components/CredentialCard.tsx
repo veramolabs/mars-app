@@ -21,7 +21,7 @@ interface Props {
 function CredentialPostCard(props: Props) {
   const { credential: { verifiableCredential, hash } } = props
 
-  const { agent, getIdentityProfile } = useAgent()
+  const { agent } = useAgent()
   const [ loading, setLoading ] = useState(false)
   const [ issuer, setIssuer ] = useState<IdentityProfile>({ did: verifiableCredential.issuer.id })
   const [ subject, setSubject ] = useState<IdentityProfile|undefined>(undefined)
@@ -29,15 +29,15 @@ function CredentialPostCard(props: Props) {
   useEffect(() => {
     setLoading(true)
     Promise.all<IdentityProfile, IdentityProfile>([
-      getIdentityProfile(verifiableCredential.issuer.id),
-      getIdentityProfile(verifiableCredential.issuer.id)
+      agent.getIdentityProfile({did: verifiableCredential.issuer.id}),
+      agent.getIdentityProfile({ did: verifiableCredential.issuer.id})
     ])
     .then(profiles => {
       setIssuer(profiles[0])
       setSubject(profiles[1])
     })
     .finally(() => setLoading(false))
-  }, [agent, getIdentityProfile, verifiableCredential.issuer.id, verifiableCredential.credentialSubject.id])
+  }, [agent, verifiableCredential.issuer.id, verifiableCredential.credentialSubject.id])
 
   if (loading) {
     return (<LinearProgress />)

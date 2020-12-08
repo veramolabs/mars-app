@@ -1,13 +1,17 @@
 import React, { useState } from "react";
 import Button from "@material-ui/core/Button";
 import { Dialog, DialogTitle, DialogContent, DialogActions, makeStyles, TextField } from "@material-ui/core";
-import { AgentConnection } from "../types";
+import { enabledMethods, Agent } from "../agent/config";
+import { NamedAgent } from "../agent/AgentListProvider";
+import { IdentityProfileManager } from "../agent/ProfileManager";
+import { createAgent } from "daf-core";
+import { AgentRestClient } from "daf-rest";
 
 interface Props {
   fullScreen: boolean,
   open: boolean,
   onClose: any,
-  saveConnection: (connection: AgentConnection) => void
+  saveAgent: (agent: NamedAgent) => void
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -39,8 +43,29 @@ const useStyles = makeStyles((theme) => ({
 function NewAgentDialog(props: Props) {
   const classes = useStyles()
 
+  const [name, setName] = useState<string>('')
   const [url, setUrl] = useState<string>('')
   const [token, setToken] = useState<string>('')
+
+  const configureAgent = () => {
+    const agent = createAgent<Agent>({
+      plugins: [
+        new AgentRestClient({
+          url, 
+          enabledMethods,
+          headers: {
+            'Authorization': 'Bearer ' + token
+          },
+        }),
+        new IdentityProfileManager(),
+      ],
+    })
+
+    props.saveAgent({
+      name,
+      agent
+    })
+  }
 
   return (
     <Dialog
@@ -53,6 +78,14 @@ function NewAgentDialog(props: Props) {
         <DialogContent>
         <form className={classes.form}>
 
+          <TextField
+            id="url"
+            label="Name"
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            fullWidth
+          />
           <TextField
             id="url"
             label="Agent URL"
@@ -79,7 +112,7 @@ function NewAgentDialog(props: Props) {
             Cancel
           </Button>
           <Button 
-            onClick={() => props.saveConnection({url, token})}
+            onClick={configureAgent}
             color="primary"
             autoFocus
           >

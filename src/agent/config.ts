@@ -1,8 +1,10 @@
-import { IDataStore, IIdentityManager, IKeyManager, IResolver } from 'daf-core'
+import { createAgent, TAgent, IDataStore, IIdentityManager, IKeyManager, IResolver } from 'daf-core'
 import { ICredentialIssuer } from 'daf-w3c'
 import { IDataStoreORM } from 'daf-typeorm'
+import { IProfileManager } from './ProfileManager'
 
-export type Agent = IDataStore & IDataStoreORM & ICredentialIssuer & IIdentityManager & IKeyManager & IResolver
+type AgentInterfaces = IProfileManager & IDataStore & IDataStoreORM & ICredentialIssuer & IIdentityManager & IKeyManager & IResolver
+export type Agent = TAgent<AgentInterfaces>
 
 export const enabledMethods = [
   'keyManagerGetKeyManagementSystems',
@@ -48,3 +50,5 @@ export const enabledMethods = [
   'getVerifiableCredentialsForSdr',
   'validatePresentationAgainstSdr',
 ]
+
+export const defaultAgent = createAgent<AgentInterfaces>({})

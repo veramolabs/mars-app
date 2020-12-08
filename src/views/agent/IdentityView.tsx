@@ -51,7 +51,7 @@ function IdentityView(props: any) {
   const classes = useStyles();
   const [expanded, setExpanded] = React.useState(false);
   const theme = useTheme();
-  const { agent, getIdentityProfile } = useAgent()
+  const { agent } = useAgent()
   const [ identity, setIdentity ] = useState<IdentityProfile | undefined>(undefined)
   const [ loading, setLoading ] = useState(false)
   const [ credentials, setCredentials ] = useState<Array<UniqueVerifiableCredential>>([])
@@ -75,9 +75,9 @@ function IdentityView(props: any) {
   };
 
   useEffect(() => {
-    getIdentityProfile(did)
+    agent.getIdentityProfile({did})
     .then(setIdentity)
-  }, [agent, getIdentityProfile, did])
+  }, [agent, did])
 
   useEffect(() => {
     if (agent) {
@@ -90,7 +90,7 @@ function IdentityView(props: any) {
       .then(setCredentials)
       .finally(() => setLoading(false))
     }
-  }, [agent, getIdentityProfile, value, did])
+  }, [agent, value, did])
 
   return (
     <Container maxWidth="sm">

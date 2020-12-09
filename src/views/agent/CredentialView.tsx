@@ -8,10 +8,12 @@ import { useAgent } from '../../agent'
 import { UniqueVerifiableCredential } from 'daf-typeorm'
 import { Grid } from "@material-ui/core";
 import { VerifiableCredential } from "daf-core";
+import { useSnackbar } from 'notistack';
 
 
 function CredentialView(props: any) {
   const { hash } = useParams<{ hash: string }>()
+  const { enqueueSnackbar } = useSnackbar()
   const { agent } = useAgent()
   const [ loading, setLoading ] = useState(false)
   const [ credential, setCredential ] = useState<VerifiableCredential|undefined>(undefined)
@@ -21,8 +23,9 @@ function CredentialView(props: any) {
       setLoading(true)
       agent.dataStoreGetVerifiableCredential({ hash })
       .then(setCredential)
+      .catch(e => enqueueSnackbar(e.message, { variant: 'error' }))
     }
-  }, [agent, hash])
+  }, [agent, hash, enqueueSnackbar])
 
   useEffect(() => {
     if (agent && credential) {

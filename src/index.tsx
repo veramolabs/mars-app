@@ -4,6 +4,7 @@ import * as serviceWorker from './serviceWorker';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { ThemeProvider } from '@material-ui/core/styles';
 import { BrowserRouter } from 'react-router-dom' 
+import { SnackbarProvider } from 'notistack';
 import App from './App';
 import theme from './theme';
 import MobileProvider from './components/Nav/MobileProvider';
@@ -12,14 +13,22 @@ import { AgentListProvider } from './agent/AgentListProvider';
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
-      <AgentListProvider>
-        <MobileProvider>
-          <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <App />
-          </ThemeProvider>
-        </MobileProvider>
-      </AgentListProvider>
+      <SnackbarProvider 
+        maxSnack={4} 
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+      >
+        <AgentListProvider>
+          <MobileProvider>
+            <ThemeProvider theme={theme}>
+              <CssBaseline />
+              <App />
+            </ThemeProvider>
+          </MobileProvider>
+        </AgentListProvider>
+      </SnackbarProvider>
     </BrowserRouter>
   </React.StrictMode>,
   document.getElementById('root')

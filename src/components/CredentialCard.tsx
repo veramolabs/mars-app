@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { CardActions, CardHeader, IconButton, LinearProgress, Menu, MenuItem } from "@material-ui/core";
+import { CardActions, CardHeader, IconButton, LinearProgress, ListItemIcon, Menu, MenuItem, Typography } from "@material-ui/core";
 import Card from "@material-ui/core/Card";
 import CardActionAreaLink from "./Nav/CardActionAreaLink";
 import Avatar from '@material-ui/core/Avatar';
@@ -7,8 +7,7 @@ import { formatDistanceToNow } from 'date-fns'
 import { UniqueVerifiableCredential } from "daf-typeorm";
 import { IdentityProfile } from "../types";
 import { useAgent, useAgentList } from '../agent'
-import { useHistory } from "react-router-dom";
-
+import { useSnackbar } from 'notistack';
 import PostCredential from "./CredentialCardContent/PostCredential";
 import ProfileCredential from "./CredentialCardContent/ProfileCredential";
 import ReactionCredential from "./CredentialCardContent/ReactionCredential";
@@ -22,10 +21,9 @@ interface Props {
 
 function CredentialPostCard(props: Props) {
   const { credential: { verifiableCredential, hash } } = props
-  const history = useHistory()
-
+  const { enqueueSnackbar } = useSnackbar()
   const { agent } = useAgent()
-  const { agentList, setActiveAgentIndex } = useAgentList()
+  const { agentList, activeAgentIndex } = useAgentList()
   const [ loading, setLoading ] = useState(false)
   const [ issuer, setIssuer ] = useState<IdentityProfile>({ did: verifiableCredential.issuer.id })
   const [ subject, setSubject ] = useState<IdentityProfile|undefined>(undefined)
@@ -39,11 +37,10 @@ function CredentialPostCard(props: Props) {
   const handleMenuItemClick = async (event: any, index: number) => {
     // setSelectedIndex(index);
     try {
-      const result = await agentList[index].agent.dataStoreSaveVerifiableCredential({verifiableCredential})
-      setActiveAgentIndex(index)
-      history.push('/agent/credential/' + result)
+      await agentList[index].agent.dataStoreSaveVerifiableCredential({verifiableCredential})
+      enqueueSnackbar('Credential copied to: ' + agentList[index].name, { variant: 'success'})
     } catch (e) {
-      console.log(e)
+      enqueueSnackbar(e.message, { variant: 'error'})
     }
     setAnchorEl(null);
   };
@@ -112,10 +109,18 @@ function CredentialPostCard(props: Props) {
         {agentList.map((option, index) => (
           <MenuItem
             key={index}
-            disabled={!option.agent.availableMethods().includes('dataStoreSaveVerifiableCredential')}
+            disabled={!option.agent.availableMethods().includes('dataStoreSaveVerifiableCredential') || index === activeAgentIndex}
             onClick={(event) => handleMenuItemClick(event, index)}
           >
-            {option.name}
+            <ListItemIcon>
+            <Avatar
+              >{option.name.substr(0,2)}</Avatar>
+            </ListItemIcon>
+            <Typography variant="inherit" noWrap>
+              {option.name}
+            </Typography>
+
+            
           </MenuItem>
         ))}
       </Menu>

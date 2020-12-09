@@ -2,8 +2,9 @@ import React, { useState, useContext, useEffect } from "react"
 import { AgentProvider } from './AgentProvider'
 import { Agent, defaultAgent } from './config'
 import { IdentityProfileManager } from "../agent/ProfileManager";
-import { createAgent } from "daf-core";
+import { createAgent, IAgentPlugin } from "daf-core";
 import { AgentRestClient } from "daf-rest";
+import { useSnackbar } from 'notistack';
 
 export interface SerializedAgentConfig {
   name: string
@@ -41,41 +42,55 @@ export const AgentListContext = React.createContext<{
 })
 
 
-const agentListToJSON = (agentList: AgentConfig[]): string => {
-  // Removing agent object from serialized config
-  return JSON.stringify(agentList.map(c => ({...c, agent: undefined})))
-}
-
-const JSONToAgentList = (json: string): AgentConfig[] => {
-  const serializedAgentList = JSON.parse(json) as Array<SerializedAgentConfig>
-  return serializedAgentList.map(deserializeAgentConfig)
-}
-
-const deserializeAgentConfig = (config: SerializedAgentConfig): AgentConfig => {
-  const plugins = []
-
-    if (config.apiUrl) {
-      const options = {
-        url: config.apiUrl,
-        enabledMethods: config.enabledMethods || [],
-        headers: config.token ? { 'Authorization': 'Bearer ' + config.token} : undefined
-      }
-      plugins.push(new AgentRestClient(options))
-    }
-    plugins.push(new IdentityProfileManager())
-
-    const agent = createAgent<Agent>({ plugins })
-    return {
-      ...config,
-      agent
-    }
-}
 
 
 export const AgentListProvider: React.FC = ({children}) => {
+  const { enqueueSnackbar } = useSnackbar()
+
+  const agentListToJSON = (agentList: AgentConfig[]): string => {
+    // Removing agent object from serialized config
+    return JSON.stringify(agentList.map(c => ({...c, agent: undefined})))
+  }
+
+  const deserializeAgentConfig = (config: SerializedAgentConfig): AgentConfig => {
+    const plugins = []
+  
+      if (config.apiUrl) {
+        const options = {
+          url: config.apiUrl,
+          enabledMethods: config.enabledMethods || [],
+          headers: config.token ? { 'Authorization': 'Bearer ' + config.token} : undefined
+        }
+        plugins.push(new AgentRestClient(options))
+      }
+      plugins.push(new IdentityProfileManager())
+      
+      plugins.push({
+        eventTypes: ['error'],
+        onEvent: (event, ctx) => {enqueueSnackbar(JSON.stringify(event.data))}
+      } as IAgentPlugin)
+  
+      const agent = createAgent<Agent>({ plugins })
+      return {
+        ...config,
+        agent
+      }
+  }
+  
+  const JSONToAgentList = (json: string): AgentConfig[] => {
+    const serializedAgentList = JSON.parse(json) as Array<SerializedAgentConfig>
+    return serializedAgentList.map(deserializeAgentConfig)
+  }
+
   const [agentList, setAgentList] = useState<Array<AgentConfig>>(JSONToAgentList(localStorage.getItem('agentList') || '[]'))
   const [activeAgentIndex, setActiveAgentIndex] = useState<number>(parseInt(localStorage.getItem('activeAgentIndex') || '0', 10))
 
+
+
+  
+
+
+  
   useEffect(() => {
     localStorage.setItem('activeAgentIndex', `${activeAgentIndex}`)
   }, [activeAgentIndex])
@@ -86,9 +101,11 @@ export const AgentListProvider: React.FC = ({children}) => {
 
   const addAgent = (agent: AgentConfig) => {
     setAgentList([ ...agentList, agent ])
+    enqueueSnackbar('Agent added: ' + agent.name, { variant: 'success'})
   }
   
   const removeAgent = (index: number) => {
+    enqueueSnackbar('Agent removed: ' + agentList[index].name, { variant: 'success'})
     const newList = [...agentList]
     newList.splice(index, 1)
     setAgentList(newList)

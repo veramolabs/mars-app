@@ -6,7 +6,6 @@ import { Box, Grid, IconButton, List, ListItem, ListItemSecondaryAction, ListIte
 import DeleteIcon from '@material-ui/icons/Delete';
 
 function CloudAgentsView(props: any) {
-
   const { agentList, removeAgent } = useAgentList()
 
   return (

@@ -33,7 +33,7 @@ export function AgentSwitch(props: any) {
   
   return (
     <Switch>
-      <Route exact path="/agent" render={() => <Redirect to="/agent/resolver" />} />
+      <Route exact path="/agent" render={() => <Redirect to="/agent/messages" />} />
       <Route path='/agent/messages' component={Messages} />
       <Route path='/agent/resolver' component={Resolver} />
       <Route path='/agent/credentials' component={Credentials} />

@@ -4,9 +4,10 @@ import AppBar from "../../components/Nav/AppBar";
 import { useAgent } from '../../agent'
 import { Button, Card, CardActions, CardContent, Grid, LinearProgress, TextField, Typography } from "@material-ui/core";
 import { DIDDocument } from 'daf-core'
+import { useSnackbar } from 'notistack';
 
 function ResolverView(props: any) {
-
+  const { enqueueSnackbar } = useSnackbar()
   const { agent } = useAgent()
   const [ loading, setLoading ] = useState(false)
   const [ didUrl, setDidUrl ] = useState<string>('')
@@ -18,6 +19,7 @@ function ResolverView(props: any) {
       agent.resolveDid({ didUrl })
       .then(setDidDoc)
       .finally(()=>setLoading(false))
+      .catch(e => enqueueSnackbar(e.message, { variant: 'error'}))
     }
   }
 

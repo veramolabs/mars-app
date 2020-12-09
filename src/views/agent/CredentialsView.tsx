@@ -5,10 +5,12 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import CredentialCard from '../../components/CredentialCard'
 import AppBar from "../../components/Nav/AppBar";
 import { useAgent } from '../../agent'
+import { useSnackbar } from 'notistack';
 import { UniqueVerifiableCredential } from 'daf-typeorm'
 
 function CredentialsView(props: any) {
   const { agent } = useAgent()
+  const { enqueueSnackbar } = useSnackbar()
   const [ loading, setLoading ] = useState(false)
   const [ credentials, setCredentials ] = useState<Array<UniqueVerifiableCredential>>([])
 
@@ -22,8 +24,9 @@ function CredentialsView(props: any) {
       })
       .then(setCredentials)
       .finally(() => setLoading(false))
+      .catch(e => enqueueSnackbar(e.message, { variant: 'error'}))
     }
-  }, [agent])
+  }, [agent, enqueueSnackbar])
   
   return (
     <Container maxWidth="sm">

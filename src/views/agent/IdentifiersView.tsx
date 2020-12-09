@@ -6,9 +6,11 @@ import AppBar from "../../components/Nav/AppBar";
 import { useAgent } from '../../agent'
 import { IIdentity } from "daf-core";
 import Identity from '../../components/Identity'
+import { useSnackbar } from 'notistack';
 
 function IdentitiesView(props: any) {
   const { agent } = useAgent()
+  const { enqueueSnackbar } = useSnackbar()
   const [ loading, setLoading ] = useState(false)
   const [ identities, setIdentities ] = useState<Array<Partial<IIdentity>>>([])
 
@@ -18,8 +20,9 @@ function IdentitiesView(props: any) {
       agent.dataStoreORMGetIdentities()
       .then(setIdentities)
       .finally(() => setLoading(false))
+      .catch(e => enqueueSnackbar(e.message, { variant: 'error'}))
     }
-  }, [agent])
+  }, [agent, enqueueSnackbar])
 
   return (
     <Container maxWidth="sm">

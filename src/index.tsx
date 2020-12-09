@@ -7,19 +7,19 @@ import { BrowserRouter } from 'react-router-dom'
 import App from './App';
 import theme from './theme';
 import MobileProvider from './components/Nav/MobileProvider';
-import AgentProvider from './agent';
+import { AgentListProvider } from './agent/AgentListProvider';
 
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
-      <AgentProvider>
+      <AgentListProvider>
         <MobileProvider>
           <ThemeProvider theme={theme}>
             <CssBaseline />
             <App />
           </ThemeProvider>
         </MobileProvider>
-      </AgentProvider>
+      </AgentListProvider>
     </BrowserRouter>
   </React.StrictMode>,
   document.getElementById('root')

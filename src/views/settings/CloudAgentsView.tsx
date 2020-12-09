@@ -1,47 +1,13 @@
-import React, { useState } from "react";
+import React from "react";
 import Container from '@material-ui/core/Container';
 import AppBar from "../../components/Nav/AppBar";
-import { useAgent } from '../../agent'
-import { Box, Button, Grid, IconButton, List, ListItem, ListItemSecondaryAction, ListItemText, ListSubheader, makeStyles, TextField } from "@material-ui/core";
+import { useAgentList } from '../../agent'
+import { Box, Grid, IconButton, List, ListItem, ListItemSecondaryAction, ListItemText, ListSubheader } from "@material-ui/core";
 import DeleteIcon from '@material-ui/icons/Delete';
-import { AgentConnection } from "../../types";
-import { useHistory } from "react-router-dom";
-const useStyles = makeStyles((theme) => ({
-  margin: {
-    margin: theme.spacing(1),
-  },
-}));
 
 function CloudAgentsView(props: any) {
-  const classes = useStyles();
-  const history = useHistory()
-  const { 
-    setConnection,
-    connection,
-    connections,
-    setConnections
-  } = useAgent()
 
-  const [ url, setUrl ] = useState<string>('')
-  const [ token, setToken ] = useState<string>('')
-
-  const handleAddConnection = () => {
-    const connection = { url, token }
-    setConnections([...connections, connection])
-    if (connections.length === 0) {
-      console.log('here')
-      history.push('/agent/messages/')
-    }
-    setConnection(connection)
-  }
-
-  const handleDeleteConnection = (item: AgentConnection) => {
-    const filtered = connections.filter(c => c.url !== item.url && c.token !== item.token)
-    if (connection?.url === item.url && connection.token === item.token) {
-      setConnection(filtered[0])
-    }
-    setConnections(filtered)
-  }
+  const { agentList, removeAgent } = useAgentList()
 
   return (
     <Container maxWidth="sm">
@@ -50,20 +16,23 @@ function CloudAgentsView(props: any) {
           <Grid item xs={12}>
           <List
             subheader={
-              connections.length > 0 
+              agentList.length > 0 
               ? <ListSubheader component="div" id="nested-list-subheader">
                 Cloud Agents
               </ListSubheader>
               : <Box/>
             }
           >
-            {connections.map(item => (
+            {agentList.map((item, index) => (
               <ListItem 
                 role={undefined} dense 
-                key={item.token} 
+                key={index} 
                 >
-                <ListItemText primary={item.url} />
-                <ListItemSecondaryAction onClick={() => handleDeleteConnection(item)}>
+                <ListItemText 
+                  primary={item.name} 
+                  secondary={`${item.apiUrl}, methods: ${item.agent.availableMethods().length}`} 
+                  />
+                <ListItemSecondaryAction onClick={() => removeAgent(index)}>
                   <IconButton edge="end" aria-label="Delete">
                     <DeleteIcon />
                   </IconButton>
@@ -72,29 +41,6 @@ function CloudAgentsView(props: any) {
 
             ))}
           </List>
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              className={classes.margin}
-              label="Cloud Agent URL"
-              type="text"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              fullWidth
-            />
-            <TextField
-              className={classes.margin}
-              label="Token"
-              type="password"
-              value={token}
-              onChange={(e) => setToken(e.target.value)}
-              fullWidth
-            />
-            <Button
-              className={classes.margin}
-              color="primary" 
-              onClick={handleAddConnection}
-            >Add Cloud Agent</Button>
           </Grid>
       </Grid>
     </Container>

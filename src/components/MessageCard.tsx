@@ -40,7 +40,7 @@ function MessageCard(props: Props) {
 
   const classes = useStyles();
   const [expanded, setExpanded] = useState(false);
-  const { agent, getIdentityProfile } = useAgent()
+  const { agent } = useAgent()
   const [ loading, setLoading ] = useState(false)
   const [ from, setFrom ] = useState<IdentityProfile|undefined>(undefined)
   const [ to, setTo ] = useState<IdentityProfile|undefined>(undefined)
@@ -52,15 +52,15 @@ function MessageCard(props: Props) {
   useEffect(() => {
     setLoading(true)
     Promise.all<IdentityProfile, IdentityProfile>([
-      getIdentityProfile(message.from),
-      getIdentityProfile(message.to)
+      agent.getIdentityProfile({ did: message.from }),
+      agent.getIdentityProfile({ did: message.to })
     ])
     .then(profiles => {
       setFrom(profiles[0])
       setTo(profiles[1])
     })
     .finally(() => setLoading(false))
-  }, [agent, getIdentityProfile, message])
+  }, [agent, message])
 
   if (loading) {
     return (<LinearProgress />)

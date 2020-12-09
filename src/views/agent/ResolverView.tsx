@@ -36,6 +36,7 @@ function ResolverView(props: any) {
               value={didUrl}
               onChange={(e) => setDidUrl(e.target.value)}
               fullWidth
+              variant='outlined'
               />
             </CardContent>
             <CardActions>

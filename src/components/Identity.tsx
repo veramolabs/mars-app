@@ -13,24 +13,24 @@ interface Props {
 
 function Identity(props: Props) {
   const { did } = props
-  const { agent, getIdentityProfile } = useAgent()
+  const { agent } = useAgent()
   const [ loading, setLoading ] = useState(false)
   const [ identity, setIdentity ] = useState<IdentityProfile|undefined>(undefined)
 
   useEffect(() => {
     if (did) {
       setLoading(true)
-      getIdentityProfile(did)
+      agent.getIdentityProfile({did})
       .then(setIdentity)
       .finally(() => setLoading(false))
     }
-  }, [agent, getIdentityProfile, did])
+  }, [agent, did])
 
   if (loading) {
     return (<LinearProgress />)
   } else if (identity) {    
     return (
-      <ListItemLink to={'/identity/'+ identity.did}>
+      <ListItemLink to={'/agent/identity/'+ identity.did}>
         <ListItemAvatar>
           <Avatar src={identity.picture} />
         </ListItemAvatar>

@@ -19,8 +19,7 @@ import { AgentSwitch, AgentDrawer } from './views/agent/navigation'
 import { SettingsSwitch, SettingsDrawer } from './views/settings/navigation'
 import ListItemLink from './components/Nav/ListItemLink'
 import { Avatar, Box, IconButton, useMediaQuery } from '@material-ui/core';
-import { useAgent } from "./agent";
-import { AgentConnection } from './types';
+import { useAgentList, AgentConfig, SerializedAgentConfig } from "./agent/AgentListProvider";
 import { deepOrange } from '@material-ui/core/colors';
 
 const drawerWidth = 312;
@@ -107,18 +106,17 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function ResponsiveDrawer() {
   const classes = useStyles();
   const theme = useTheme();
-  const { connection, connections, setConnection, setConnections } = useAgent()
+  const { addSerializedAgentConfig, setActiveAgentIndex, agentList, activeAgentIndex } = useAgentList()
   const { mobileOpen, setMobileOpen } = useMobile();
   const history = useHistory()
-  const agentMatch = useRouteMatch("/agent");
+  // const agentMatch = useRouteMatch("/agent");
   const settingsMatch = useRouteMatch("/settings");
 
   const fullScreen = useMediaQuery(theme.breakpoints.down('xs'));
   const [openNewAgentModal, setOpenNewAgentModal] = React.useState(false);
 
-  const saveConnection = ( connection: AgentConnection) => {
-    setConnections([...connections, connection])
-    setConnection(connection)
+  const saveAgentConfig = ( config: SerializedAgentConfig) => {
+    addSerializedAgentConfig(config)
     setOpenNewAgentModal(false)
     history.push('/agent')
   }
@@ -139,16 +137,16 @@ export default function ResponsiveDrawer() {
   const drawer = (
     <Box className={classes.drawerWrapper}>
       <Box className={classes.sideBar}>
-      {connections.map((item: AgentConnection) => (
+      {agentList.map((item: AgentConfig, index: number) => (
         <IconButton 
           className={classes.connectionButton}
           color="inherit"
-          onClick={() => {setConnection(item); history.push('/agent')}}
-          key={item.url}
+          onClick={() => {setActiveAgentIndex(index); history.push('/agent')}}
+          key={index}
         >
           <Avatar
-            className={agentMatch !== null && connection?.url === item.url && connection?.token === item.token ? classes.orange : classes.purple}
-          >{item.url.substr(8,2)}</Avatar>
+            className={index === activeAgentIndex ? classes.orange : classes.purple}
+          >{item.name.substr(0,2)}</Avatar>
         </IconButton>
       ))}
 
@@ -219,11 +217,11 @@ export default function ResponsiveDrawer() {
           fullScreen={fullScreen}
           open={openNewAgentModal}
           onClose={handleCloseNewAgentModal}
-          saveConnection={saveConnection}
+          saveAgentConfig={saveAgentConfig}
         />
 
         <Switch>
-          <Route exact path="/" render={() => <Redirect to={connection ? "/agent" : '/settings'} />} />
+          <Route exact path="/" render={() => <Redirect to={agentList.length > 0 ? "/agent" : '/settings'} />} />
           <Route path={'/agent'} component={AgentSwitch} />
           <Route path={'/settings'} component={SettingsSwitch} />
         </Switch>

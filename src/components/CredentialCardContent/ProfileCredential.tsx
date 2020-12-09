@@ -1,5 +1,5 @@
 import React from "react";
-import { Typography, CardContent, Grid } from "@material-ui/core";
+import { Typography, CardContent, makeStyles } from "@material-ui/core";
 import Avatar from '@material-ui/core/Avatar';
 import { UniqueVerifiableCredential } from "daf-typeorm";
 import { IdentityProfile } from "../../types";
@@ -11,24 +11,31 @@ interface Props {
   type: 'summary' | 'details'
 }
 
-function ProfileCredential(props: Props) {
-  const { credential: { verifiableCredential }, issuer, subject } = props
-  
-  return (
-    <CardContent>
-      <Typography variant="body2" color="textSecondary" component="p" gutterBottom>
-      {issuer.name} updated profile for {subject?.name}
-      </Typography>
+const useStyles = makeStyles((theme) => ({
+  avatar: {
+    width: 50,
+    height: 50
+  },
+  content: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    padding: theme.spacing(2)
+  },
+}));
 
-      <Grid container spacing={1}>
-        {Object.keys(verifiableCredential.credentialSubject).map(type => (
-          <Grid item key={type} xs={12} sm={type === 'id' ? 12 : 6}>
-            <Typography variant='caption' color='textSecondary'>{type}</Typography>
-            {type !== 'picture' && <Typography variant='body2'>{verifiableCredential.credentialSubject[type]}</Typography>}
-            {type === 'picture' && <Avatar src={verifiableCredential.credentialSubject[type]}/>}
-          </Grid>
-        ))}
-      </Grid>
+function ProfileCredential(props: Props) {
+  const { credential: { verifiableCredential } } = props
+  const classes = useStyles();
+
+  return (
+    <CardContent className={classes.content}>
+      <Avatar
+        className={classes.avatar}
+        src={verifiableCredential.credentialSubject.picture}
+        />
+      <Typography variant='subtitle1'>{verifiableCredential.credentialSubject.name}</Typography>
+      <Typography variant='subtitle2' color='textSecondary'>{verifiableCredential.credentialSubject.nickname}</Typography>
 
     </CardContent>    
   );

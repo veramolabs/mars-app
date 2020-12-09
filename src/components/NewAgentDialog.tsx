@@ -1,69 +1,70 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Button from "@material-ui/core/Button";
-import { Dialog, DialogTitle, DialogContent, DialogActions, makeStyles, TextField } from "@material-ui/core";
-import { enabledMethods, Agent } from "../agent/config";
-import { NamedAgent } from "../agent/AgentListProvider";
-import { IdentityProfileManager } from "../agent/ProfileManager";
-import { createAgent } from "daf-core";
-import { AgentRestClient } from "daf-rest";
+import { Dialog, DialogTitle, DialogContent, DialogActions, makeStyles, TextField, Box, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, Checkbox, FormGroup } from "@material-ui/core";
+import { SerializedAgentConfig } from "../agent/AgentListProvider";
 
 interface Props {
   fullScreen: boolean,
   open: boolean,
   onClose: any,
-  saveAgent: (agent: NamedAgent) => void
+  saveAgentConfig: (config: SerializedAgentConfig) => void
 }
 
 const useStyles = makeStyles((theme) => ({
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    margin: 'auto',
-    // width: 'fit-content',
-  },
   formControl: {
-    marginTop: theme.spacing(2),
-    minWidth: 220,
-  },
-  select: {
-    height: '48px',
-    display: 'flex',
-    alignItems: 'center',
-  },
-  avatar: {
-    marginTop: theme.spacing(2),
-    height: 30,
-    width: 30,
-  },
-  formControlLabel: {
-    marginTop: theme.spacing(1),
+    margin: theme.spacing(1),
   },
 }));
 
 function NewAgentDialog(props: Props) {
   const classes = useStyles()
 
+  const [schemaUrl, setSchemaUrl] = useState<string>('')
+  const [validSchema, setValidSchema] = useState<boolean>(false)
   const [name, setName] = useState<string>('')
-  const [url, setUrl] = useState<string>('')
+  const [apiUrl, setApiUrl] = useState<string>('')
   const [token, setToken] = useState<string>('')
+  const [schema, setSchema] = useState<any>()
+  const [enabledMethods, setEnabledMethods] = useState<string[]>([])
+  const [availableMethods, setAvailableMethods] = useState<string[]>([])
+
+  const handleChange = (event: any) => {
+    if (event.target.checked) {
+      setEnabledMethods(enabledMethods.concat([event.target.name]))
+    } else {
+      setEnabledMethods(enabledMethods.filter(m => m !== event.target.name))
+    }
+  }
+
+  useEffect(() => {
+    fetch(schemaUrl)
+    .then(res => res.json())
+    .then(schema => {
+      setSchema(schema)
+      setApiUrl(schema.servers[0].url)
+      setName(schema.info.title)
+      const methods = []
+      for(const path of Object.keys(schema.paths)) {
+        methods.push(schema.paths[path].post.operationId)
+      }
+      setAvailableMethods(methods)
+      setEnabledMethods(methods)
+      setValidSchema(true)
+    })
+    .catch((e) => {
+      console.log(e)
+      setValidSchema(false)
+      setSchema(undefined)
+      setApiUrl('')
+    })
+  }, [schemaUrl])
 
   const configureAgent = () => {
-    const agent = createAgent<Agent>({
-      plugins: [
-        new AgentRestClient({
-          url, 
-          enabledMethods,
-          headers: {
-            'Authorization': 'Bearer ' + token
-          },
-        }),
-        new IdentityProfileManager(),
-      ],
-    })
-
-    props.saveAgent({
+    props.saveAgentConfig({
       name,
-      agent
+      apiUrl,
+      token, 
+      enabledMethods  
     })
   }
 
@@ -72,39 +73,70 @@ function NewAgentDialog(props: Props) {
         fullScreen={props.fullScreen}
         open={props.open}
         onClose={props.onClose}
+        maxWidth='sm'
+        fullWidth
         aria-labelledby="responsive-dialog-title"
       >
-        <DialogTitle id="responsive-dialog-title">Add Cloud Agent</DialogTitle>
+        <DialogTitle id="responsive-dialog-title">New Cloud Agent</DialogTitle>
         <DialogContent>
-        <form className={classes.form}>
-
+          
           <TextField
-            id="url"
+            label="Schema URL"
+            margin='normal'
+            type="text"
+            variant="outlined"
+            error={schemaUrl !== '' && !validSchema}
+            helperText={schemaUrl !== '' && !validSchema ? 'Invalid schema' : ''}
+            value={schemaUrl}
+            onChange={(e) => setSchemaUrl(e.target.value)}
+            fullWidth
+            />
+
+          {validSchema && <Box>
+            <TextField
             label="Name"
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
+            margin='normal'
+            variant="outlined"
             fullWidth
-          />
-          <TextField
-            id="url"
-            label="Agent URL"
-            type="text"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            fullWidth
-          />
+            />
 
-          <TextField
-            id="token"
-            label="Token"
-            type="password"
-            value={token}
-            onChange={(e) => setToken(e.target.value)}
-            fullWidth
-          />
+            {schema?.servers?.length > 1 && <FormControl component="fieldset">
+              <FormLabel component="legend">Agent URL</FormLabel>
+              <RadioGroup aria-label="apiUrl" name="apiUrl" value={apiUrl} onChange={(e) => setApiUrl(e.target.value)}>
+                {schema.servers.map((server: any) => (
+                  <FormControlLabel value={server.url} control={<Radio />} label={server.url} />
+                ))}
+              </RadioGroup>
+            </FormControl>}
 
-        </form>
+            {schema.security?.length > 0 && <TextField
+              label="Token"
+              type="password"
+              value={token}
+              onChange={(e) => setToken(e.target.value)}
+              margin='normal'
+              variant="outlined"
+              fullWidth
+            />}
+
+            <FormControl component="fieldset" className={classes.formControl}>
+              <FormLabel component="legend">Enabled methods</FormLabel>
+              <FormGroup>
+                {availableMethods.map(method => (
+                  <FormControlLabel
+                    control={<Checkbox checked={enabledMethods.includes(method)} onChange={handleChange} name={method} />}
+                    key={method}
+                    label={method}
+                  />
+
+                ))}
+              </FormGroup>
+            </FormControl>
+
+          </Box>}
 
         </DialogContent>
         <DialogActions>
@@ -115,6 +147,7 @@ function NewAgentDialog(props: Props) {
             onClick={configureAgent}
             color="primary"
             autoFocus
+            disabled={!validSchema}
           >
             Save
           </Button>

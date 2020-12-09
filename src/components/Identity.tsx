@@ -30,7 +30,7 @@ function Identity(props: Props) {
     return (<LinearProgress />)
   } else if (identity) {    
     return (
-      <ListItemLink to={'/identity/'+ identity.did}>
+      <ListItemLink to={'/agent/identity/'+ identity.did}>
         <ListItemAvatar>
           <Avatar src={identity.picture} />
         </ListItemAvatar>

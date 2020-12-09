@@ -28,7 +28,10 @@ function CloudAgentsView(props: any) {
                 role={undefined} dense 
                 key={index} 
                 >
-                <ListItemText primary={item.name} />
+                <ListItemText 
+                  primary={item.name} 
+                  secondary={`${item.apiUrl}, methods: ${item.agent.availableMethods().length}`} 
+                  />
                 <ListItemSecondaryAction onClick={() => removeAgent(index)}>
                   <IconButton edge="end" aria-label="Delete">
                     <DeleteIcon />

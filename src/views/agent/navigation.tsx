@@ -7,7 +7,7 @@ import {
 } from 'react-router-dom' 
 // import { useAgent } from '../../agent'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
-import { useAgentList } from '../../agent'
+import { useAgentList, useAgent } from '../../agent'
 
 import PeopleIcon from '@material-ui/icons/People';
 import RecentActorsIcon from '@material-ui/icons/RecentActors';
@@ -108,6 +108,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export function AgentDrawer(props: any) {
   const { agentList, activeAgentIndex } = useAgentList()
+  const { agent } = useAgent()
   const classes = useStyles();
 
   const messagesMatch = useRouteMatch("/agent/messages");
@@ -124,45 +125,50 @@ export function AgentDrawer(props: any) {
           className={classes.list}
           subheader={
             <ListSubheader component="div" id="nested-list-subheader">
-              {agentList[activeAgentIndex].name}
+              {agentList[activeAgentIndex]?.name}
             </ListSubheader>
           }
 
         >          
           <Divider/>
-          <ListItemLink to={'/agent/messages'} 
+          
+          {agent?.availableMethods().includes('dataStoreORMGetMessages') && <ListItemLink to={'/agent/messages'} 
             selected={messagesMatch !== null}
             >
             <ListItemIcon><MessageIcon /></ListItemIcon>
             <ListItemText primary={'Messages'} />
-          </ListItemLink>
-          <ListItemLink to={'/agent/credentials'} 
+          </ListItemLink>}
+
+          {agent?.availableMethods().includes('dataStoreORMGetVerifiableCredentials') && <ListItemLink to={'/agent/credentials'} 
             selected={credentialsMatch !== null}
             >
             <ListItemIcon><VerifiedUserIcon /></ListItemIcon>
             <ListItemText primary={'Credentials'} />
-          </ListItemLink>
-          <ListItemLink
+          </ListItemLink>}
+
+          {agent?.availableMethods().includes('dataStoreORMGetIdentities') && <ListItemLink
             to={'/agent/identifiers'}
             selected={identitiesMatch !== null || identityMatch !== null}
             >
             <ListItemIcon><RecentActorsIcon /></ListItemIcon>
             <ListItemText primary={'Known identifiers'} />
-          </ListItemLink>
-          <ListItemLink
+          </ListItemLink>}
+
+          {agent?.availableMethods().includes('identityManagerGetIdentities') && <ListItemLink
             to={'/agent/managed-identities'}
             selected={managedIdentitiesMatch !== null}
             >
             <ListItemIcon><PeopleIcon /></ListItemIcon>
             <ListItemText primary={'Managed identities'} />
-          </ListItemLink>
-          <ListItemLink
+          </ListItemLink>}
+
+          {agent?.availableMethods().includes('resolveDid') && <ListItemLink
             to={'/agent/resolver'}
             selected={resolverMatch !== null}
             >
             <ListItemIcon><DescriptionIcon /></ListItemIcon>
             <ListItemText primary={'Resolver'} />
-          </ListItemLink>
+          </ListItemLink>}
 
         </List>
       </Box>

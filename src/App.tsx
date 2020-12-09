@@ -19,7 +19,7 @@ import { AgentSwitch, AgentDrawer } from './views/agent/navigation'
 import { SettingsSwitch, SettingsDrawer } from './views/settings/navigation'
 import ListItemLink from './components/Nav/ListItemLink'
 import { Avatar, Box, IconButton, useMediaQuery } from '@material-ui/core';
-import { useAgentList, NamedAgent } from "./agent/AgentListProvider";
+import { useAgentList, AgentConfig, SerializedAgentConfig } from "./agent/AgentListProvider";
 import { deepOrange } from '@material-ui/core/colors';
 
 const drawerWidth = 312;
@@ -106,7 +106,7 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function ResponsiveDrawer() {
   const classes = useStyles();
   const theme = useTheme();
-  const { addAgent, setActiveAgentIndex, agentList, activeAgentIndex } = useAgentList()
+  const { addSerializedAgentConfig, setActiveAgentIndex, agentList, activeAgentIndex } = useAgentList()
   const { mobileOpen, setMobileOpen } = useMobile();
   const history = useHistory()
   // const agentMatch = useRouteMatch("/agent");
@@ -115,8 +115,8 @@ export default function ResponsiveDrawer() {
   const fullScreen = useMediaQuery(theme.breakpoints.down('xs'));
   const [openNewAgentModal, setOpenNewAgentModal] = React.useState(false);
 
-  const saveAgent = ( agent: NamedAgent) => {
-    addAgent(agent)
+  const saveAgentConfig = ( config: SerializedAgentConfig) => {
+    addSerializedAgentConfig(config)
     setOpenNewAgentModal(false)
     history.push('/agent')
   }
@@ -137,7 +137,7 @@ export default function ResponsiveDrawer() {
   const drawer = (
     <Box className={classes.drawerWrapper}>
       <Box className={classes.sideBar}>
-      {agentList.map((item: NamedAgent, index: number) => (
+      {agentList.map((item: AgentConfig, index: number) => (
         <IconButton 
           className={classes.connectionButton}
           color="inherit"
@@ -217,7 +217,7 @@ export default function ResponsiveDrawer() {
           fullScreen={fullScreen}
           open={openNewAgentModal}
           onClose={handleCloseNewAgentModal}
-          saveAgent={saveAgent}
+          saveAgentConfig={saveAgentConfig}
         />
 
         <Switch>

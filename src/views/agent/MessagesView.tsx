@@ -6,9 +6,11 @@ import MessageCard from '../../components/MessageCard'
 import AppBar from "../../components/Nav/AppBar";
 import { useAgent } from '../../agent'
 import { IMessage } from 'daf-core'
+import { useSnackbar } from 'notistack';
 
 function MessagesView(props: any) {
   const { agent } = useAgent()
+  const { enqueueSnackbar } = useSnackbar()
   const [ loading, setLoading ] = useState(false)
   const [ messages, setMessages ] = useState<Array<IMessage>>([])
 
@@ -22,8 +24,9 @@ function MessagesView(props: any) {
       })
       .then(setMessages)
       .finally(() => setLoading(false))
+      .catch(e => enqueueSnackbar(e.message, { variant: 'error'}))
     }
-  }, [agent])
+  }, [agent, enqueueSnackbar])
   
   return (
     <Container maxWidth="sm">

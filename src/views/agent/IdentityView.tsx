@@ -12,6 +12,7 @@ import AppBar from "../../components/Nav/AppBar";
 import { UniqueVerifiableCredential } from "daf-typeorm";
 import { useAgent } from "../../agent";
 import { IdentityProfile } from "../../types";
+import { useSnackbar } from 'notistack';
 
 const useStyles = makeStyles((theme) => ({
   avatar: {
@@ -52,6 +53,7 @@ function IdentityView(props: any) {
   const [expanded, setExpanded] = React.useState(false);
   const theme = useTheme();
   const { agent } = useAgent()
+  const { enqueueSnackbar } = useSnackbar()
   const [ identity, setIdentity ] = useState<IdentityProfile | undefined>(undefined)
   const [ loading, setLoading ] = useState(false)
   const [ credentials, setCredentials ] = useState<Array<UniqueVerifiableCredential>>([])
@@ -89,8 +91,9 @@ function IdentityView(props: any) {
       })
       .then(setCredentials)
       .finally(() => setLoading(false))
+      .catch(e => enqueueSnackbar(e.message, { variant: 'error'}))
     }
-  }, [agent, value, did])
+  }, [agent, enqueueSnackbar, value, did])
 
   return (
     <Container maxWidth="sm">

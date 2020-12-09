@@ -6,11 +6,13 @@ import { useAgent } from '../../agent'
 import { IIdentity } from "daf-core";
 import AppBar from "../../components/Nav/AppBar";
 import Identity from '../../components/Identity'
+import { useSnackbar } from 'notistack';
 
 function ManagedIdentities(props: any) {
   const { agent } = useAgent()
   const [ loading, setLoading ] = useState(false)
   const [ identities, setIdentities ] = useState<Array<IIdentity>>([])
+  const { enqueueSnackbar } = useSnackbar()
 
   useEffect(() => {
     if (agent) {
@@ -18,8 +20,9 @@ function ManagedIdentities(props: any) {
       agent.identityManagerGetIdentities()
       .then(setIdentities)
       .finally(() => setLoading(false))
+      .catch(e => enqueueSnackbar(e.message, { variant: 'error'}))
     }
-  }, [agent])
+  }, [agent, enqueueSnackbar])
 
   return (
     <Container maxWidth="sm">

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Button from "@material-ui/core/Button";
 import { Dialog, DialogTitle, DialogContent, DialogActions, makeStyles, TextField, Box, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, Checkbox, FormGroup } from "@material-ui/core";
 import { SerializedAgentConfig } from "../agent/AgentListProvider";
-
+import { useSnackbar } from 'notistack';
 interface Props {
   fullScreen: boolean,
   open: boolean,
@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
 
 function NewAgentDialog(props: Props) {
   const classes = useStyles()
-
+  const { enqueueSnackbar } = useSnackbar();
   const [schemaUrl, setSchemaUrl] = useState<string>('')
   const [validSchema, setValidSchema] = useState<boolean>(false)
   const [name, setName] = useState<string>('')
@@ -53,11 +53,12 @@ function NewAgentDialog(props: Props) {
     })
     .catch((e) => {
       console.log(e)
+      enqueueSnackbar(e.message, {variant: 'error'})
       setValidSchema(false)
       setSchema(undefined)
       setApiUrl('')
     })
-  }, [schemaUrl])
+  }, [schemaUrl, enqueueSnackbar])
 
   const configureAgent = () => {
     props.saveAgentConfig({

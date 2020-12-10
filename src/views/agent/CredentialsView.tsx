@@ -36,7 +36,7 @@ function CredentialsView(props: any) {
         {credentials.map(credential => (
           <Grid item
             key={credential.hash}
-            xs={6} sm={6} md={4} lg={3} xl={2}
+            xs={12} sm={6} md={4} lg={3} xl={2}
           >
             <CredentialCard 
               credential={credential} 

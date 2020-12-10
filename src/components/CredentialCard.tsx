@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { CardActions, IconButton, LinearProgress, ListItemIcon, Menu, MenuItem, Typography, makeStyles, MenuList, ListSubheader, Box } from "@material-ui/core";
+import { CardActions, IconButton, LinearProgress, ListItemIcon, Menu, MenuItem, Typography, makeStyles, MenuList, ListSubheader, Box, DialogActions, Button, Dialog, DialogContent, DialogTitle, useMediaQuery, useTheme } from "@material-ui/core";
 import Card from "@material-ui/core/Card";
 import CardActionAreaLink from "./Nav/CardActionAreaLink";
 import Avatar from '@material-ui/core/Avatar';
@@ -20,7 +20,7 @@ import MoreIcon from '@material-ui/icons/MoreVert';
 import QrIcon from '@material-ui/icons/CropFree';
 import DownloadIcon from '@material-ui/icons/SystemUpdateAlt';
 import AvatarLink from "./Nav/AvatarLink";
-
+const QRCode = require('qrcode-react');
 interface Props {
   credential: UniqueVerifiableCredential
   type: 'summary' | 'details'
@@ -77,9 +77,12 @@ function CredentialPostCard(props: Props) {
   const { agent } = useAgent()
   const { agentList, activeAgentIndex } = useAgentList()
   const [ loading, setLoading ] = useState(false)
+  const [ showQr, setShowQr ] = useState(false)
   const [ issuer, setIssuer ] = useState<IdentityProfile>({ did: verifiableCredential.issuer.id })
   const [ subject, setSubject ] = useState<IdentityProfile|undefined>(undefined)
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down('xs'));
 
 
   const handleClickCopyButton = (event: any) => {
@@ -101,19 +104,27 @@ function CredentialPostCard(props: Props) {
     setAnchorEl(null);
   };
 
+  const handleDownload = () => {
+    const element = document.createElement("a");
+    const file = new Blob([JSON.stringify(verifiableCredential,null,2)], {type: 'text/plain'});
+    element.href = URL.createObjectURL(file);
+    element.download = "credential.txt";
+    document.body.appendChild(element); // Required for this to work in FireFox
+    element.click();
+  }
 
   useEffect(() => {
     setLoading(true)
     Promise.all<IdentityProfile, IdentityProfile>([
-      agent.getIdentityProfile({did: verifiableCredential.issuer.id}),
-      agent.getIdentityProfile({ did: verifiableCredential.issuer.id})
+      agent.getIdentityProfile({ did: verifiableCredential.issuer.id }),
+      agent.getIdentityProfile({ did: verifiableCredential.credentialSubject.id })
     ])
     .then(profiles => {
       setIssuer(profiles[0])
       setSubject(profiles[1])
     })
     .finally(() => setLoading(false))
-  }, [agent, verifiableCredential.issuer.id, verifiableCredential.credentialSubject.id])
+  }, [agent, verifiableCredential])
 
   if (loading) {
     return (<LinearProgress />)
@@ -170,7 +181,7 @@ function CredentialPostCard(props: Props) {
         onClose={handleClose}
       >
         <MenuItem
-          onClick={(event) => console.log('aaa')}
+          onClick={() => {setShowQr(true)}}
           >
           <ListItemIcon>
             <QrIcon />
@@ -180,7 +191,7 @@ function CredentialPostCard(props: Props) {
           </Typography>
         </MenuItem>
         <MenuItem
-          onClick={(event) => console.log('aaa')}
+          onClick={handleDownload}
           >
           <ListItemIcon>
             <DownloadIcon />
@@ -214,6 +225,26 @@ function CredentialPostCard(props: Props) {
         </MenuList>
         
       </Menu>
+      <Dialog
+        fullScreen={fullScreen}
+        open={showQr}
+        onClose={()=>{setShowQr(false)}}
+        maxWidth='md'
+        fullWidth
+        aria-labelledby="responsive-dialog-title"
+      >
+        <DialogTitle id="responsive-dialog-title">Credential</DialogTitle>
+        <DialogContent style={{display: 'flex', justifyContent: 'center'}}>
+          
+          <QRCode value={verifiableCredential.proof['jwt']} size={512}/>
+
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus onClick={()=>{setShowQr(false)}} color='primary' variant='contained'>
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Card>
   )
 }

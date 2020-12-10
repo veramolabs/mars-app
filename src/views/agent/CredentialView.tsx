@@ -32,10 +32,11 @@ function CredentialView(props: any) {
       agent.dataStoreORMGetVerifiableCredentials({      
         where: [ { column: 'subject', value: [credential?.credentialSubject.id || '']}]
       })
+      .then((c) => c.filter(i => i.hash!==hash))
       .then(setCredentials)
       .finally(() => setLoading(false))
     }
-  }, [agent, credential])
+  }, [agent, credential, hash])
 
 
   return (

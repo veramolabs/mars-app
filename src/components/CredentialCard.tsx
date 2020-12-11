@@ -18,9 +18,11 @@ import ReactionIcon from '@material-ui/icons/ThumbUp';
 import MessageIcon from '@material-ui/icons/Message';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import QrIcon from '@material-ui/icons/CropFree';
-import DownloadIcon from '@material-ui/icons/SystemUpdateAlt';
+import DownloadIcon from '@material-ui/icons/CloudDownload';
+import CodeIcon from '@material-ui/icons/Code';
 import AvatarLink from "./Nav/AvatarLink";
 const QRCode = require('qrcode-react');
+
 interface Props {
   credential: UniqueVerifiableCredential
   type: 'summary' | 'details'
@@ -78,6 +80,7 @@ function CredentialPostCard(props: Props) {
   const { agentList, activeAgentIndex } = useAgentList()
   const [ loading, setLoading ] = useState(false)
   const [ showQr, setShowQr ] = useState(false)
+  const [ showCode, setShowCode ] = useState(false)
   const [ issuer, setIssuer ] = useState<IdentityProfile>({ did: verifiableCredential.issuer.id })
   const [ subject, setSubject ] = useState<IdentityProfile|undefined>(undefined)
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -190,6 +193,18 @@ function CredentialPostCard(props: Props) {
             Show QR Code
           </Typography>
         </MenuItem>
+
+        <MenuItem
+          onClick={() => {setShowCode(true)}}
+          >
+          <ListItemIcon>
+            <CodeIcon />
+          </ListItemIcon>
+          <Typography variant="inherit" noWrap>
+            Show source
+          </Typography>
+        </MenuItem>
+
         <MenuItem
           onClick={handleDownload}
           >
@@ -197,7 +212,7 @@ function CredentialPostCard(props: Props) {
             <DownloadIcon />
           </ListItemIcon>
           <Typography variant="inherit" noWrap>
-            Download
+            Export
           </Typography>
         </MenuItem>
 
@@ -245,6 +260,30 @@ function CredentialPostCard(props: Props) {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <Dialog
+        fullScreen={fullScreen}
+        open={showCode}
+        onClose={()=>{setShowCode(false)}}
+        maxWidth='md'
+        fullWidth
+        aria-labelledby="responsive-dialog-title"
+      >
+        <DialogTitle id="responsive-dialog-title">Code</DialogTitle>
+        <DialogContent>
+          <Box fontFamily="Monospace" fontSize="body2.fontSize" m={1}>
+            <pre>{JSON.stringify(verifiableCredential, null, 2)}</pre>
+          </Box>
+
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus onClick={()=>{setShowCode(false)}} color='primary' variant='contained'>
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+
     </Card>
   )
 }

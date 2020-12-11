@@ -14,8 +14,10 @@ import RecentActorsIcon from '@material-ui/icons/RecentActors';
 import MessageIcon from '@material-ui/icons/Message';
 import VerifiedUserIcon from '@material-ui/icons/VerifiedUser';
 import DescriptionIcon from '@material-ui/icons/Description';
+import ImportIcon from '@material-ui/icons/Backup';
 
 
+import ImportView from './ImportView'
 import Messages from './MessagesView'
 import Resolver from './ResolverView'
 import Credentials from './CredentialsView'
@@ -34,6 +36,7 @@ export function AgentSwitch(props: any) {
   return (
     <Switch>
       <Route exact path="/agent" render={() => <Redirect to="/agent/messages" />} />
+      <Route path='/agent/import' component={ImportView} />
       <Route path='/agent/messages' component={Messages} />
       <Route path='/agent/resolver' component={Resolver} />
       <Route path='/agent/credentials' component={Credentials} />
@@ -111,6 +114,7 @@ export function AgentDrawer(props: any) {
   const { agent } = useAgent()
   const classes = useStyles();
 
+  const importMatch = useRouteMatch("/agent/import");
   const messagesMatch = useRouteMatch("/agent/messages");
   const resolverMatch = useRouteMatch("/agent/resolver");
   const credentialsMatch = useRouteMatch("/agent/credentials");
@@ -168,6 +172,14 @@ export function AgentDrawer(props: any) {
             >
             <ListItemIcon><DescriptionIcon /></ListItemIcon>
             <ListItemText primary={'Resolver'} />
+          </ListItemLink>}
+
+          {agent?.availableMethods().includes('handleMessage') && <ListItemLink
+            to={'/agent/import'}
+            selected={importMatch !== null}
+            >
+            <ListItemIcon><ImportIcon /></ListItemIcon>
+            <ListItemText primary={'Import'} />
           </ListItemLink>}
 
         </List>

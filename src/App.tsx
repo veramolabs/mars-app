@@ -4,8 +4,8 @@ import Drawer from '@material-ui/core/Drawer';
 import Hidden from '@material-ui/core/Hidden';
 import SettingsIcon from '@material-ui/icons/Settings';
 import AddIcon from '@material-ui/icons/Add';
-import { useMobile } from './components/Nav/MobileProvider';
-import NewAgentModal from "./components/NewAgentDialog"
+import { useMobile } from './components/nav/MobileProvider';
+import NewAgentModal from "./views/agent/dialogs/NewAgentDialog"
 import { useHistory, useRouteMatch } from "react-router-dom";
 
 import { makeStyles, useTheme, Theme, createStyles } from '@material-ui/core/styles';
@@ -17,7 +17,7 @@ import {
 
 import { AgentSwitch, AgentDrawer } from './views/agent/navigation'
 import { SettingsSwitch, SettingsDrawer } from './views/settings/navigation'
-import ListItemLink from './components/Nav/ListItemLink'
+import ListItemLink from './components/nav/ListItemLink'
 import { Avatar, Box, IconButton, useMediaQuery } from '@material-ui/core';
 import { useAgentList, AgentConfig, SerializedAgentConfig } from "./agent/AgentListProvider";
 import { deepOrange } from '@material-ui/core/colors';

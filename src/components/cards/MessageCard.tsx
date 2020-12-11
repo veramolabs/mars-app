@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { CardContent, CardHeader, LinearProgress, Typography } from "@material-ui/core";
 import Card from "@material-ui/core/Card";
-import CardActionAreaLink from "./Nav/CardActionAreaLink";
+import CardActionAreaLink from "../nav/CardActionAreaLink";
 import Avatar from '@material-ui/core/Avatar';
 import { formatDistanceToNow } from 'date-fns'
-import { IdentityProfile } from "../types";
-import { useAgent } from '../agent'
+import { IdentityProfile } from "../../types";
+import { useAgent } from '../../agent'
 // import CredentialCard from "./CredentialCard";
 import { IMessage } from "daf-core";
 import { makeStyles } from '@material-ui/core/styles';

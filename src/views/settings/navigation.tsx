@@ -8,9 +8,9 @@ import {
 // import { useAgent } from '../../agent'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 import CloudIcon from '@material-ui/icons/Cloud';
-import CloudAgentsView from './CloudAgentsView'
+import AgentListView from './AgentListView'
 import { Box, Divider, List, ListItemIcon, ListItemText } from "@material-ui/core";
-import ListItemLink from "../../components/Nav/ListItemLink";
+import ListItemLink from "../../components/nav/ListItemLink";
 
 const drawerWidth = 312;
 
@@ -20,7 +20,7 @@ export function SettingsSwitch(props: any) {
   return (
     <Switch>
       <Route exact path="/settings" render={() => <Redirect to="/settings/agents" />} />
-      <Route path='/settings/agents' component={CloudAgentsView} />
+      <Route path='/settings/agents' component={AgentListView} />
     </Switch>
   );
 }

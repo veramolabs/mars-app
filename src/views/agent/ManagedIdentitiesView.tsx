@@ -4,8 +4,8 @@ import Container from '@material-ui/core/Container';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import { useAgent } from '../../agent'
 import { IIdentity } from "daf-core";
-import AppBar from "../../components/Nav/AppBar";
-import Identity from '../../components/Identity'
+import AppBar from "../../components/nav/AppBar";
+import IdentityListItemLink from '../../components/nav/IdentityListItemLink'
 import { useSnackbar } from 'notistack';
 
 function ManagedIdentities(props: any) {
@@ -30,7 +30,7 @@ function ManagedIdentities(props: any) {
       {loading && <LinearProgress />}
       <List >
         {identities.map(identity => (
-          <Identity 
+          <IdentityListItemLink 
             key={identity.did} 
             did={identity.did} 
             type='summary'

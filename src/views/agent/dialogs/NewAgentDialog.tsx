@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Button from "@material-ui/core/Button";
 import { Dialog, DialogTitle, DialogContent, DialogActions, makeStyles, TextField, Box, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, Checkbox, FormGroup } from "@material-ui/core";
-import { SerializedAgentConfig } from "../agent/AgentListProvider";
+import { SerializedAgentConfig } from "../../../agent/AgentListProvider";
 import { useSnackbar } from 'notistack';
 interface Props {
   fullScreen: boolean,

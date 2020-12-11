@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Container from '@material-ui/core/Container';
-import AppBar from "../../components/Nav/AppBar";
-import MessageCard from "../../components/MessageCard";
+import AppBar from "../../components/nav/AppBar";
+import MessageCard from "../../components/cards/MessageCard";
 import { useAgent } from '../../agent'
 import { Button, ButtonGroup, Card, CardActions, CardContent, Grid, LinearProgress } from "@material-ui/core";
 

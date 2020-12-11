@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Grid } from "@material-ui/core";
 import Container from '@material-ui/core/Container';
 import LinearProgress from '@material-ui/core/LinearProgress';
-import CredentialCard from '../../components/CredentialCard'
-import AppBar from "../../components/Nav/AppBar";
+import CredentialCard from '../../components/cards/CredentialCard'
+import AppBar from "../../components/nav/AppBar";
 import { useAgent } from '../../agent'
 import { useSnackbar } from 'notistack';
 import { UniqueVerifiableCredential } from 'daf-typeorm'

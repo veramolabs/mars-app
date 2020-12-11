@@ -26,7 +26,7 @@ import ManagedIdentities from './ManagedIdentitiesView'
 import Identity from './IdentityView'
 import Credential from './CredentialView'
 import { Box, Divider, List, ListItemIcon, ListItemText, ListSubheader } from "@material-ui/core";
-import ListItemLink from "../../components/Nav/ListItemLink";
+import ListItemLink from "../../components/nav/ListItemLink";
 
 const drawerWidth = 312;
 

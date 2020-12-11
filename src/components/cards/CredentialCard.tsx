@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { CardActions, IconButton, LinearProgress, ListItemIcon, Menu, MenuItem, Typography, makeStyles, MenuList, ListSubheader, Box, DialogActions, Button, Dialog, DialogContent, DialogTitle, useMediaQuery, useTheme } from "@material-ui/core";
 import Card from "@material-ui/core/Card";
-import CardActionAreaLink from "./Nav/CardActionAreaLink";
+import CardActionAreaLink from "../nav/CardActionAreaLink";
 import Avatar from '@material-ui/core/Avatar';
 import { formatDistanceToNow } from 'date-fns'
 import { UniqueVerifiableCredential } from "daf-typeorm";
-import { IdentityProfile } from "../types";
-import { useAgent, useAgentList } from '../agent'
+import { IdentityProfile } from "../../types";
+import { useAgent, useAgentList } from '../../agent'
 import { useSnackbar } from 'notistack';
 import PostCredential from "./CredentialCardContent/PostCredential";
 import ProfileCredential from "./CredentialCardContent/ProfileCredential";
@@ -20,7 +20,7 @@ import MoreIcon from '@material-ui/icons/MoreVert';
 import QrIcon from '@material-ui/icons/CropFree';
 import DownloadIcon from '@material-ui/icons/CloudDownload';
 import CodeIcon from '@material-ui/icons/Code';
-import AvatarLink from "./Nav/AvatarLink";
+import AvatarLink from "../nav/AvatarLink";
 const QRCode = require('qrcode-react');
 
 interface Props {

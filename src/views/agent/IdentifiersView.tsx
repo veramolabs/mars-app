@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import { List } from "@material-ui/core";
 import Container from '@material-ui/core/Container';
 import LinearProgress from '@material-ui/core/LinearProgress';
-import AppBar from "../../components/Nav/AppBar";
+import AppBar from "../../components/nav/AppBar";
 import { useAgent } from '../../agent'
 import { IIdentity } from "daf-core";
-import Identity from '../../components/Identity'
+import IdentityListItemLink from '../../components/nav/IdentityListItemLink'
 import { useSnackbar } from 'notistack';
 
 function IdentitiesView(props: any) {
@@ -30,7 +30,7 @@ function IdentitiesView(props: any) {
       {loading && <LinearProgress />}
       <List >
         {identities.map(identity => (
-          <Identity 
+          <IdentityListItemLink 
             key={identity.did} 
             did={identity.did} 
             type='summary'

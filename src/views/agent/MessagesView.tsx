@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Grid } from "@material-ui/core";
 import Container from '@material-ui/core/Container';
 import LinearProgress from '@material-ui/core/LinearProgress';
-import MessageCard from '../../components/MessageCard'
-import AppBar from "../../components/Nav/AppBar";
+import MessageCard from '../../components/cards/MessageCard'
+import AppBar from "../../components/nav/AppBar";
 import { useAgent } from '../../agent'
 import { IMessage } from 'daf-core'
 import { useSnackbar } from 'notistack';

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Button from "@material-ui/core/Button";
-import { useAgent } from "../agent";
+import { useAgent } from "../../../agent";
 // import { useHistory } from "react-router-dom";
 import { Dialog, DialogTitle, DialogContent, DialogActions, makeStyles, TextField } from "@material-ui/core";
 // import shortId from 'shortid'

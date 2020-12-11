@@ -1,7 +1,7 @@
 import React from "react";
 import { Typography, CardContent } from "@material-ui/core";
 import { UniqueVerifiableCredential } from "daf-typeorm";
-import { IdentityProfile } from "../../types";
+import { IdentityProfile } from "../../../types";
 
 interface Props {
   credential: UniqueVerifiableCredential

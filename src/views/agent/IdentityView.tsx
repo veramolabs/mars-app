@@ -6,9 +6,9 @@ import clsx from 'clsx';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Container from '@material-ui/core/Container';
 import LinearProgress from '@material-ui/core/LinearProgress';
-import CredentialCard from '../../components/CredentialCard'
-import ProfileDialog from "../../components/ProfileDialog"
-import AppBar from "../../components/Nav/AppBar";
+import CredentialCard from '../../components/cards/CredentialCard'
+import ProfileDialog from "./dialogs/ProfileDialog"
+import AppBar from "../../components/nav/AppBar";
 import { UniqueVerifiableCredential } from "daf-typeorm";
 import { useAgent } from "../../agent";
 import { IdentityProfile } from "../../types";
@@ -69,7 +69,7 @@ function IdentityView(props: any) {
   const [openProfileModal, setOpenProfileModal] = React.useState(false);
   
   const handleOpenProfileModal = () => {
-    setOpenProfileModal(false);
+    setOpenProfileModal(true);
   };
 
   const handleCloseProfileModal = () => {

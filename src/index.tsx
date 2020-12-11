@@ -7,7 +7,7 @@ import { BrowserRouter } from 'react-router-dom'
 import { SnackbarProvider } from 'notistack';
 import App from './App';
 import theme from './theme';
-import MobileProvider from './components/Nav/MobileProvider';
+import MobileProvider from './components/nav/MobileProvider';
 import { AgentListProvider } from './agent/AgentListProvider';
 
 ReactDOM.render(

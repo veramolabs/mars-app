@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react"
 import { LinearProgress, ListItemAvatar, ListItemText } from "@material-ui/core"
 import Avatar from '@material-ui/core/Avatar'
-import { IdentityProfile } from "../types";
-import { useAgent } from '../agent'
-import ListItemLink from "./Nav/ListItemLink"
+import { IdentityProfile } from "../../types";
+import { useAgent } from '../../agent'
+import ListItemLink from "./ListItemLink"
 import Box from "@material-ui/core/Box/Box";
 
 interface Props {
@@ -11,7 +11,7 @@ interface Props {
   type: 'summary' | 'details'
 }
 
-function Identity(props: Props) {
+function IdentityListItemLink(props: Props) {
   const { did } = props
   const { agent } = useAgent()
   const [ loading, setLoading ] = useState(false)
@@ -44,4 +44,4 @@ function Identity(props: Props) {
   }
 }
 
-export default Identity;
+export default IdentityListItemLink;

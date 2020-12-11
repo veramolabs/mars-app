@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Container from '@material-ui/core/Container';
-import AppBar from "../../components/Nav/AppBar";
+import AppBar from "../../components/nav/AppBar";
 import { useAgent } from '../../agent'
 import { Button, Card, CardActions, CardContent, Grid, LinearProgress, TextField, Typography } from "@material-ui/core";
 import { DIDDocument } from 'daf-core'

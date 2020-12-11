@@ -1,9 +1,9 @@
-import { createAgent, TAgent, IDataStore, IIdentityManager, IKeyManager, IResolver } from 'daf-core'
+import { createAgent, TAgent, IDataStore, IIdentityManager, IKeyManager, IResolver, IMessageHandler } from 'daf-core'
 import { ICredentialIssuer } from 'daf-w3c'
 import { IDataStoreORM } from 'daf-typeorm'
 import { IProfileManager } from './ProfileManager'
 
-type AgentInterfaces = IProfileManager & IDataStore & IDataStoreORM & ICredentialIssuer & IIdentityManager & IKeyManager & IResolver
+type AgentInterfaces = IProfileManager & IDataStore & IDataStoreORM & ICredentialIssuer & IIdentityManager & IKeyManager & IResolver & IMessageHandler
 export type Agent = TAgent<AgentInterfaces>
 
 export const enabledMethods = [

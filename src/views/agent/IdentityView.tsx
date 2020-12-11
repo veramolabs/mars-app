@@ -131,7 +131,7 @@ function IdentityView(props: any) {
                 })}
                 onClick={() => setExpanded(!expanded)}
                 aria-expanded={expanded}
-                aria-label="show more"
+                aria-label="Show more"
               >
                 <ExpandMoreIcon />
               </IconButton>

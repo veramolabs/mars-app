@@ -1,24 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import {
-  Grid,
-  Typography,
-  makeStyles,
-  Card,
-  CardContent,
-  CardActions,
-  Button,
-  IconButton,
-  Collapse,
-  useTheme,
-  useMediaQuery,
-  Box,
-  Tabs,
-  Tab,
-} from '@material-ui/core'
+import { Grid, makeStyles, Button, useTheme, useMediaQuery, Tabs, Tab } from '@material-ui/core'
 import { useParams } from 'react-router-dom'
 import Avatar from '@material-ui/core/Avatar'
-import clsx from 'clsx'
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import Container from '@material-ui/core/Container'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import CredentialCard from '../../components/cards/CredentialCard'
@@ -65,7 +48,6 @@ const useStyles = makeStyles((theme) => ({
 function IdentityView(props: any) {
   const { did } = useParams<{ did: string }>()
   const classes = useStyles()
-  const [expanded, setExpanded] = React.useState(false)
   const theme = useTheme()
   const { agent } = useAgent()
   const { enqueueSnackbar } = useSnackbar()

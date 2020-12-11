@@ -2,16 +2,7 @@ import React from 'react'
 import Container from '@material-ui/core/Container'
 import AppBar from '../../components/nav/AppBar'
 import { useAgentList } from '../../agent'
-import {
-  Box,
-  Grid,
-  IconButton,
-  List,
-  ListItem,
-  ListItemSecondaryAction,
-  ListItemText,
-  ListSubheader,
-} from '@material-ui/core'
+import { Grid, IconButton, List, ListItem, ListItemSecondaryAction, ListItemText } from '@material-ui/core'
 import DeleteIcon from '@material-ui/icons/Delete'
 
 function AgentListView(props: any) {

@@ -1,28 +1,24 @@
-import React from 'react';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Drawer from '@material-ui/core/Drawer';
-import Hidden from '@material-ui/core/Hidden';
-import SettingsIcon from '@material-ui/icons/Settings';
-import AddIcon from '@material-ui/icons/Add';
-import { useMobile } from './components/Nav/MobileProvider';
-import NewAgentModal from "./components/NewAgentDialog"
-import { useHistory, useRouteMatch } from "react-router-dom";
+import React from 'react'
+import CssBaseline from '@material-ui/core/CssBaseline'
+import Drawer from '@material-ui/core/Drawer'
+import Hidden from '@material-ui/core/Hidden'
+import SettingsIcon from '@material-ui/icons/Settings'
+import AddIcon from '@material-ui/icons/Add'
+import { useMobile } from './components/nav/MobileProvider'
+import NewAgentModal from './views/agent/dialogs/NewAgentDialog'
+import { useHistory, useRouteMatch } from 'react-router-dom'
 
-import { makeStyles, useTheme, Theme, createStyles } from '@material-ui/core/styles';
-import {
-  Route,
-  Redirect,
-  Switch
-} from 'react-router-dom' 
+import { makeStyles, useTheme, Theme, createStyles } from '@material-ui/core/styles'
+import { Route, Redirect, Switch } from 'react-router-dom'
 
 import { AgentSwitch, AgentDrawer } from './views/agent/navigation'
 import { SettingsSwitch, SettingsDrawer } from './views/settings/navigation'
-import ListItemLink from './components/Nav/ListItemLink'
-import { Avatar, Box, IconButton, useMediaQuery } from '@material-ui/core';
-import { useAgentList, AgentConfig, SerializedAgentConfig } from "./agent/AgentListProvider";
-import { deepOrange } from '@material-ui/core/colors';
+import ListItemLink from './components/nav/ListItemLink'
+import { Avatar, Box, IconButton, useMediaQuery } from '@material-ui/core'
+import { useAgentList, AgentConfig, SerializedAgentConfig } from './agent/AgentListProvider'
+import { deepOrange } from '@material-ui/core/colors'
 
-const drawerWidth = 312;
+const drawerWidth = 312
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -79,7 +75,7 @@ const useStyles = makeStyles((theme: Theme) =>
     drawerWrapper: {
       flexGrow: 1,
       display: 'flex',
-      flexDirection: 'row'
+      flexDirection: 'row',
     },
     orange: {
       color: theme.palette.getContrastText(deepOrange[500]),
@@ -88,7 +84,7 @@ const useStyles = makeStyles((theme: Theme) =>
     purple: {
       // color: theme.palette.getContrastText(deepPurple[500]),
       // backgroundColor: deepPurple[500],
-    },    
+    },
     connectionButton: {
       // paddingLeft: theme.spacing(1),
     },
@@ -97,82 +93,75 @@ const useStyles = makeStyles((theme: Theme) =>
       display: 'flex',
       alignItems: 'flex-end',
       paddingBottom: theme.spacing(1),
-
-    }
+    },
   }),
-);
-
+)
 
 export default function ResponsiveDrawer() {
-  const classes = useStyles();
-  const theme = useTheme();
+  const classes = useStyles()
+  const theme = useTheme()
   const { addSerializedAgentConfig, setActiveAgentIndex, agentList, activeAgentIndex } = useAgentList()
-  const { mobileOpen, setMobileOpen } = useMobile();
+  const { mobileOpen, setMobileOpen } = useMobile()
   const history = useHistory()
   // const agentMatch = useRouteMatch("/agent");
-  const settingsMatch = useRouteMatch("/settings");
+  const settingsMatch = useRouteMatch('/settings')
 
-  const fullScreen = useMediaQuery(theme.breakpoints.down('xs'));
-  const [openNewAgentModal, setOpenNewAgentModal] = React.useState(false);
+  const fullScreen = useMediaQuery(theme.breakpoints.down('xs'))
+  const [openNewAgentModal, setOpenNewAgentModal] = React.useState(false)
 
-  const saveAgentConfig = ( config: SerializedAgentConfig) => {
+  const saveAgentConfig = (config: SerializedAgentConfig) => {
     addSerializedAgentConfig(config)
     setOpenNewAgentModal(false)
     history.push('/agent')
   }
 
   const handleOpenNewAgentModal = () => {
-    setOpenNewAgentModal(true);
-  };
+    setOpenNewAgentModal(true)
+  }
 
   const handleCloseNewAgentModal = () => {
-    setOpenNewAgentModal(false);
-  };
+    setOpenNewAgentModal(false)
+  }
 
-  
   const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
-  };
+    setMobileOpen(!mobileOpen)
+  }
 
   const drawer = (
     <Box className={classes.drawerWrapper}>
       <Box className={classes.sideBar}>
-      {agentList.map((item: AgentConfig, index: number) => (
-        <IconButton 
-          className={classes.connectionButton}
-          color="inherit"
-          onClick={() => {setActiveAgentIndex(index); history.push('/agent')}}
-          key={index}
-        >
-          <Avatar
-            className={index === activeAgentIndex ? classes.orange : classes.purple}
-          >{item.name.substr(0,2)}</Avatar>
+        {agentList.map((item: AgentConfig, index: number) => (
+          <IconButton
+            className={classes.connectionButton}
+            color="inherit"
+            onClick={() => {
+              setActiveAgentIndex(index)
+              history.push('/agent')
+            }}
+            key={index}
+          >
+            <Avatar className={index === activeAgentIndex ? classes.orange : classes.purple}>
+              {item.name.substr(0, 2)}
+            </Avatar>
+          </IconButton>
+        ))}
+
+        <IconButton className={classes.connectionButton} color="inherit" onClick={handleOpenNewAgentModal}>
+          <AddIcon />
         </IconButton>
-      ))}
 
-      <IconButton 
-          className={classes.connectionButton}
-          color="inherit"
-          onClick={handleOpenNewAgentModal}
-      >
-        <AddIcon />
-      </IconButton>
-
-      <Box className={classes.settings}>
-        <ListItemLink to={'/settings'}>
-          <SettingsIcon 
-            color={settingsMatch !== null ? 'primary' : 'inherit'}
-          />
-        </ListItemLink>
-      </Box>
+        <Box className={classes.settings}>
+          <ListItemLink to={'/settings'}>
+            <SettingsIcon color={settingsMatch !== null ? 'primary' : 'inherit'} />
+          </ListItemLink>
+        </Box>
       </Box>
       <Switch>
         <Route path={'/agent'} component={AgentDrawer} />
         <Route path={'/settings'} component={SettingsDrawer} />
       </Switch>
-      
     </Box>
-  );
+  )
 
   const container = window.document.body
 
@@ -221,12 +210,15 @@ export default function ResponsiveDrawer() {
         />
 
         <Switch>
-          <Route exact path="/" render={() => <Redirect to={agentList.length > 0 ? "/agent" : '/settings'} />} />
+          <Route
+            exact
+            path="/"
+            render={() => <Redirect to={agentList.length > 0 ? '/agent' : '/settings'} />}
+          />
           <Route path={'/agent'} component={AgentSwitch} />
           <Route path={'/settings'} component={SettingsSwitch} />
         </Switch>
       </main>
-      
     </div>
-  );
+  )
 }

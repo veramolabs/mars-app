@@ -1,6 +1,6 @@
-import { createMuiTheme } from '@material-ui/core/styles';
-import deepOrange from '@material-ui/core/colors/deepOrange';
-import green from '@material-ui/core/colors/green';
+import { createMuiTheme } from '@material-ui/core/styles'
+import deepOrange from '@material-ui/core/colors/deepOrange'
+import green from '@material-ui/core/colors/green'
 
 // A custom theme for this app
 const theme = createMuiTheme({
@@ -10,9 +10,8 @@ const theme = createMuiTheme({
     secondary: green,
   },
   shape: {
-    borderRadius: 10
-  }
-  
-});
+    borderRadius: 10,
+  },
+})
 
-export default theme;
+export default theme

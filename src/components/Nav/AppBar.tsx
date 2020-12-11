@@ -1,9 +1,10 @@
 import React from 'react'
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
-import { Toolbar, IconButton, AppBar, Typography } from '@material-ui/core';
-import MenuIcon from '@material-ui/icons/Menu';
-import { useMobile } from './MobileProvider';
-const drawerWidth = 312;
+import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
+import { Toolbar, IconButton, AppBar, Typography, Box } from '@material-ui/core'
+import MenuIcon from '@material-ui/icons/Menu'
+import clsx from 'clsx'
+import { useMobile } from './MobileProvider'
+const drawerWidth = 312
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -22,26 +23,33 @@ const useStyles = makeStyles((theme: Theme) =>
         display: 'none',
       },
     },
-    box: {
+    header: {
       display: 'flex',
       flex: 1,
-      flexDirection: 'row'
+      flexDirection: 'column',
+    },
+    margin: {
+      marginLeft: theme.spacing(1),
     },
     avatar: {
       height: 24,
-      width: 24
-    }
+      width: 24,
+    },
   }),
-);
+)
 
 export interface Props {
   title?: string
+  primary?: string
+  secondary?: string
+  avatar?: React.ReactNode
+  button?: React.ReactNode
 }
 
-const AppBarTabs: React.FC<Props> = props => {
+const AppBarTabs: React.FC<Props> = (props) => {
   const { children } = props
-  const classes = useStyles();
-  const { mobileOpen, setMobileOpen } = useMobile();
+  const classes = useStyles()
+  const { mobileOpen, setMobileOpen } = useMobile()
 
   return (
     <AppBar position="fixed" className={classes.appBar} color={'inherit'}>
@@ -50,15 +58,34 @@ const AppBarTabs: React.FC<Props> = props => {
           color="inherit"
           aria-label="open drawer"
           edge="start"
-          onClick={()=> setMobileOpen(!mobileOpen)}
+          onClick={() => setMobileOpen(!mobileOpen)}
           className={classes.menuButton}
         >
           <MenuIcon />
         </IconButton>
-        <Typography variant="h6" noWrap className={classes.title}>
-          {props.title}  
-        </Typography>
-
+        {props.avatar}
+        <Box
+          className={clsx(classes.header, {
+            [classes.margin]: props.avatar !== undefined,
+          })}
+        >
+          {!props.secondary && (
+            <Typography variant="h6" noWrap>
+              {props.title}
+            </Typography>
+          )}
+          {props.secondary && props.primary && (
+            <Typography variant="body1" noWrap>
+              {props.primary}
+            </Typography>
+          )}
+          {props.secondary && props.primary && (
+            <Typography variant="body2" color="textSecondary" noWrap>
+              {props.secondary}
+            </Typography>
+          )}
+        </Box>
+        {props.button}
       </Toolbar>
       {children}
     </AppBar>

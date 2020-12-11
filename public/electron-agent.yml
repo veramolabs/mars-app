@@ -5,7 +5,7 @@ server:
     $env: BASE_URL
   port:
     $env: PORT
-  apiKey: 
+  apiKey:
     $env: API_KEY
   schemaPath: /open-api.json
   # homePageTemplate: ./homepage.html

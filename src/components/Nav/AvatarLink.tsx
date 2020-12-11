@@ -10,19 +10,12 @@ export interface Props {
   onClick?: (event: React.MouseEvent<HTMLElement>) => void
 }
 
-const AvatarLink: React.FC<Props> = props => {
+const AvatarLink: React.FC<Props> = (props) => {
   const { className, onClick, to, children, src } = props
 
   // If link is not set return the orinary Button
   if (!to || typeof to !== 'string') {
-    return (
-      <Avatar
-        className={className}
-        children={children}
-        src={src}
-        onClick={onClick}
-      />
-    )
+    return <Avatar className={className} children={children} src={src} onClick={onClick} />
   }
 
   // Return a LitItem with a link component
@@ -31,7 +24,9 @@ const AvatarLink: React.FC<Props> = props => {
       className={className}
       children={children}
       src={src}
-      component={forwardRef((props: NavLinkProps, ref: any) => <NavLink exact {...props} innerRef={ref} />)}
+      component={forwardRef((props: NavLinkProps, ref: any) => (
+        <NavLink exact {...props} innerRef={ref} />
+      ))}
       to={to}
     />
   )

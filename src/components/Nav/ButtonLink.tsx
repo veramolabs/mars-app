@@ -9,18 +9,12 @@ export interface Props {
   onClick?: (event: React.MouseEvent<HTMLElement>) => void
 }
 
-const ButtonLink: React.FC<Props> = props => {
+const ButtonLink: React.FC<Props> = (props) => {
   const { className, onClick, to, children, color } = props
 
   // If link is not set return the orinary Button
   if (!to || typeof to !== 'string') {
-    return (
-      <Button
-        className={className}
-        children={children}
-        onClick={onClick}
-      />
-    )
+    return <Button className={className} children={children} onClick={onClick} />
   }
 
   // Return a LitItem with a link component
@@ -28,7 +22,9 @@ const ButtonLink: React.FC<Props> = props => {
     <Button
       className={className}
       children={children}
-      component={forwardRef((props: NavLinkProps, ref: any) => <NavLink exact {...props} innerRef={ref} />)}
+      component={forwardRef((props: NavLinkProps, ref: any) => (
+        <NavLink exact {...props} innerRef={ref} />
+      ))}
       to={to}
     />
   )

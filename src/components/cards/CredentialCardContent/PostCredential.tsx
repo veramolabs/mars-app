@@ -1,8 +1,8 @@
-import React from "react";
-import { Typography, CardContent, Link, makeStyles } from "@material-ui/core";
-import Avatar from '@material-ui/core/Avatar';
-import { UniqueVerifiableCredential } from "daf-typeorm";
-import { IdentityProfile } from "../../../types";
+import React from 'react'
+import { Typography, CardContent, Link, makeStyles } from '@material-ui/core'
+import Avatar from '@material-ui/core/Avatar'
+import { UniqueVerifiableCredential } from 'daf-typeorm'
+import { IdentityProfile } from '../../../types'
 
 interface Props {
   credential: UniqueVerifiableCredential
@@ -18,26 +18,32 @@ const useStyles = makeStyles((theme) => ({
   },
   link: {
     display: 'inline-block',
-    marginRight: theme.spacing(1)
-  }
-}));
+    marginRight: theme.spacing(1),
+  },
+}))
 
 function PostCredential(props: Props) {
-  const { credential: { verifiableCredential }, issuer, subject } = props
-  const classes = useStyles();
-  
+  const {
+    credential: { verifiableCredential },
+    issuer,
+    subject,
+  } = props
+  const classes = useStyles()
+
   return (
     <CardContent>
-      {verifiableCredential.credentialSubject.comment && 
-        <Typography variant='body1' color='textPrimary'>
-          {subject && issuer.did !== subject.did && <Link href={'/identity/' + subject.did} className={classes.link}>
-            <Avatar variant='rounded' src={subject.picture} className={classes.avatar}/> {subject.nickname}
-            </Link>}
+      {verifiableCredential.credentialSubject.comment && (
+        <Typography variant="body1" color="textPrimary">
+          {subject && issuer.did !== subject.did && (
+            <Link href={'/identity/' + subject.did} className={classes.link}>
+              <Avatar variant="rounded" src={subject.picture} className={classes.avatar} /> {subject.nickname}
+            </Link>
+          )}
           {verifiableCredential.credentialSubject.comment}
-        </Typography>}
-        
-    </CardContent>    
-  );
+        </Typography>
+      )}
+    </CardContent>
+  )
 }
 
-export default PostCredential;
+export default PostCredential

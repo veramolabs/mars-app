@@ -1,7 +1,7 @@
-import React from "react";
-import { Typography, CardContent, makeStyles } from "@material-ui/core";
-import { UniqueVerifiableCredential } from "daf-typeorm";
-import { IdentityProfile } from "../../../types";
+import React from 'react'
+import { Typography, CardContent, makeStyles } from '@material-ui/core'
+import { UniqueVerifiableCredential } from 'daf-typeorm'
+import { IdentityProfile } from '../../../types'
 
 interface Props {
   credential: UniqueVerifiableCredential
@@ -17,19 +17,22 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
     // padding: theme.spacing(2)
   },
-}));
+}))
 
 function ReactionCredential(props: Props) {
-  const { credential: {verifiableCredential} } = props
-  const classes = useStyles();
+  const {
+    credential: { verifiableCredential },
+  } = props
+  const classes = useStyles()
 
   return (
     <CardContent className={classes.content}>
-      {verifiableCredential.credentialSubject.emoji && 
-        <Typography variant='h3' color='textPrimary'>
+      {verifiableCredential.credentialSubject.emoji && (
+        <Typography variant="h3" color="textPrimary">
           {verifiableCredential.credentialSubject.emoji}
-        </Typography>}      
-    </CardContent>    
+        </Typography>
+      )}
+    </CardContent>
   )
 }
 

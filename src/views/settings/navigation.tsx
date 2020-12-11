@@ -1,28 +1,23 @@
-import React from "react";
-import {
-  Route,
-  Redirect,
-  Switch,
-  useRouteMatch
-} from 'react-router-dom' 
+import React from 'react'
+import { Route, Redirect, Switch, useRouteMatch } from 'react-router-dom'
 // import { useAgent } from '../../agent'
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
-import CloudIcon from '@material-ui/icons/Cloud';
+import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
+import CloudIcon from '@material-ui/icons/Cloud'
 import AgentListView from './AgentListView'
-import { Box, Divider, List, ListItemIcon, ListItemText } from "@material-ui/core";
-import ListItemLink from "../../components/nav/ListItemLink";
+import { Box, Divider, List, ListItemIcon, ListItemText } from '@material-ui/core'
+import ListItemLink from '../../components/nav/ListItemLink'
 
-const drawerWidth = 312;
+const drawerWidth = 312
 
 export function SettingsSwitch(props: any) {
   // const { agent } = useAgent()
-  
+
   return (
     <Switch>
       <Route exact path="/settings" render={() => <Redirect to="/settings/agents" />} />
-      <Route path='/settings/agents' component={AgentListView} />
+      <Route path="/settings/agents" component={AgentListView} />
     </Switch>
-  );
+  )
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -81,32 +76,28 @@ const useStyles = makeStyles((theme: Theme) =>
     drawerWrapper: {
       flexGrow: 1,
       display: 'flex',
-      flexDirection: 'row'
+      flexDirection: 'row',
     },
   }),
-);
+)
 
 export function SettingsDrawer(props: any) {
-  const classes = useStyles();
+  const classes = useStyles()
 
-  const cloudAgentsMatch = useRouteMatch("/settings/agents");
+  const cloudAgentsMatch = useRouteMatch('/settings/agents')
 
   return (
     <Box className={classes.mainDrawerContent}>
-        <div className={classes.toolbar} />
-        <List 
-          className={classes.list}
-        >          
-          <Divider/>
-          <ListItemLink to={'/settings/agents'} selected={cloudAgentsMatch !== null}>
-            <ListItemIcon><CloudIcon /></ListItemIcon>
-            <ListItemText primary={'Cloud agents'} />
-          </ListItemLink>
-
-        </List>
-      </Box>
-  );
+      <div className={classes.toolbar} />
+      <List className={classes.list}>
+        <Divider />
+        <ListItemLink to={'/settings/agents'} selected={cloudAgentsMatch !== null}>
+          <ListItemIcon>
+            <CloudIcon />
+          </ListItemIcon>
+          <ListItemText primary={'Cloud agents'} />
+        </ListItemLink>
+      </List>
+    </Box>
+  )
 }
-
-
-

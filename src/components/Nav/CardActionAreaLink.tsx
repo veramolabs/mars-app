@@ -8,24 +8,20 @@ export interface Props {
   onClick?: (event: React.MouseEvent<HTMLElement>) => void
 }
 
-const CardActionAreaLink: React.FC<Props> = props => {
+const CardActionAreaLink: React.FC<Props> = (props) => {
   const { className, onClick, to, children } = props
 
   if (!to || typeof to !== 'string') {
-    return (
-      <CardActionArea
-        className={className}
-        children={children}
-        onClick={onClick}
-      />
-    )
+    return <CardActionArea className={className} children={children} onClick={onClick} />
   }
 
   return (
     <CardActionArea
       className={className}
       children={children}
-      component={forwardRef((props: NavLinkProps, ref: any) => <NavLink exact {...props} innerRef={ref} />)}
+      component={forwardRef((props: NavLinkProps, ref: any) => (
+        <NavLink exact {...props} innerRef={ref} />
+      ))}
       to={to}
     />
   )

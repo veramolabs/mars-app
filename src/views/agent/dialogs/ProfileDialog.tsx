@@ -1,14 +1,14 @@
-import React, { useState } from "react";
-import Button from "@material-ui/core/Button";
-import { useAgent } from "../../../agent";
+import React, { useState } from 'react'
+import Button from '@material-ui/core/Button'
+import { useAgent } from '../../../agent'
 // import { useHistory } from "react-router-dom";
-import { Dialog, DialogTitle, DialogContent, DialogActions, makeStyles, TextField } from "@material-ui/core";
+import { Dialog, DialogTitle, DialogContent, DialogActions, makeStyles, TextField } from '@material-ui/core'
 // import shortId from 'shortid'
 
 interface Props {
-  fullScreen: boolean,
-  open: boolean,
-  onClose: any,
+  fullScreen: boolean
+  open: boolean
+  onClose: any
   subject: string
 }
 
@@ -36,32 +36,29 @@ const useStyles = makeStyles((theme) => ({
   formControlLabel: {
     marginTop: theme.spacing(1),
   },
-}));
+}))
 
 function ProfileDialog(props: Props) {
   const classes = useStyles()
   // const history = useHistory()
   const { agent } = useAgent()
 
-  const [name, setName] = useState<string|undefined>('')
-  const [nickname, setNickname] = useState<string|undefined>('')
+  const [name, setName] = useState<string | undefined>('')
+  const [nickname, setNickname] = useState<string | undefined>('')
 
   const saveProfileInfo = async () => {
     if (!agent) throw Error('Agent not configured')
     try {
       // if (!authenticatedDid) throw Error('Not authenticated')
-
       // const credentialSubject = {
       //   id: props.subject,
-      // } as { 
+      // } as {
       //   id: string,
       //   name?: string,
       //   nickname?: string,
       // }
-
       // if (name) credentialSubject['name'] = name
       // if (nickname) credentialSubject['nickname'] = nickname
-
       // const uniqId = shortId.generate()
       // await agent.createVerifiableCredential({
       //   credential: {
@@ -75,26 +72,23 @@ function ProfileDialog(props: Props) {
       //   save: true,
       //   proofFormat: 'jwt',
       // })
-
       // props.onClose()
       // history.push('/c/'+ uniqId)
-
     } catch (error) {
-      console.error(error);
+      console.error(error)
     }
-  };
+  }
 
   return (
     <Dialog
-        fullScreen={props.fullScreen}
-        open={props.open}
-        onClose={props.onClose}
-        aria-labelledby="responsive-dialog-title"
-      >
-        <DialogTitle id="responsive-dialog-title">Update profile information</DialogTitle>
-        <DialogContent>
+      fullScreen={props.fullScreen}
+      open={props.open}
+      onClose={props.onClose}
+      aria-labelledby="responsive-dialog-title"
+    >
+      <DialogTitle id="responsive-dialog-title">Update profile information</DialogTitle>
+      <DialogContent>
         <form className={classes.form}>
-
           <TextField
             id="name"
             label="Name"
@@ -112,22 +106,18 @@ function ProfileDialog(props: Props) {
             onChange={(e) => setNickname(e.target.value)}
             fullWidth
           />
-
         </form>
-
-        </DialogContent>
-        <DialogActions>
-          <Button autoFocus onClick={props.onClose} color="default">
-            Cancel
-          </Button>
-          <Button onClick={saveProfileInfo} color="primary" autoFocus>
-            Sign
-          </Button>
-        </DialogActions>
-      </Dialog>
-    )
-
-
+      </DialogContent>
+      <DialogActions>
+        <Button autoFocus onClick={props.onClose} color="default">
+          Cancel
+        </Button>
+        <Button onClick={saveProfileInfo} color="primary" autoFocus>
+          Sign
+        </Button>
+      </DialogActions>
+    </Dialog>
+  )
 }
 
-export default ProfileDialog;
+export default ProfileDialog

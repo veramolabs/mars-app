@@ -179,7 +179,7 @@ function CredentialPostCard(props: Props) {
   }
 
   return (
-    <Card elevation={2}>
+    <Card elevation={props.type === 'summary' ? 2 : 10}>
       <CardActionAreaLink
         to={props.type === 'summary' ? '/agent/credential/' + hash : '/agent/identity/' + subject?.did}
       >

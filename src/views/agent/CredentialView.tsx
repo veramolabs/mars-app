@@ -55,7 +55,7 @@ function CredentialView(props: any) {
           </Grid>
           {credentials.map((credential) => (
             <Grid item key={credential.hash} xs={12}>
-              <CredentialCard credential={credential} type="details" />
+              <CredentialCard credential={credential} type="summary" />
             </Grid>
           ))}
         </Grid>

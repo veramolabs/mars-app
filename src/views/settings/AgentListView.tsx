@@ -22,17 +22,7 @@ function AgentListView(props: any) {
       <AppBar title="Cloud agents" />
       <Grid container spacing={2} justify="center">
         <Grid item xs={12}>
-          <List
-            subheader={
-              agentList.length > 0 ? (
-                <ListSubheader component="div" id="nested-list-subheader">
-                  Cloud Agents
-                </ListSubheader>
-              ) : (
-                <Box />
-              )
-            }
-          >
+          <List>
             {agentList.map((item, index) => (
               <ListItem role={undefined} dense key={index}>
                 <ListItemText

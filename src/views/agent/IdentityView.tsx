@@ -109,7 +109,13 @@ function IdentityView(props: any) {
 
   return (
     <Container maxWidth="sm">
-      <AppBar title={identity?.name || ''}>
+      <AppBar
+        title={identity?.name || ''}
+        avatar={<Avatar src={identity?.picture} />}
+        primary={identity?.name}
+        secondary={identity?.nickname}
+        button={<Button onClick={handleOpenProfileModal}>Edit</Button>}
+      >
         <Tabs value={value} onChange={handleChange} indicatorColor="primary" textColor="primary">
           <Tab label="Issued" />
           <Tab label="Received" />
@@ -117,38 +123,6 @@ function IdentityView(props: any) {
       </AppBar>
       {loading && <LinearProgress />}
       <Grid container spacing={2} justify="center" className={classes.container}>
-        <Grid item xs={12}>
-          <Card variant="outlined">
-            <CardContent className={classes.header}>
-              <Avatar className={classes.avatar} src={identity?.picture} />
-              <Typography variant="h5">{identity?.name}</Typography>
-              <Typography variant="h6">{identity?.nickname}</Typography>
-            </CardContent>
-            <CardActions>
-              <IconButton
-                className={clsx(classes.expand, {
-                  [classes.expandOpen]: expanded,
-                })}
-                onClick={() => setExpanded(!expanded)}
-                aria-expanded={expanded}
-                aria-label="Show more"
-              >
-                <ExpandMoreIcon />
-              </IconButton>
-            </CardActions>
-            <Collapse in={expanded} timeout="auto" unmountOnExit>
-              <Box className={classes.collapse}>
-                <Typography variant="subtitle2" color="textSecondary">
-                  {identity?.did}
-                </Typography>
-                <Button size="small" color="primary" onClick={handleOpenProfileModal}>
-                  Profile
-                </Button>
-              </Box>
-            </Collapse>
-          </Card>
-        </Grid>
-
         {credentials.map((credential) => (
           <Grid item key={credential.hash} xs={12}>
             <CredentialCard credential={credential} type="summary" />

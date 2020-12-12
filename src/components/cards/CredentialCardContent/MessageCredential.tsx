@@ -21,6 +21,11 @@ function MessageCredential(props: Props) {
           {verifiableCredential.credentialSubject.content}
         </Typography>
       )}
+      {verifiableCredential.credentialSubject.channel && (
+        <Typography variant="caption" color="textSecondary">
+          #{verifiableCredential.credentialSubject.channel.name}
+        </Typography>
+      )}
     </CardContent>
   )
 }

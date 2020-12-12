@@ -18,7 +18,9 @@ function IdentitiesView(props: any) {
     if (agent) {
       setLoading(true)
       agent
-        .dataStoreORMGetIdentities()
+        .dataStoreORMGetIdentities({
+          where: [{ column: 'did', value: ['did%'], op: 'Like' }],
+        })
         .then(setIdentities)
         .finally(() => setLoading(false))
         .catch((e) => enqueueSnackbar(e.message, { variant: 'error' }))

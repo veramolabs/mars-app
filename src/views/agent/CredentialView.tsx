@@ -6,7 +6,7 @@ import CredentialCard from '../../components/cards/CredentialCard'
 import AppBar from '../../components/nav/AppBar'
 import { useAgent } from '../../agent'
 import { UniqueVerifiableCredential } from 'daf-typeorm'
-import { Grid } from '@material-ui/core'
+import { Grid, Typography } from '@material-ui/core'
 import { VerifiableCredential } from 'daf-core'
 import { useSnackbar } from 'notistack'
 
@@ -46,13 +46,28 @@ function CredentialView(props: any) {
 
   return (
     <Container maxWidth="sm">
-      <AppBar />
+      <AppBar title="Verifiable credential" />
       {loading && <LinearProgress />}
       {credential && (
         <Grid container spacing={2} justify="center">
           <Grid item xs={12}>
             <CredentialCard credential={{ hash, verifiableCredential: credential }} type="details" />
           </Grid>
+
+          <Grid item xs={12} style={{ padding: 8, marginTop: 8, overflowWrap: 'anywhere' }}>
+            {credentials.length > 0 && (
+              <Typography variant="body2">Known credentials issued to the same subject:</Typography>
+            )}
+            {credentials.length === 0 && (
+              <Typography variant="body2">
+                There are no known credentials issued to the same subject:
+              </Typography>
+            )}
+            <Typography variant="caption" color="textSecondary">
+              {credential.credentialSubject.id}
+            </Typography>
+          </Grid>
+
           {credentials.map((credential) => (
             <Grid item key={credential.hash} xs={12}>
               <CredentialCard credential={credential} type="summary" />

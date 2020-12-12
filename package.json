@@ -2,7 +2,7 @@
   "name": "mars-app",
   "description": "Mars app",
   "author": "Simonas Karuzas <simonas@not.cat>",
-  "version": "0.1.12",
+  "version": "0.1.13",
   "private": true,
   "main": "build/electron.js",
   "build": {

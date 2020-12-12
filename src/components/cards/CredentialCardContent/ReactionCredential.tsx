@@ -32,6 +32,12 @@ const useStyles = makeStyles((theme) => ({
   emoji: {
     marginRight: theme.spacing(2),
   },
+  message: {
+    display: 'flex',
+    flex: 1,
+    flexDirection: 'column',
+    padding: theme.spacing(1),
+  },
 }))
 
 function ReactionCredential(props: Props) {
@@ -54,15 +60,15 @@ function ReactionCredential(props: Props) {
     <CardContent className={classes.content}>
       {verifiableCredential.credentialSubject.emoji && (
         <Box className={classes.emoji}>
-          <Typography variant="h3" color="textPrimary">
+          <Typography variant="h2" color="textPrimary">
             {verifiableCredential.credentialSubject.emoji}
           </Typography>
         </Box>
       )}
 
       {verifiableCredential.credentialSubject.message && (
-        <Card variant="outlined">
-          <CardContent>
+        <Card variant="outlined" className={classes.message}>
+          <Box className={classes.message}>
             {verifiableCredential.credentialSubject.message.content && (
               <Typography variant="body1" color="textPrimary">
                 {verifiableCredential.credentialSubject.message.content}
@@ -72,13 +78,13 @@ function ReactionCredential(props: Props) {
               <Box>
                 <Box className={classes.author}>
                   <Avatar src={author?.picture} className={classes.authorAvatar} />
-                  <Typography variant="caption" color="textSecondary" title={author?.nickname}>
+                  <Typography variant="body2" color="textSecondary" title={author?.nickname}>
                     {author?.name} #{verifiableCredential.credentialSubject.message.channel.name}
                   </Typography>
                 </Box>
               </Box>
             )}
-          </CardContent>
+          </Box>
         </Card>
       )}
     </CardContent>

@@ -39,6 +39,7 @@ import MoreIcon from '@material-ui/icons/MoreVert'
 import QrIcon from '@material-ui/icons/CropFree'
 import DownloadIcon from '@material-ui/icons/CloudDownload'
 import CodeIcon from '@material-ui/icons/Code'
+import LinkIcon from '@material-ui/icons/Link'
 import AvatarLink from '../nav/AvatarLink'
 const QRCode = require('qrcode-react')
 
@@ -211,6 +212,21 @@ function CredentialPostCard(props: Props) {
         </Box>
       </CardActions>
       <Menu id="lock-menu" anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleClose}>
+        {verifiableCredential.credentialSubject.id?.substr(0, 4) === 'http' && (
+          <MenuItem
+            onClick={() => {
+              window.document.location.href = verifiableCredential.credentialSubject.id as string
+            }}
+          >
+            <ListItemIcon>
+              <LinkIcon />
+            </ListItemIcon>
+            <Typography variant="inherit" noWrap>
+              Open original URL
+            </Typography>
+          </MenuItem>
+        )}
+
         <MenuItem
           onClick={() => {
             setShowQr(true)
@@ -246,31 +262,33 @@ function CredentialPostCard(props: Props) {
           </Typography>
         </MenuItem>
 
-        <MenuList
-          subheader={
-            <ListSubheader component="div" id="nested-list-subheader">
-              Save to
-            </ListSubheader>
-          }
-        >
-          {agentList.map((option, index) => (
-            <MenuItem
-              key={index}
-              disabled={
-                !option.agent.availableMethods().includes('dataStoreSaveVerifiableCredential') ||
-                index === activeAgentIndex
-              }
-              onClick={(event) => handleMenuItemClick(event, index)}
-            >
-              <ListItemIcon>
-                <Avatar className={classes.small}>{option.name.substr(0, 2)}</Avatar>
-              </ListItemIcon>
-              <Typography variant="inherit" noWrap>
-                {option.name}
-              </Typography>
-            </MenuItem>
-          ))}
-        </MenuList>
+        {agentList.length > 0 && (
+          <MenuList
+            subheader={
+              <ListSubheader component="div" id="nested-list-subheader">
+                Copy to
+              </ListSubheader>
+            }
+          >
+            {agentList.map((option, index) => (
+              <MenuItem
+                key={index}
+                disabled={
+                  !option.agent.availableMethods().includes('dataStoreSaveVerifiableCredential') ||
+                  index === activeAgentIndex
+                }
+                onClick={(event) => handleMenuItemClick(event, index)}
+              >
+                <ListItemIcon>
+                  <Avatar className={classes.small}>{option.name.substr(0, 2)}</Avatar>
+                </ListItemIcon>
+                <Typography variant="inherit" noWrap>
+                  {option.name}
+                </Typography>
+              </MenuItem>
+            ))}
+          </MenuList>
+        )}
       </Menu>
       <Dialog
         fullScreen={fullScreen}

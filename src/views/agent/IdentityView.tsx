@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Grid, makeStyles, Button, useTheme, useMediaQuery, Tabs, Tab } from '@material-ui/core'
+import { Grid, makeStyles, useTheme, useMediaQuery, Tabs, Tab, IconButton } from '@material-ui/core'
 import { useParams } from 'react-router-dom'
 import Avatar from '@material-ui/core/Avatar'
 import Container from '@material-ui/core/Container'
@@ -11,7 +11,7 @@ import { UniqueVerifiableCredential } from 'daf-typeorm'
 import { useAgent } from '../../agent'
 import { IdentityProfile } from '../../types'
 import { useSnackbar } from 'notistack'
-
+import AssignmentIndIcon from '@material-ui/icons/AssignmentInd'
 const useStyles = makeStyles((theme) => ({
   avatar: {
     width: 150,
@@ -96,7 +96,11 @@ function IdentityView(props: any) {
         avatar={<Avatar src={identity?.picture} />}
         primary={identity?.name}
         secondary={identity?.nickname}
-        button={<Button onClick={handleOpenProfileModal}>Edit</Button>}
+        button={
+          <IconButton onClick={handleOpenProfileModal} aria-label="delete">
+            <AssignmentIndIcon />
+          </IconButton>
+        }
       >
         <Tabs value={value} onChange={handleChange} indicatorColor="primary" textColor="primary">
           <Tab label="Issued" />

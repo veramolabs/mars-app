@@ -150,7 +150,7 @@ function ProfileDialog(props: Props) {
       fullWidth
       aria-labelledby="responsive-dialog-title"
     >
-      <DialogTitle id="responsive-dialog-title">Issue profile credential</DialogTitle>
+      <DialogTitle id="responsive-dialog-title">Issue contact information credential</DialogTitle>
       {loading && <LinearProgress />}
       <DialogContent>
         <form className={classes.form}>

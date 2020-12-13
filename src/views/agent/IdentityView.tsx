@@ -103,8 +103,8 @@ function IdentityView(props: any) {
         }
       >
         <Tabs value={value} onChange={handleChange} indicatorColor="primary" textColor="primary">
-          <Tab label="Issued" />
-          <Tab label="Received" />
+          <Tab label="Issuer" />
+          <Tab label="Subject" />
         </Tabs>
       </AppBar>
       {loading && <LinearProgress />}

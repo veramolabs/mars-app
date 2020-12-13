@@ -155,7 +155,7 @@ export function AgentDrawer(props: any) {
             <ListItemIcon>
               <RecentActorsIcon />
             </ListItemIcon>
-            <ListItemText primary={'Known identifiers'} />
+            <ListItemText primary={'Contacts'} />
           </ListItemLink>
         )}
 

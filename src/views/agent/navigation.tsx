@@ -8,7 +8,7 @@ import PeopleIcon from '@material-ui/icons/People'
 import RecentActorsIcon from '@material-ui/icons/RecentActors'
 import MessageIcon from '@material-ui/icons/Message'
 import VerifiedUserIcon from '@material-ui/icons/VerifiedUser'
-import DescriptionIcon from '@material-ui/icons/Description'
+import DescriptionIcon from '@material-ui/icons/Search'
 import ImportIcon from '@material-ui/icons/Backup'
 
 import ImportView from './ImportView'
@@ -173,7 +173,7 @@ export function AgentDrawer(props: any) {
             <ListItemIcon>
               <DescriptionIcon />
             </ListItemIcon>
-            <ListItemText primary={'Resolver'} />
+            <ListItemText primary={'Discover'} />
           </ListItemLink>
         )}
 

@@ -18,7 +18,9 @@ function AgentListView(props: any) {
               <ListItem role={undefined} dense key={index}>
                 <ListItemText
                   primary={item.name}
-                  secondary={`${item.apiUrl}, methods: ${item.agent.availableMethods().length}`}
+                  secondary={`${item.apiUrl || ''} ${item.apiUrl ? '|' : ''} ${
+                    item.agent.availableMethods().length
+                  } methods`}
                 />
                 <ListItemSecondaryAction onClick={() => removeAgent(index)}>
                   <IconButton edge="end" aria-label="Delete">

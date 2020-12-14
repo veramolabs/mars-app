@@ -36,7 +36,7 @@ export class IdentityProfileManager implements IAgentPlugin {
       const { name, nickname, picture } = result[0].verifiableCredential.credentialSubject
       return { did: args.did, name, nickname, picture }
     } else {
-      return { did: args.did, name: args.did, nickname: args.did }
+      return { did: args.did, name: args.did }
     }
   }
 }

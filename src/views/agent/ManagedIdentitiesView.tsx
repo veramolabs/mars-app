@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { List } from '@material-ui/core'
+import { IconButton, List, useMediaQuery, useTheme } from '@material-ui/core'
 import Container from '@material-ui/core/Container'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import { useAgent } from '../../agent'
@@ -7,12 +7,25 @@ import { IIdentity } from 'daf-core'
 import AppBar from '../../components/nav/AppBar'
 import IdentityListItemLink from '../../components/nav/IdentityListItemLink'
 import { useSnackbar } from 'notistack'
+import AddIcon from '@material-ui/icons/Add'
+import NewIdentifierDialog from './dialogs/NewIdentifierDialog'
 
 function ManagedIdentities(props: any) {
   const { agent } = useAgent()
   const [loading, setLoading] = useState(false)
   const [identities, setIdentities] = useState<Array<IIdentity>>([])
   const { enqueueSnackbar } = useSnackbar()
+  const [openNewIdentifierModal, setOpenNewIdentifierModal] = React.useState(false)
+  const theme = useTheme()
+  const fullScreen = useMediaQuery(theme.breakpoints.down('xs'))
+
+  const handleOpenNewIdentifierModal = () => {
+    setOpenNewIdentifierModal(true)
+  }
+
+  const handleCloseNewIdentifierModal = () => {
+    setOpenNewIdentifierModal(false)
+  }
 
   useEffect(() => {
     if (agent) {
@@ -27,13 +40,26 @@ function ManagedIdentities(props: any) {
 
   return (
     <Container maxWidth="sm">
-      <AppBar title="Managed identities" />
+      <AppBar
+        title="Managed identifiers"
+        button={
+          <IconButton onClick={handleOpenNewIdentifierModal} aria-label="delete">
+            <AddIcon />
+          </IconButton>
+        }
+      />
       {loading && <LinearProgress />}
       <List>
         {identities.map((identity) => (
           <IdentityListItemLink key={identity.did} did={identity.did} type="summary" />
         ))}
       </List>
+
+      <NewIdentifierDialog
+        fullScreen={fullScreen}
+        open={openNewIdentifierModal}
+        onClose={handleCloseNewIdentifierModal}
+      />
     </Container>
   )
 }

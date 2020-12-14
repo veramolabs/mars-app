@@ -4,7 +4,7 @@ import { Route, Redirect, Switch, useRouteMatch } from 'react-router-dom'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import { useAgentList, useAgent } from '../../agent'
 
-import PeopleIcon from '@material-ui/icons/People'
+import PeopleIcon from '@material-ui/icons/SupervisorAccount'
 import RecentActorsIcon from '@material-ui/icons/RecentActors'
 import MessageIcon from '@material-ui/icons/Message'
 import VerifiedUserIcon from '@material-ui/icons/VerifiedUser'
@@ -164,7 +164,7 @@ export function AgentDrawer(props: any) {
             <ListItemIcon>
               <PeopleIcon />
             </ListItemIcon>
-            <ListItemText primary={'Managed identities'} />
+            <ListItemText primary={'Managed identifiers'} />
           </ListItemLink>
         )}
 

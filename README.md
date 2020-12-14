@@ -2,7 +2,7 @@
 
 ## Todo
 
-- [ ] keyManagerGetKeyManagementSystems
+- [x] keyManagerGetKeyManagementSystems
 - [ ] keyManagerCreateKey
 - [ ] keyManagerGetKey
 - [ ] keyManagerDeleteKey
@@ -11,11 +11,11 @@
 - [ ] keyManagerDecryptJWE
 - [ ] keyManagerSignJWT
 - [ ] keyManagerSignEthTX
-- [ ] identityManagerGetProviders
+- [x] identityManagerGetProviders
 - [x] identityManagerGetIdentities
 - [ ] identityManagerGetIdentity
 - [ ] identityManagerGetIdentityByAlias
-- [ ] identityManagerCreateIdentity
+- [x] identityManagerCreateIdentity
 - [ ] identityManagerSetAlias
 - [ ] identityManagerGetOrCreateIdentity
 - [ ] identityManagerImportIdentity

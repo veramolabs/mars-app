@@ -161,7 +161,14 @@ function ProfileDialog(props: Props) {
               <ListItemAvatar>
                 <Avatar src={subject?.picture} />
               </ListItemAvatar>
-              <ListItemText primary={`${subject?.name} (${subject?.nickname})`} secondary={subject?.did} />
+              <ListItemText
+                primary={
+                  subject?.nickname && subject?.nickname !== subject?.name
+                    ? `${subject?.name} (${subject?.nickname})`
+                    : `${subject?.name}`
+                }
+                secondary={subject?.did !== subject?.name ? subject?.did : undefined}
+              />
             </ListItem>
           </Paper>
 

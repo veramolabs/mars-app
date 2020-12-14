@@ -1,1 +1,51 @@
 # mars-app
+
+## Todo
+
+- [ ] keyManagerGetKeyManagementSystems
+- [ ] keyManagerCreateKey
+- [ ] keyManagerGetKey
+- [ ] keyManagerDeleteKey
+- [ ] keyManagerImportKey
+- [ ] keyManagerEncryptJWE
+- [ ] keyManagerDecryptJWE
+- [ ] keyManagerSignJWT
+- [ ] keyManagerSignEthTX
+- [ ] identityManagerGetProviders
+- [x] identityManagerGetIdentities
+- [ ] identityManagerGetIdentity
+- [ ] identityManagerGetIdentityByAlias
+- [ ] identityManagerCreateIdentity
+- [ ] identityManagerSetAlias
+- [ ] identityManagerGetOrCreateIdentity
+- [ ] identityManagerImportIdentity
+- [ ] identityManagerDeleteIdentity
+- [ ] identityManagerAddKey
+- [ ] identityManagerRemoveKey
+- [ ] identityManagerAddService
+- [ ] identityManagerRemoveService
+- [x] resolveDid
+- [ ] dataStoreSaveMessage
+- [ ] dataStoreGetMessage
+- [ ] dataStoreSaveVerifiableCredential
+- [x] dataStoreGetVerifiableCredential
+- [ ] dataStoreSaveVerifiablePresentation
+- [ ] dataStoreGetVerifiablePresentation
+- [x] dataStoreORMGetIdentities
+- [ ] dataStoreORMGetIdentitiesCount
+- [x] dataStoreORMGetMessages
+- [ ] dataStoreORMGetMessagesCount
+- [ ] dataStoreORMGetVerifiableCredentialsByClaims
+- [ ] dataStoreORMGetVerifiableCredentialsByClaimsCount
+- [x] dataStoreORMGetVerifiableCredentials
+- [ ] dataStoreORMGetVerifiableCredentialsCount
+- [ ] dataStoreORMGetVerifiablePresentations
+- [ ] dataStoreORMGetVerifiablePresentationsCount
+- [x] handleMessage
+- [ ] sendMessageDIDCommAlpha1
+- [ ] createVerifiablePresentation
+- [x] createVerifiableCredential
+- [ ] createSelectiveDisclosureRequest
+- [ ] getVerifiableCredentialsForSdr
+- [ ] validatePresentationAgainstSdr
+- [ ] createProfilePresentation

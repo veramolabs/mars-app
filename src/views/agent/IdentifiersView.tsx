@@ -33,7 +33,7 @@ function IdentitiesView(props: any) {
       {loading && <LinearProgress />}
       <List>
         {identities.map((identity) => (
-          <IdentityListItemLink key={identity.did} did={identity.did} type="summary" />
+          <IdentityListItemLink key={identity.did} did={identity.did as string} type="summary" />
         ))}
       </List>
     </Container>

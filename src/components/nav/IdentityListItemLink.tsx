@@ -4,10 +4,9 @@ import Avatar from '@material-ui/core/Avatar'
 import { IdentityProfile } from '../../types'
 import { useAgent } from '../../agent'
 import ListItemLink from './ListItemLink'
-import Box from '@material-ui/core/Box/Box'
 
 interface Props {
-  did?: string
+  did: string
   type: 'summary' | 'details'
 }
 
@@ -15,7 +14,7 @@ function IdentityListItemLink(props: Props) {
   const { did } = props
   const { agent } = useAgent()
   const [loading, setLoading] = useState(false)
-  const [identity, setIdentity] = useState<IdentityProfile | undefined>(undefined)
+  const [identity, setIdentity] = useState<IdentityProfile>({ did, name: did })
 
   useEffect(() => {
     if (did) {
@@ -27,20 +26,15 @@ function IdentityListItemLink(props: Props) {
     }
   }, [agent, did])
 
-  if (loading) {
-    return <LinearProgress />
-  } else if (identity) {
-    return (
-      <ListItemLink to={'/agent/identity/' + identity.did}>
-        <ListItemAvatar>
-          <Avatar src={identity.picture} />
-        </ListItemAvatar>
-        <ListItemText primary={identity.name} secondary={identity.nickname} />
-      </ListItemLink>
-    )
-  } else {
-    return <Box />
-  }
+  return (
+    <ListItemLink to={'/agent/identity/' + identity.did}>
+      {loading && <LinearProgress />}
+      <ListItemAvatar>
+        <Avatar src={identity.picture} />
+      </ListItemAvatar>
+      <ListItemText primary={identity.name} secondary={identity.nickname} />
+    </ListItemLink>
+  )
 }
 
 export default IdentityListItemLink

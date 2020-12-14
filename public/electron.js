@@ -6,10 +6,10 @@ const { fork, spawn } = require('child_process')
 const getPort = require('get-port')
 let agentServer
 
-getPort().then((port) => {
+getPort({ port: [8880, 8881, 8882, 8883] }).then((port) => {
   process.env.PORT = port
   process.env.BASE_URL = 'http://localhost:' + port
-  process.env.API_KEY = `${Math.floor(Math.random() * 10000000000000)}`
+  process.env.API_KEY = '12345' //FIXME `${Math.floor(Math.random() * 10000000000000)}`
   process.env.API_BASE_PATH = '/agent'
 
   agentServer = fork('./node_modules/daf-cli/bin/daf.js', [
@@ -18,8 +18,10 @@ getPort().then((port) => {
   ])
 
   var defaultConnection = {
-    url: process.env.BASE_URL + process.env.API_BASE_PATH,
+    name: 'Mars',
+    apiUrl: process.env.BASE_URL + process.env.API_BASE_PATH,
     token: process.env.API_KEY,
+    schemaUrl: process.env.BASE_URL + '/open-api.json',
   }
 
   ipcMain.on('get-default-connection', function (event, arg) {

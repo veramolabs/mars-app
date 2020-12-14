@@ -111,6 +111,7 @@ export default function ResponsiveDrawer() {
 
   const saveAgentConfig = (config: SerializedAgentConfig) => {
     addSerializedAgentConfig(config)
+    setActiveAgentIndex(agentList.length)
     setOpenNewAgentModal(false)
     history.push('/agent')
   }

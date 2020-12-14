@@ -4,8 +4,3 @@ export interface IdentityProfile {
   nickname?: string
   picture?: string
 }
-
-export interface AgentConnection {
-  url: string
-  token: string
-}

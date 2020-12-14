@@ -6,9 +6,10 @@ import { ThemeProvider } from '@material-ui/core/styles'
 import { BrowserRouter } from 'react-router-dom'
 import { SnackbarProvider } from 'notistack'
 import App from './App'
+import OnboardingView from './views/onboarding/OnboardingView'
 import theme from './theme'
 import MobileProvider from './components/nav/MobileProvider'
-import { AgentListProvider } from './agent/AgentListProvider'
+import { AgentListProvider, AgentListConsumer } from './agent/AgentListProvider'
 
 ReactDOM.render(
   <React.StrictMode>
@@ -20,14 +21,16 @@ ReactDOM.render(
           horizontal: 'right',
         }}
       >
-        <AgentListProvider>
-          <MobileProvider>
-            <ThemeProvider theme={theme}>
-              <CssBaseline />
-              <App />
-            </ThemeProvider>
-          </MobileProvider>
-        </AgentListProvider>
+        <MobileProvider>
+          <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <AgentListProvider>
+              <AgentListConsumer>
+                {({ agentList }) => (agentList.length === 0 ? <OnboardingView /> : <App />)}
+              </AgentListConsumer>
+            </AgentListProvider>
+          </ThemeProvider>
+        </MobileProvider>
       </SnackbarProvider>
     </BrowserRouter>
   </React.StrictMode>,

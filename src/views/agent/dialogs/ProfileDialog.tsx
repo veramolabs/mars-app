@@ -78,7 +78,9 @@ function ProfileDialog(props: Props) {
       .identityManagerGetIdentities()
       .then((identities) => Promise.all(identities.map(({ did }) => agent.getIdentityProfile({ did }))))
       .then((profiles) => {
-        setIssuer(profiles[0].did)
+        if (profiles.length > 0) {
+          setIssuer(profiles[0].did)
+        }
         return profiles
       })
       .then(setIdentities)

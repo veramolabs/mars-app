@@ -29,7 +29,7 @@ export function AgentSwitch(props: any) {
 
   return (
     <Switch>
-      <Route exact path="/agent" render={() => <Redirect to="/agent/messages" />} />
+      <Route exact path="/agent" render={() => <Redirect to="/agent/resolver" />} />
       <Route path="/agent/import" component={ImportView} />
       <Route path="/agent/messages" component={Messages} />
       <Route path="/agent/resolver" component={Resolver} />

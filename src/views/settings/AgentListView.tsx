@@ -10,7 +10,7 @@ function AgentListView(props: any) {
 
   return (
     <Container maxWidth="sm">
-      <AppBar title="Cloud agents" />
+      <AppBar title="Agents" />
       <Grid container spacing={2} justify="center">
         <Grid item xs={12}>
           <List>

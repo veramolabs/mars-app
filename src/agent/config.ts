@@ -7,9 +7,14 @@ import {
   IResolver,
   IMessageHandler,
 } from 'daf-core'
-import { ICredentialIssuer } from 'daf-w3c'
+import { ICredentialIssuer, W3cMessageHandler } from 'daf-w3c'
+import { SdrMessageHandler } from 'daf-selective-disclosure'
+import { JwtMessageHandler } from 'daf-did-jwt'
+import { DIDCommMessageHandler } from 'daf-did-comm'
+import { MessageHandler } from 'daf-message-handler'
+import { DafResolver } from 'daf-resolver'
 import { IDataStoreORM } from 'daf-typeorm'
-import { IProfileManager } from './ProfileManager'
+import { IdentityProfileManager, IProfileManager } from './ProfileManager'
 
 type AgentInterfaces = IProfileManager &
   IDataStore &
@@ -66,4 +71,19 @@ export const enabledMethods = [
   'validatePresentationAgainstSdr',
 ]
 
-export const defaultAgent = createAgent<AgentInterfaces>({})
+export const infuraProjectId = '5ffc47f65c4042ce847ef66a3fa70d4c'
+
+export const defaultAgent = createAgent<AgentInterfaces>({
+  plugins: [
+    new DafResolver({ infuraProjectId }),
+    new MessageHandler({
+      messageHandlers: [
+        new DIDCommMessageHandler(),
+        new JwtMessageHandler(),
+        new W3cMessageHandler(),
+        new SdrMessageHandler(),
+      ],
+    }),
+    new IdentityProfileManager(),
+  ],
+})

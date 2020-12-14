@@ -95,7 +95,7 @@ export function SettingsDrawer(props: any) {
           <ListItemIcon>
             <CloudIcon />
           </ListItemIcon>
-          <ListItemText primary={'Cloud agents'} />
+          <ListItemText primary={'Agents'} />
         </ListItemLink>
       </List>
     </Box>

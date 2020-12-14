@@ -1,10 +1,16 @@
 import React, { useState, useContext, useEffect } from 'react'
 import { AgentProvider } from './AgentProvider'
-import { Agent, defaultAgent } from './config'
+import { Agent, defaultAgent, infuraProjectId } from './config'
 import { IdentityProfileManager } from '../agent/ProfileManager'
 import { createAgent, IAgentPlugin } from 'daf-core'
 import { AgentRestClient } from 'daf-rest'
 import { useSnackbar } from 'notistack'
+import { W3cMessageHandler } from 'daf-w3c'
+import { SdrMessageHandler } from 'daf-selective-disclosure'
+import { JwtMessageHandler } from 'daf-did-jwt'
+import { DIDCommMessageHandler } from 'daf-did-comm'
+import { MessageHandler } from 'daf-message-handler'
+import { DafResolver } from 'daf-resolver'
 
 export interface SerializedAgentConfig {
   name: string
@@ -59,6 +65,18 @@ export const AgentListProvider: React.FC = ({ children }) => {
         headers: config.token ? { Authorization: 'Bearer ' + config.token } : undefined,
       }
       plugins.push(new AgentRestClient(options))
+    } else {
+      plugins.push(new DafResolver({ infuraProjectId }))
+      plugins.push(
+        new MessageHandler({
+          messageHandlers: [
+            new DIDCommMessageHandler(),
+            new JwtMessageHandler(),
+            new W3cMessageHandler(),
+            new SdrMessageHandler(),
+          ],
+        }),
+      )
     }
     plugins.push(new IdentityProfileManager())
 
@@ -131,3 +149,4 @@ export const AgentListProvider: React.FC = ({ children }) => {
 }
 
 export const useAgentList = () => useContext(AgentListContext)
+export const AgentListConsumer = AgentListContext.Consumer

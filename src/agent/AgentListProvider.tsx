@@ -11,7 +11,9 @@ import { JwtMessageHandler } from 'daf-did-jwt'
 import { DIDCommMessageHandler } from 'daf-did-comm'
 import { MessageHandler } from 'daf-message-handler'
 import { DafResolver } from 'daf-resolver'
-
+import { Resolver } from 'did-resolver'
+import { getResolver as ethrDidResolver } from 'ethr-did-resolver'
+import { getResolver as webDidResolver } from 'web-did-resolver'
 export interface SerializedAgentConfig {
   name: string
   schema?: IAgentPluginSchema
@@ -70,7 +72,22 @@ export const AgentListProvider: React.FC = ({ children }) => {
       }
       plugins.push(new AgentRestClient(options))
     } else {
-      plugins.push(new DafResolver({ infuraProjectId }))
+      plugins.push(
+        new DafResolver({
+          resolver: new Resolver({
+            ethr: ethrDidResolver({
+              networks: [
+                { name: 'mainnet', rpcUrl: 'https://mainnet.infura.io/v3/' + infuraProjectId },
+                { name: 'rinkeby', rpcUrl: 'https://rinkeby.infura.io/v3/' + infuraProjectId },
+                { name: 'ropsten', rpcUrl: 'https://ropsten.infura.io/v3/' + infuraProjectId },
+                { name: 'kovan', rpcUrl: 'https://kovan.infura.io/v3/' + infuraProjectId },
+                { name: 'goerli', rpcUrl: 'https://goerli.infura.io/v3/' + infuraProjectId },
+              ],
+            }).ethr,
+            web: webDidResolver().web,
+          }),
+        }),
+      )
       plugins.push(
         new MessageHandler({
           messageHandlers: [

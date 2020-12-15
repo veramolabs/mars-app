@@ -15,6 +15,9 @@ import { MessageHandler } from 'daf-message-handler'
 import { DafResolver } from 'daf-resolver'
 import { IDataStoreORM } from 'daf-typeorm'
 import { IdentityProfileManager, IProfileManager } from './ProfileManager'
+import { Resolver } from 'did-resolver'
+import { getResolver as ethrDidResolver } from 'ethr-did-resolver'
+import { getResolver as webDidResolver } from 'web-did-resolver'
 
 type AgentInterfaces = IProfileManager &
   IDataStore &
@@ -75,7 +78,20 @@ export const infuraProjectId = '5ffc47f65c4042ce847ef66a3fa70d4c'
 
 export const defaultAgent = createAgent<AgentInterfaces>({
   plugins: [
-    new DafResolver({ infuraProjectId }),
+    new DafResolver({
+      resolver: new Resolver({
+        ethr: ethrDidResolver({
+          networks: [
+            { name: 'mainnet', rpcUrl: 'https://mainnet.infura.io/v3/' + infuraProjectId },
+            { name: 'rinkeby', rpcUrl: 'https://rinkeby.infura.io/v3/' + infuraProjectId },
+            { name: 'ropsten', rpcUrl: 'https://ropsten.infura.io/v3/' + infuraProjectId },
+            { name: 'kovan', rpcUrl: 'https://kovan.infura.io/v3/' + infuraProjectId },
+            { name: 'goerli', rpcUrl: 'https://goerli.infura.io/v3/' + infuraProjectId },
+          ],
+        }).ethr,
+        web: webDidResolver().web,
+      }),
+    }),
     new MessageHandler({
       messageHandlers: [
         new DIDCommMessageHandler(),

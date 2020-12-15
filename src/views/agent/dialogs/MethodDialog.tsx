@@ -31,19 +31,20 @@ function MethodDialog(props: Props) {
     setResult(undefined)
   }, [props.method])
 
-  const handleExecute = () => {
+  const handleExecute = async () => {
     setLoading(true)
-    agent
-      .execute(props.method, JSON.parse(args))
-      .then((r) => {
-        console.log({ r })
-        setResult(JSON.stringify(r, null, 2))
-        enqueueSnackbar('Success', { variant: 'success' })
-      })
-      .finally(() => {
-        setLoading(false)
-      })
-      .catch((e) => enqueueSnackbar(e.message, { variant: 'error' }))
+
+    try {
+      const argsObj = JSON.parse(args)
+      const r = await agent.execute(props.method, argsObj)
+      console.log({ r })
+      setResult(JSON.stringify(r, null, 2))
+      enqueueSnackbar('Success', { variant: 'success' })
+      setLoading(false)
+    } catch (e) {
+      enqueueSnackbar(e.message, { variant: 'error' })
+    }
+    setLoading(false)
   }
 
   return (

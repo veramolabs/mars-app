@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Button from '@material-ui/core/Button'
-import { useAgent } from '../../../agent'
+import { useAgentList } from '../../../agent'
 // import { useHistory } from "react-router-dom";
 import { useSnackbar } from 'notistack'
 import {
@@ -18,9 +18,11 @@ import {
   MenuItem,
   Select,
   LinearProgress,
+  ListSubheader,
 } from '@material-ui/core'
 import { IdentityProfile } from '../../../types'
 import shortId from 'shortid'
+import { AgentConfig } from '../../../agent/AgentListProvider'
 
 interface Props {
   fullScreen: boolean
@@ -58,60 +60,82 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
+interface AgentWithManagedDids {
+  agentConfig: AgentConfig
+  profiles: IdentityProfile[]
+}
+
 function ProfileDialog(props: Props) {
   const classes = useStyles()
   const { enqueueSnackbar } = useSnackbar()
-  const { agent } = useAgent()
+  const { agentList, activeAgentIndex } = useAgentList()
   const [loading, setLoading] = useState(false)
   const [name, setName] = useState<string | undefined>('')
   const [nickname, setNickname] = useState<string | undefined>('')
   const [picture, setPicture] = useState<string | undefined>('')
-  const [issuer, setIssuer] = useState<string | undefined>(undefined)
-  const [subject, setSubject] = useState<string | undefined>('')
-  const [, setSubjectProfile] = useState<IdentityProfile | undefined>(undefined)
-  const [identities, setIdentities] = useState<IdentityProfile[]>([])
-  const [, setKnownIdentifiers] = useState<IdentityProfile[]>([])
+  const [issuer, setIssuer] = useState<string>('')
+  const [subject, setSubject] = useState<string>('')
+  const [issuers, setIssuers] = useState<AgentWithManagedDids[]>([])
+  const [knownIdentifiers, setKnownIdentifiers] = useState<AgentWithManagedDids[]>([])
 
   useEffect(() => {
     setLoading(true)
-    agent
-      .identityManagerGetIdentities()
-      .then((identities) => Promise.all(identities.map(({ did }) => agent.getIdentityProfile({ did }))))
-      .then((profiles) => {
-        if (profiles.length > 0) {
-          setIssuer(profiles[0].did)
+
+    const getAllManagedIdentifiers = async (): Promise<AgentWithManagedDids[]> => {
+      const result: AgentWithManagedDids[] = []
+      for (const agentConfig of agentList) {
+        if (agentConfig.agent.availableMethods().includes('identityManagerGetIdentities')) {
+          const identities = await agentConfig.agent.identityManagerGetIdentities()
+          const profiles = await Promise.all(
+            identities.map(({ did }) => agentConfig.agent.getIdentityProfile({ did })),
+          )
+          result.push({
+            agentConfig,
+            profiles,
+          })
         }
-        return profiles
-      })
-      .then(setIdentities)
+      }
+      return result
+    }
+
+    getAllManagedIdentifiers()
+      .then(setIssuers)
       .finally(() => setLoading(false))
-  }, [agent])
+  }, [agentList])
 
   useEffect(() => {
     setLoading(true)
-    agent
-      .dataStoreORMGetIdentities({})
-      .then((identities) => Promise.all(identities.map(({ did }) => agent.getIdentityProfile({ did }))))
+
+    const getAllKnownIdentifiers = async (): Promise<AgentWithManagedDids[]> => {
+      const result: AgentWithManagedDids[] = []
+      for (const agentConfig of agentList) {
+        if (agentConfig.agent.availableMethods().includes('dataStoreORMGetIdentities')) {
+          const identities = await agentConfig.agent.dataStoreORMGetIdentities({
+            where: [{ column: 'did', value: ['did%'], op: 'Like' }],
+          })
+          const profiles = await Promise.all(
+            identities.map(({ did }) => agentConfig.agent.getIdentityProfile({ did })),
+          )
+          result.push({
+            agentConfig,
+            profiles,
+          })
+        }
+      }
+      return result
+    }
+
+    getAllKnownIdentifiers()
       .then(setKnownIdentifiers)
       .finally(() => setLoading(false))
-  }, [agent])
+  }, [agentList])
 
   useEffect(() => {
     setLoading(true)
     if (props.subject) {
-      setSubject(props.subject)
-      agent
-        .getIdentityProfile({ did: props.subject })
-        .then((profile) => {
-          setName(profile.name || '')
-          setNickname(profile.nickname || '')
-          setPicture(profile.picture || '')
-          return profile
-        })
-        .then(setSubjectProfile)
-        .finally(() => setLoading(false))
+      setSubject(activeAgentIndex + '|' + props.subject)
     }
-  }, [agent, props.subject])
+  }, [agentList, activeAgentIndex, props.subject])
 
   const saveProfileInfo = async () => {
     if (!issuer || !subject) throw Error('Issuer not set')
@@ -124,14 +148,17 @@ function ProfileDialog(props: Props) {
         nickname?: string
         picture?: string
       }
-      credentialSubject['id'] = subject
+      credentialSubject['id'] = subject.split('|')[1]
       if (name) credentialSubject['name'] = name
       if (nickname) credentialSubject['nickname'] = nickname
       if (picture) credentialSubject['picture'] = picture
       const uniqId = shortId.generate()
-      await agent.createVerifiableCredential({
+
+      const split = issuer.split('|')
+
+      await agentList[parseInt(split[0], 10)].agent.createVerifiableCredential({
         credential: {
-          issuer: { id: issuer },
+          issuer: { id: split[1] },
           '@context': ['https://www.w3.org/2018/credentials/v1'],
           type: ['VerifiableCredential', 'Profile'],
           issuanceDate: new Date().toISOString(),
@@ -168,22 +195,6 @@ function ProfileDialog(props: Props) {
       {loading && <LinearProgress />}
       <DialogContent>
         <form className={classes.form}>
-          {/* <Paper elevation={10} className={classes.subject}>
-            <ListItem>
-              <ListItemAvatar>
-                <Avatar src={subjectProfile?.picture} />
-              </ListItemAvatar>
-              <ListItemText
-                primary={
-                  subjectProfile?.nickname && subjectProfile?.nickname !== subjectProfile?.name
-                    ? `${subjectProfile?.name} (${subjectProfile?.nickname})`
-                    : `${subjectProfile?.name}`
-                }
-                secondary={subjectProfile?.did !== subjectProfile?.name ? subjectProfile?.did : undefined}
-              />
-            </ListItem>
-          </Paper> */}
-
           <FormControl className={classes.formControl} variant="outlined">
             <InputLabel id="demo-simple-select-label">Issuer</InputLabel>
             <Select
@@ -193,14 +204,20 @@ function ProfileDialog(props: Props) {
               onChange={(event) => setIssuer(event.target.value as string)}
               SelectDisplayProps={SelectDisplayProps}
             >
-              {identities.map((identity) => (
-                <MenuItem value={identity.did} key={identity.did}>
-                  <ListItemAvatar>
-                    <Avatar src={identity.picture} />
-                  </ListItemAvatar>
-                  <ListItemText primary={identity.name} secondary={identity.nickname} />
-                </MenuItem>
-              ))}
+              {issuers.map((agentWithDids, index) => [
+                <ListSubheader key={agentWithDids.agentConfig.name}>
+                  {agentWithDids.agentConfig.name}
+                </ListSubheader>,
+
+                agentWithDids.profiles.map((identity) => (
+                  <MenuItem value={index + '|' + identity.did} key={index + '|' + identity.did}>
+                    <ListItemAvatar>
+                      <Avatar src={identity.picture} />
+                    </ListItemAvatar>
+                    <ListItemText primary={identity.name} secondary={identity.nickname} />
+                  </MenuItem>
+                )),
+              ])}
             </Select>
           </FormControl>
 
@@ -213,14 +230,20 @@ function ProfileDialog(props: Props) {
               onChange={(event) => setSubject(event.target.value as string)}
               SelectDisplayProps={SelectDisplayProps}
             >
-              {identities.map((identity) => (
-                <MenuItem value={identity.did} key={identity.did}>
-                  <ListItemAvatar>
-                    <Avatar src={identity.picture} />
-                  </ListItemAvatar>
-                  <ListItemText primary={identity.name} secondary={identity.nickname} />
-                </MenuItem>
-              ))}
+              {knownIdentifiers.map((agentWithDids, index) => [
+                <ListSubheader key={agentWithDids.agentConfig.name}>
+                  {agentWithDids.agentConfig.name}
+                </ListSubheader>,
+
+                agentWithDids.profiles.map((identity) => (
+                  <MenuItem value={index + '|' + identity.did} key={index + '|' + identity.did}>
+                    <ListItemAvatar>
+                      <Avatar src={identity.picture} />
+                    </ListItemAvatar>
+                    <ListItemText primary={identity.name} secondary={identity.nickname} />
+                  </MenuItem>
+                )),
+              ])}
             </Select>
           </FormControl>
 

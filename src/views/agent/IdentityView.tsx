@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react'
-import { Grid, makeStyles, useTheme, useMediaQuery, Tabs, Tab, IconButton } from '@material-ui/core'
+import { Grid, makeStyles, Tabs, Tab } from '@material-ui/core'
 import { useParams } from 'react-router-dom'
 import Avatar from '@material-ui/core/Avatar'
 import Container from '@material-ui/core/Container'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import CredentialCard from '../../components/cards/CredentialCard'
-import ProfileDialog from './dialogs/ProfileDialog'
 import AppBar from '../../components/nav/AppBar'
 import { UniqueVerifiableCredential } from 'daf-typeorm'
 import { useAgent } from '../../agent'
 import { IdentityProfile } from '../../types'
 import { useSnackbar } from 'notistack'
-import AssignmentIndIcon from '@material-ui/icons/AssignmentInd'
+import CredentialFAB from '../../components/nav/CredentialFAB'
+
 const useStyles = makeStyles((theme) => ({
   avatar: {
     width: 150,
@@ -45,10 +45,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-function IdentityView(props: any) {
-  const { did } = useParams<{ did: string }>()
+function IdentityView() {
+  const { did: rawDid } = useParams<{ did: string }>()
+  const did = decodeURIComponent(rawDid)
   const classes = useStyles()
-  const theme = useTheme()
   const { agent } = useAgent()
   const { enqueueSnackbar } = useSnackbar()
   const [identity, setIdentity] = useState<IdentityProfile | undefined>(undefined)
@@ -59,17 +59,6 @@ function IdentityView(props: any) {
 
   const handleChange = (event: any, newValue: any) => {
     setValue(newValue)
-  }
-
-  const fullScreen = useMediaQuery(theme.breakpoints.down('xs'))
-  const [openProfileModal, setOpenProfileModal] = React.useState(false)
-
-  const handleOpenProfileModal = () => {
-    setOpenProfileModal(true)
-  }
-
-  const handleCloseProfileModal = () => {
-    setOpenProfileModal(false)
   }
 
   useEffect(() => {
@@ -96,17 +85,13 @@ function IdentityView(props: any) {
         avatar={<Avatar src={identity?.picture} />}
         primary={identity?.name}
         secondary={identity?.nickname}
-        button={
-          <IconButton onClick={handleOpenProfileModal} aria-label="delete">
-            <AssignmentIndIcon />
-          </IconButton>
-        }
       >
         <Tabs value={value} onChange={handleChange} indicatorColor="primary" textColor="primary">
           <Tab label="Issuer" />
           <Tab label="Subject" />
         </Tabs>
       </AppBar>
+      {identity && <CredentialFAB subject={identity.did} />}
       {loading && <LinearProgress />}
       <Grid container spacing={2} justify="center" className={classes.container}>
         {credentials.map((credential) => (
@@ -115,14 +100,6 @@ function IdentityView(props: any) {
           </Grid>
         ))}
       </Grid>
-      {identity && (
-        <ProfileDialog
-          fullScreen={fullScreen}
-          open={openProfileModal}
-          onClose={handleCloseProfileModal}
-          subject={identity.did}
-        />
-      )}
     </Container>
   )
 }

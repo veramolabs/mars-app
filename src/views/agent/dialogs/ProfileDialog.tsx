@@ -28,7 +28,7 @@ interface Props {
   fullScreen: boolean
   open: boolean
   onClose: any
-  subject: string
+  subject?: string
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -89,16 +89,18 @@ function ProfileDialog(props: Props) {
 
   useEffect(() => {
     setLoading(true)
-    agent
-      .getIdentityProfile({ did: props.subject })
-      .then((profile) => {
-        setName(profile.name || '')
-        setNickname(profile.nickname || '')
-        setPicture(profile.picture || '')
-        return profile
-      })
-      .then(setSubject)
-      .finally(() => setLoading(false))
+    if (props.subject) {
+      agent
+        .getIdentityProfile({ did: props.subject })
+        .then((profile) => {
+          setName(profile.name || '')
+          setNickname(profile.nickname || '')
+          setPicture(profile.picture || '')
+          return profile
+        })
+        .then(setSubject)
+        .finally(() => setLoading(false))
+    }
   }, [agent, props.subject])
 
   const saveProfileInfo = async () => {

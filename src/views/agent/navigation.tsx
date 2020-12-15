@@ -10,7 +10,9 @@ import MessageIcon from '@material-ui/icons/Message'
 import VerifiedUserIcon from '@material-ui/icons/VerifiedUser'
 import DescriptionIcon from '@material-ui/icons/Search'
 import ImportIcon from '@material-ui/icons/Backup'
+import CodeIcon from '@material-ui/icons/Code'
 
+import ApiView from './ApiView'
 import ImportView from './ImportView'
 import Messages from './MessagesView'
 import Resolver from './ResolverView'
@@ -30,6 +32,7 @@ export function AgentSwitch(props: any) {
   return (
     <Switch>
       <Route exact path="/agent" render={() => <Redirect to="/agent/resolver" />} />
+      <Route path="/agent/api" component={ApiView} />
       <Route path="/agent/import" component={ImportView} />
       <Route path="/agent/messages" component={Messages} />
       <Route path="/agent/resolver" component={Resolver} />
@@ -108,6 +111,7 @@ export function AgentDrawer(props: any) {
   const { agent } = useAgent()
   const classes = useStyles()
 
+  const apiMatch = useRouteMatch('/agent/api')
   const importMatch = useRouteMatch('/agent/import')
   const messagesMatch = useRouteMatch('/agent/messages')
   const resolverMatch = useRouteMatch('/agent/resolver')
@@ -185,6 +189,13 @@ export function AgentDrawer(props: any) {
             <ListItemText primary={'Import'} />
           </ListItemLink>
         )}
+
+        <ListItemLink to={'/agent/api'} selected={apiMatch !== null}>
+          <ListItemIcon>
+            <CodeIcon />
+          </ListItemIcon>
+          <ListItemText primary={'API'} />
+        </ListItemLink>
       </List>
     </Box>
   )

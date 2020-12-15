@@ -78,6 +78,12 @@ function NewAgentDialog(props: Props) {
   const configureAgent = () => {
     props.saveAgentConfig({
       name,
+      schema: {
+        components: {
+          schemas: schema.components.schemas,
+          methods: schema['x-methods'],
+        },
+      },
       apiUrl,
       token,
       enabledMethods,

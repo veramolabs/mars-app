@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from 'react'
 import { AgentProvider } from './AgentProvider'
 import { Agent, defaultAgent, infuraProjectId } from './config'
 import { IdentityProfileManager } from '../agent/ProfileManager'
-import { createAgent, IAgentPlugin } from 'daf-core'
+import { createAgent, IAgentPlugin, IAgentPluginSchema } from 'daf-core'
 import { AgentRestClient } from 'daf-rest'
 import { useSnackbar } from 'notistack'
 import { W3cMessageHandler } from 'daf-w3c'
@@ -14,6 +14,7 @@ import { DafResolver } from 'daf-resolver'
 
 export interface SerializedAgentConfig {
   name: string
+  schema?: IAgentPluginSchema
   schemaUrl?: string
   apiUrl?: string
   token?: string
@@ -23,6 +24,7 @@ export interface SerializedAgentConfig {
 export interface AgentConfig {
   name: string
   agent: Agent
+  schema?: IAgentPluginSchema
   schemaUrl?: string
   apiUrl?: string
   token?: string
@@ -59,8 +61,10 @@ export const AgentListProvider: React.FC = ({ children }) => {
     const plugins = []
 
     if (config.apiUrl) {
+      console.log('HERE', config.schema)
       const options = {
         url: config.apiUrl,
+        schema: config.schema,
         enabledMethods: config.enabledMethods || [],
         headers: config.token ? { Authorization: 'Bearer ' + config.token } : undefined,
       }

@@ -137,6 +137,20 @@ function ProfileDialog(props: Props) {
     }
   }, [agentList, activeAgentIndex, props.subject])
 
+  useEffect(() => {
+    setLoading(true)
+    if (subject) {
+      agentList[activeAgentIndex].agent
+        .getIdentityProfile({ did: subject.split('|')[1] })
+        .then((profile) => {
+          setName(profile.name || '')
+          setNickname(profile.nickname || '')
+          setPicture(profile.picture || '')
+        })
+        .finally(() => setLoading(false))
+    }
+  }, [agentList, activeAgentIndex, subject])
+
   const saveProfileInfo = async () => {
     if (!issuer || !subject) throw Error('Issuer not set')
     try {

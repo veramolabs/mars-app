@@ -18,7 +18,7 @@ ReactDOM.render(
         maxSnack={4}
         anchorOrigin={{
           vertical: 'bottom',
-          horizontal: 'right',
+          horizontal: 'left',
         }}
       >
         <MobileProvider>

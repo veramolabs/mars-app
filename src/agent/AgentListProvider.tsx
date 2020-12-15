@@ -38,6 +38,8 @@ const defaultNamedAgent = { name: 'default', agent: defaultAgent }
 export const AgentListContext = React.createContext<{
   agentList: Array<AgentConfig>
   activeAgentIndex: number
+  defaultDid?: string
+  setDefaultDid: (did: string) => void
   setActiveAgentIndex: (index: number) => void
   addAgent: (agent: AgentConfig) => void
   addSerializedAgentConfig: (config: SerializedAgentConfig) => void
@@ -45,6 +47,7 @@ export const AgentListContext = React.createContext<{
 }>({
   agentList: [defaultNamedAgent],
   activeAgentIndex: 0,
+  setDefaultDid: (did: string) => {},
   setActiveAgentIndex: (index: number) => {},
   addAgent: (agent: AgentConfig) => {},
   addSerializedAgentConfig: (config: SerializedAgentConfig) => {},
@@ -53,6 +56,7 @@ export const AgentListContext = React.createContext<{
 
 export const AgentListProvider: React.FC = ({ children }) => {
   const { enqueueSnackbar } = useSnackbar()
+  const [defaultDid, setDefaultDid] = useState<string | undefined>()
 
   const agentListToJSON = (agentList: AgentConfig[]): string => {
     // Removing agent object from serialized config
@@ -158,6 +162,8 @@ export const AgentListProvider: React.FC = ({ children }) => {
       value={{
         agentList,
         activeAgentIndex,
+        defaultDid,
+        setDefaultDid,
         setActiveAgentIndex,
         addAgent,
         removeAgent,

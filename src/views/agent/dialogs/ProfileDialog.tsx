@@ -69,8 +69,10 @@ function ProfileDialog(props: Props) {
   const [nickname, setNickname] = useState<string | undefined>('')
   const [picture, setPicture] = useState<string | undefined>('')
   const [issuer, setIssuer] = useState<string | undefined>(undefined)
-  const [subject, setSubject] = useState<IdentityProfile | undefined>(undefined)
+  const [subject, setSubject] = useState<string | undefined>('')
+  const [subjectProfile, setSubjectProfile] = useState<IdentityProfile | undefined>(undefined)
   const [identities, setIdentities] = useState<IdentityProfile[]>([])
+  const [knownIdentifiers, setKnownIdentifiers] = useState<IdentityProfile[]>([])
 
   useEffect(() => {
     setLoading(true)
@@ -89,7 +91,17 @@ function ProfileDialog(props: Props) {
 
   useEffect(() => {
     setLoading(true)
+    agent
+      .dataStoreORMGetIdentities({})
+      .then((identities) => Promise.all(identities.map(({ did }) => agent.getIdentityProfile({ did }))))
+      .then(setKnownIdentifiers)
+      .finally(() => setLoading(false))
+  }, [agent])
+
+  useEffect(() => {
+    setLoading(true)
     if (props.subject) {
+      setSubject(props.subject)
       agent
         .getIdentityProfile({ did: props.subject })
         .then((profile) => {
@@ -98,7 +110,7 @@ function ProfileDialog(props: Props) {
           setPicture(profile.picture || '')
           return profile
         })
-        .then(setSubject)
+        .then(setSubjectProfile)
         .finally(() => setLoading(false))
     }
   }, [agent, props.subject])
@@ -114,7 +126,7 @@ function ProfileDialog(props: Props) {
         nickname?: string
         picture?: string
       }
-      credentialSubject['id'] = subject?.did
+      credentialSubject['id'] = subject
       if (name) credentialSubject['name'] = name
       if (nickname) credentialSubject['nickname'] = nickname
       if (picture) credentialSubject['picture'] = picture
@@ -158,21 +170,21 @@ function ProfileDialog(props: Props) {
       {loading && <LinearProgress />}
       <DialogContent>
         <form className={classes.form}>
-          <Paper elevation={10} className={classes.subject}>
+          {/* <Paper elevation={10} className={classes.subject}>
             <ListItem>
               <ListItemAvatar>
-                <Avatar src={subject?.picture} />
+                <Avatar src={subjectProfile?.picture} />
               </ListItemAvatar>
               <ListItemText
                 primary={
-                  subject?.nickname && subject?.nickname !== subject?.name
-                    ? `${subject?.name} (${subject?.nickname})`
-                    : `${subject?.name}`
+                  subjectProfile?.nickname && subjectProfile?.nickname !== subjectProfile?.name
+                    ? `${subjectProfile?.name} (${subjectProfile?.nickname})`
+                    : `${subjectProfile?.name}`
                 }
-                secondary={subject?.did !== subject?.name ? subject?.did : undefined}
+                secondary={subjectProfile?.did !== subjectProfile?.name ? subjectProfile?.did : undefined}
               />
             </ListItem>
-          </Paper>
+          </Paper> */}
 
           <FormControl className={classes.formControl} variant="outlined">
             <InputLabel id="demo-simple-select-label">Issuer</InputLabel>
@@ -181,6 +193,26 @@ function ProfileDialog(props: Props) {
               id="demo-simple-select"
               value={issuer}
               onChange={(event) => setIssuer(event.target.value as string)}
+              SelectDisplayProps={SelectDisplayProps}
+            >
+              {identities.map((identity) => (
+                <MenuItem value={identity.did} key={identity.did}>
+                  <ListItemAvatar>
+                    <Avatar src={identity.picture} />
+                  </ListItemAvatar>
+                  <ListItemText primary={identity.name} secondary={identity.nickname} />
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          <FormControl className={classes.formControl} variant="outlined">
+            <InputLabel id="demo-simple-select-label">Subject</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={subject}
+              onChange={(event) => setSubject(event.target.value as string)}
               SelectDisplayProps={SelectDisplayProps}
             >
               {identities.map((identity) => (

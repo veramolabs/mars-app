@@ -7,6 +7,7 @@ import { useAgent } from '../../agent'
 import { IIdentity } from 'daf-core'
 import IdentityListItemLink from '../../components/nav/IdentityListItemLink'
 import { useSnackbar } from 'notistack'
+import CredentialFAB from '../../components/nav/CredentialFAB'
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -50,6 +51,7 @@ function IdentitiesView(props: any) {
           <Tab label="HTTP" />
         </Tabs>
       </AppBar>
+      <CredentialFAB />
       {loading && <LinearProgress />}
       <List>
         {identities.map((identity) => (

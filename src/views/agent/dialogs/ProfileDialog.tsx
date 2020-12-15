@@ -17,9 +17,7 @@ import {
   ListItemText,
   MenuItem,
   Select,
-  ListItem,
   LinearProgress,
-  Paper,
 } from '@material-ui/core'
 import { IdentityProfile } from '../../../types'
 import shortId from 'shortid'
@@ -70,9 +68,9 @@ function ProfileDialog(props: Props) {
   const [picture, setPicture] = useState<string | undefined>('')
   const [issuer, setIssuer] = useState<string | undefined>(undefined)
   const [subject, setSubject] = useState<string | undefined>('')
-  const [subjectProfile, setSubjectProfile] = useState<IdentityProfile | undefined>(undefined)
+  const [, setSubjectProfile] = useState<IdentityProfile | undefined>(undefined)
   const [identities, setIdentities] = useState<IdentityProfile[]>([])
-  const [knownIdentifiers, setKnownIdentifiers] = useState<IdentityProfile[]>([])
+  const [, setKnownIdentifiers] = useState<IdentityProfile[]>([])
 
   useEffect(() => {
     setLoading(true)

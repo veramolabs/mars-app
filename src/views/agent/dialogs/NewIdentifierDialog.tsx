@@ -46,7 +46,7 @@ function NewAgentDialog(props: Props) {
   const [alias, setAlias] = useState<string>('')
   const [kms, setKms] = useState<string | undefined>()
   const [keyManagementSystems, setKeyManagementSystems] = useState<string[]>([])
-  const [provider, setProvider] = useState<string | undefined>()
+  const [provider, setProvider] = useState<string>('')
   const [providers, setProviders] = useState<string[]>([])
 
   useEffect(() => {

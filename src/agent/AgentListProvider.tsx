@@ -67,7 +67,6 @@ export const AgentListProvider: React.FC = ({ children }) => {
     const plugins = []
 
     if (config.apiUrl) {
-      console.log('HERE', config.schema)
       const options = {
         url: config.apiUrl,
         schema: config.schema,

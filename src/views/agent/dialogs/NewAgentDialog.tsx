@@ -135,7 +135,12 @@ function NewAgentDialog(props: Props) {
                   onChange={(e) => setApiUrl(e.target.value)}
                 >
                   {schema.servers.map((server: any) => (
-                    <FormControlLabel value={server.url} control={<Radio />} label={server.url} />
+                    <FormControlLabel
+                      key={server.url}
+                      value={server.url}
+                      control={<Radio />}
+                      label={server.url}
+                    />
                   ))}
                 </RadioGroup>
               </FormControl>

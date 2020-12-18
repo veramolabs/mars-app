@@ -3,7 +3,9 @@ import { Route, Redirect, Switch, useRouteMatch } from 'react-router-dom'
 // import { useAgent } from '../../agent'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import CloudIcon from '@material-ui/icons/Cloud'
+import DebugIcon from '@material-ui/icons/SettingsEthernet'
 import AgentListView from './AgentListView'
+import DebugView from './DebugView'
 import { Box, Divider, List, ListItemIcon, ListItemText } from '@material-ui/core'
 import ListItemLink from '../../components/nav/ListItemLink'
 
@@ -16,6 +18,7 @@ export function SettingsSwitch(props: any) {
     <Switch>
       <Route exact path="/settings" render={() => <Redirect to="/settings/agents" />} />
       <Route path="/settings/agents" component={AgentListView} />
+      <Route path="/settings/debug" component={DebugView} />
     </Switch>
   )
 }
@@ -85,6 +88,7 @@ export function SettingsDrawer(props: any) {
   const classes = useStyles()
 
   const cloudAgentsMatch = useRouteMatch('/settings/agents')
+  const debugMatch = useRouteMatch('/settings/debug')
 
   return (
     <Box className={classes.mainDrawerContent}>
@@ -96,6 +100,12 @@ export function SettingsDrawer(props: any) {
             <CloudIcon />
           </ListItemIcon>
           <ListItemText primary={'Agents'} />
+        </ListItemLink>
+        <ListItemLink to={'/settings/debug'} selected={debugMatch !== null}>
+          <ListItemIcon>
+            <DebugIcon />
+          </ListItemIcon>
+          <ListItemText primary={'Debug'} />
         </ListItemLink>
       </List>
     </Box>

@@ -56,7 +56,7 @@ function ProfileCredential(props: Props) {
           {Object.keys(verifiableCredential.credentialSubject)
             .filter((t) => !['picture', 'id'].includes(t))
             .map((type) => (
-              <Box>
+              <Box key={type}>
                 <Typography variant="caption" color="textSecondary">
                   {type}
                 </Typography>

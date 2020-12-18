@@ -52,27 +52,28 @@ function NewAgentDialog(props: Props) {
   }
 
   useEffect(() => {
-    fetch(schemaUrl)
-      .then((res) => res.json())
-      .then((schema) => {
-        setSchema(schema)
-        setApiUrl(schema.servers[0].url)
-        setName(schema.info.title)
-        const methods = []
-        for (const path of Object.keys(schema.paths)) {
-          methods.push(schema.paths[path].post.operationId)
-        }
-        setAvailableMethods(methods)
-        setEnabledMethods(methods)
-        setValidSchema(true)
-      })
-      .catch((e) => {
-        console.log(e)
-        enqueueSnackbar(e.message, { variant: 'error' })
-        setValidSchema(false)
-        setSchema(undefined)
-        setApiUrl('')
-      })
+    if (schemaUrl && schemaUrl !== '') {
+      fetch(schemaUrl)
+        .then((res) => res.json())
+        .then((schema) => {
+          setSchema(schema)
+          setApiUrl(schema.servers[0].url)
+          setName(schema.info.title)
+          const methods = []
+          for (const path of Object.keys(schema.paths)) {
+            methods.push(schema.paths[path].post.operationId)
+          }
+          setAvailableMethods(methods)
+          setEnabledMethods(methods)
+          setValidSchema(true)
+        })
+        .catch((e) => {
+          enqueueSnackbar(e.message, { variant: 'error' })
+          setValidSchema(false)
+          setSchema(undefined)
+          setApiUrl('')
+        })
+    }
   }, [schemaUrl, enqueueSnackbar])
 
   const configureAgent = () => {

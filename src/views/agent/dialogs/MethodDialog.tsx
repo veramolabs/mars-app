@@ -37,7 +37,6 @@ function MethodDialog(props: Props) {
     try {
       const argsObj = JSON.parse(args)
       const r = await agent.execute(props.method, argsObj)
-      console.log({ r })
       setResult(JSON.stringify(r, null, 2))
       enqueueSnackbar('Success', { variant: 'success' })
       setLoading(false)
@@ -77,7 +76,7 @@ function MethodDialog(props: Props) {
           <TextField
             label="Result"
             multiline
-            rows={5}
+            rows={10}
             value={result}
             onChange={(e) => setArgs(e.target.value)}
             margin="normal"

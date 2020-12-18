@@ -3,7 +3,22 @@ import Container from '@material-ui/core/Container'
 import AppBar from '../../components/nav/AppBar'
 import MessageCard from '../../components/cards/MessageCard'
 import { useAgent } from '../../agent'
-import { Button, ButtonGroup, Card, CardActions, CardContent, Grid, LinearProgress } from '@material-ui/core'
+import {
+  Button,
+  ButtonGroup,
+  Card,
+  CardActions,
+  CardContent,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Grid,
+  LinearProgress,
+  TextField,
+  useMediaQuery,
+  useTheme,
+} from '@material-ui/core'
 
 import { useSnackbar } from 'notistack'
 import { IMessage } from 'daf-core'
@@ -18,7 +33,10 @@ function ImportView(props: any) {
   const [showUploadDialog, setShowUploadDialog] = useState<boolean>(false)
   const [data, setData] = useState<string | undefined>(undefined)
   const [importType, setImportType] = useState<string>('')
+  const [input, setInput] = useState<string>('')
   const [message, setMessage] = useState<IMessage | undefined>(undefined)
+  const theme = useTheme()
+  const fullScreen = useMediaQuery(theme.breakpoints.down('xs'))
 
   const handleError = (e: Error) => {
     enqueueSnackbar(e.message, { variant: 'error' })
@@ -34,22 +52,6 @@ function ImportView(props: any) {
     }
   }
 
-  const handleSaveMessage = () => {
-    if (message) {
-      setLoading(true)
-      agent
-        .dataStoreSaveMessage({ message })
-        .then((e) => enqueueSnackbar('Message saved', { variant: 'success' }))
-        .finally(() => {
-          setLoading(false)
-          setData(undefined)
-          setMessage(undefined)
-          setImportType('')
-        })
-        .catch((e) => enqueueSnackbar(e.message, { variant: 'error' }))
-    }
-  }
-
   const handleImportedData = (imported: string) => {
     try {
       // FIXME
@@ -57,20 +59,11 @@ function ImportView(props: any) {
       if (obj?.proof?.jwt) {
         setData(obj?.proof?.jwt)
       }
+      if (obj?.raw) {
+        setData(obj?.raw)
+      }
     } catch (e) {
       setData(imported)
-    }
-  }
-
-  const handlePaste = () => {
-    if (navigator.clipboard) {
-      navigator.clipboard
-        .readText()
-        .then((d) => {
-          setImportType('paste')
-          handleImportedData(d)
-        })
-        .catch((e) => enqueueSnackbar(e.message, { variant: 'error' }))
     }
   }
 
@@ -103,6 +96,11 @@ function ImportView(props: any) {
     <Container maxWidth="sm">
       <AppBar title="Import" />
       <Grid container spacing={2} justify="center">
+        {message && (
+          <Grid item xs={12}>
+            <MessageCard message={message} type="details" />
+          </Grid>
+        )}
         <Grid item xs={12}>
           <Card>
             <CardActions>
@@ -113,7 +111,7 @@ function ImportView(props: any) {
                     setShowUploadDialog(true)
                   }}
                 >
-                  Upload
+                  Open file
                 </Button>
 
                 <Button
@@ -122,10 +120,8 @@ function ImportView(props: any) {
                     setShowScanner(true)
                   }}
                 >
-                  Scan
+                  Scan QR Code
                 </Button>
-
-                <Button onClick={handlePaste}>Paste</Button>
               </ButtonGroup>
             </CardActions>
 
@@ -133,30 +129,39 @@ function ImportView(props: any) {
           </Card>
         </Grid>
 
-        {showScanner && !data && (
-          <Grid item xs={12}>
-            <Card variant="outlined">
-              <CardContent>
-                <QrReader delay={300} onError={handleError} onScan={handleScan} style={{ width: '100%' }} />
-              </CardContent>
-            </Card>
-          </Grid>
-        )}
-
-        {message && (
-          <Grid item xs={12}>
-            <MessageCard message={message} type="details" />
-            <Button color="primary" variant="contained" onClick={handleSaveMessage}>
-              Save message
-            </Button>
-          </Grid>
-        )}
+        <Grid item xs={12}>
+          <Card>
+            <CardContent>
+              <TextField
+                label="JWT"
+                multiline
+                rows={5}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                fullWidth
+                margin="normal"
+                variant="outlined"
+                inputProps={{ style: { fontFamily: 'monospace' } }}
+              />
+              <Button
+                color="primary"
+                onClick={() => {
+                  setImportType('paste')
+                  handleImportedData(input)
+                }}
+              >
+                Verify
+              </Button>
+            </CardContent>
+          </Card>
+        </Grid>
       </Grid>
 
       <DropzoneDialog
         filesLimit={1}
+        dialogTitle="Open file"
         cancelButtonText={'Cancel'}
-        submitButtonText={'Import'}
+        submitButtonText={'Verify'}
         maxFileSize={5000000}
         open={showUploadDialog}
         onClose={() => setShowUploadDialog(false)}
@@ -165,6 +170,33 @@ function ImportView(props: any) {
         showFileNamesInPreview={false}
         showPreviewsInDropzone={true}
       />
+
+      <Dialog
+        fullScreen={fullScreen}
+        open={showScanner}
+        onClose={() => {
+          setShowScanner(false)
+        }}
+        maxWidth="md"
+        fullWidth
+        aria-labelledby="responsive-dialog-title"
+      >
+        <DialogTitle id="responsive-dialog-title">Scan QR Code</DialogTitle>
+        <DialogContent>
+          <QrReader delay={300} onError={handleError} onScan={handleScan} style={{ height: '80%' }} />
+        </DialogContent>
+        <DialogActions>
+          <Button
+            autoFocus
+            onClick={() => {
+              setShowScanner(false)
+            }}
+            color="primary"
+          >
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   )
 }

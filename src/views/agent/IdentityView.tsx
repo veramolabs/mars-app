@@ -55,10 +55,10 @@ function IdentityView() {
   const [loading, setLoading] = useState(false)
   const [credentials, setCredentials] = useState<Array<UniqueVerifiableCredential>>([])
 
-  const [value, setValue] = React.useState(0)
+  const [tab, setTab] = React.useState(did.substr(0, 3) === 'did' ? 0 : 1)
 
   const handleChange = (event: any, newValue: any) => {
-    setValue(newValue)
+    setTab(newValue)
   }
 
   useEffect(() => {
@@ -70,13 +70,13 @@ function IdentityView() {
       setLoading(true)
       agent
         .dataStoreORMGetVerifiableCredentials({
-          where: [{ column: value === 0 ? 'issuer' : 'subject', value: [did] }],
+          where: [{ column: tab === 0 ? 'issuer' : 'subject', value: [did] }],
         })
         .then(setCredentials)
         .finally(() => setLoading(false))
         .catch((e) => enqueueSnackbar(e.message, { variant: 'error' }))
     }
-  }, [agent, enqueueSnackbar, value, did])
+  }, [agent, enqueueSnackbar, tab, did])
 
   return (
     <Container maxWidth="sm">
@@ -86,10 +86,12 @@ function IdentityView() {
         primary={identity?.name}
         secondary={identity?.nickname}
       >
-        <Tabs value={value} onChange={handleChange} indicatorColor="primary" textColor="primary">
-          <Tab label="Issuer" />
-          <Tab label="Subject" />
-        </Tabs>
+        {did.substr(0, 3) === 'did' && (
+          <Tabs value={tab} onChange={handleChange} indicatorColor="primary" textColor="primary">
+            <Tab label="Issuer" />
+            <Tab label="Subject" />
+          </Tabs>
+        )}
       </AppBar>
       {identity && <CredentialFAB subject={identity.did} />}
       {loading && <LinearProgress />}

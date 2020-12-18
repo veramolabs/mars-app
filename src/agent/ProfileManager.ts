@@ -25,6 +25,9 @@ export class IdentityProfileManager implements IAgentPlugin {
     context: IContext,
   ): Promise<IdentityProfile> {
     if (!args.did) return Promise.reject('DID Required')
+    if (!context.agent.availableMethods().includes('dataStoreORMGetVerifiableCredentials')) {
+      return { did: args.did, name: args.did }
+    }
     const result = await context.agent.dataStoreORMGetVerifiableCredentials({
       where: [
         { column: 'type', value: ['VerifiableCredential,Profile'] },

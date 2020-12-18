@@ -46,7 +46,7 @@ function ImportView(props: any) {
 
   const handleScan = (result: string) => {
     if (result !== null) {
-      setImportType('upload')
+      setImportType('scan')
       setData(result)
       setShowScanner(false)
     }
@@ -104,7 +104,7 @@ function ImportView(props: any) {
         <Grid item xs={12}>
           <Card>
             <CardActions>
-              <ButtonGroup variant="text" color="primary" aria-label="contained primary button group">
+              <ButtonGroup variant="text" color="primary" fullWidth>
                 <Button
                   onClick={() => {
                     setData(undefined)
@@ -133,7 +133,7 @@ function ImportView(props: any) {
           <Card>
             <CardContent>
               <TextField
-                label="JWT"
+                label="Data"
                 multiline
                 rows={5}
                 value={input}

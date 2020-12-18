@@ -187,7 +187,7 @@ function MessageCard(props: Props) {
           {message.credentials
             ?.map((c) => ({ hash: blake2bHex(c.proof.jwt), verifiableCredential: c }))
             .map((c) => (
-              <CredentialCard type="summary" credential={c} />
+              <CredentialCard type="summary" credential={c} key={c.hash} />
             ))}
         </CardContent>
       </Collapse>

@@ -47,12 +47,16 @@ function OnboardingView() {
     <Container maxWidth="sm">
       <Grid container spacing={2} justify="center">
         <Grid item xs={12}>
-          <Typography variant="h4">Welcome to Veramo Mars</Typography>
-          <Typography variant="h5">Add your first agent:</Typography>
-          <Button variant="outlined" color="primary" onClick={handleSaveLocalAgent}>
+          <Typography variant="h4">Veramo Mars</Typography>
+          <Typography variant="body1">Add your first agent:</Typography>
+        </Grid>
+        <Grid item xs={6}>
+          <Button variant="outlined" color="primary" onClick={handleSaveLocalAgent} fullWidth>
             Local
           </Button>
-          <Button variant="outlined" color="primary" onClick={handleOpenNewAgentModal}>
+        </Grid>
+        <Grid item xs={6}>
+          <Button variant="outlined" color="primary" onClick={handleOpenNewAgentModal} fullWidth>
             Cloud
           </Button>
         </Grid>

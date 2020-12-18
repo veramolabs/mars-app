@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import Container from '@material-ui/core/Container'
 import AppBar from '../../components/nav/AppBar'
 import { useAgent } from '../../agent'
-import { Card, CardContent, Grid, LinearProgress, Typography } from '@material-ui/core'
+import { Box, Card, CardContent, Grid, LinearProgress, TextField, Typography } from '@material-ui/core'
 import { DIDDocument } from 'daf-core'
 import { useSnackbar } from 'notistack'
 import { makeStyles } from '@material-ui/core/styles'
@@ -36,16 +36,16 @@ function ResolverView() {
   const [didUrl, setDidUrl] = useState<string>('')
   const [didDoc, setDidDoc] = useState<DIDDocument | undefined>(undefined)
   const classes = useStyles()
-  const handleResolve = () => {
-    if (agent) {
-      setLoading(true)
-      agent
-        .resolveDid({ didUrl })
-        .then(setDidDoc)
-        .finally(() => setLoading(false))
-        .catch((e) => enqueueSnackbar(e.message, { variant: 'error' }))
-    }
-  }
+
+  const handleResolve = useCallback(() => {
+    setLoading(true)
+    console.log('here')
+    agent
+      .resolveDid({ didUrl })
+      .then(setDidDoc)
+      .finally(() => setLoading(false))
+      .catch((e) => enqueueSnackbar(e.message, { variant: 'error' }))
+  }, [agent, didUrl, enqueueSnackbar])
 
   return (
     <Container maxWidth="sm">
@@ -66,12 +66,7 @@ function ResolverView() {
               onChange={(e) => setDidUrl(e.target.value)}
               placeholder="Enter DID"
             />
-            <IconButton
-              type="submit"
-              className={classes.iconButton}
-              aria-label="search"
-              onClick={handleResolve}
-            >
+            <IconButton type="submit" className={classes.iconButton} aria-label="search">
               <SearchIcon />
             </IconButton>
           </Paper>
@@ -87,9 +82,16 @@ function ResolverView() {
           <Grid item xs={12}>
             <Card variant="outlined">
               <CardContent>
-                <Typography variant="body2" color="textPrimary">
-                  <pre>{JSON.stringify(didDoc, null, 2)}</pre>
-                </Typography>
+                <TextField
+                  label="DID Document"
+                  multiline
+                  rows={30}
+                  value={JSON.stringify(didDoc, null, 2)}
+                  fullWidth
+                  margin="normal"
+                  variant="outlined"
+                  inputProps={{ style: { fontFamily: 'monospace' } }}
+                />
               </CardContent>
             </Card>
           </Grid>

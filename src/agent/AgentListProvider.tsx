@@ -104,12 +104,12 @@ export const AgentListProvider: React.FC = ({ children }) => {
     }
     plugins.push(new IdentityProfileManager())
 
-    plugins.push({
-      eventTypes: ['ev_err'],
-      onEvent: (event, ctx) => {
-        enqueueSnackbar(JSON.stringify(event.data), { variant: 'error' })
-      },
-    } as IAgentPlugin)
+    // plugins.push({
+    //   eventTypes: ['ev_err'],
+    //   onEvent: (event, ctx) => {
+    //     enqueueSnackbar(JSON.stringify(event.data), { variant: 'error' })
+    //   },
+    // } as IAgentPlugin)
 
     plugins.push({
       eventTypes: ['ev_warn'],

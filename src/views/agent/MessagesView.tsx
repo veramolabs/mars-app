@@ -5,7 +5,7 @@ import LinearProgress from '@material-ui/core/LinearProgress'
 import MessageCard from '../../components/cards/MessageCard'
 import AppBar from '../../components/nav/AppBar'
 import { useAgent } from '../../agent'
-import { IMessage } from 'daf-core'
+import { IMessage } from '@veramo/core'
 import { useSnackbar } from 'notistack'
 
 function MessagesView(props: any) {

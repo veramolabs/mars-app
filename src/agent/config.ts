@@ -2,18 +2,18 @@ import {
   createAgent,
   TAgent,
   IDataStore,
-  IIdentityManager,
+  IDIDManager,
   IKeyManager,
   IResolver,
   IMessageHandler,
-} from 'daf-core'
-import { ICredentialIssuer, W3cMessageHandler } from 'daf-w3c'
-import { SdrMessageHandler } from 'daf-selective-disclosure'
-import { JwtMessageHandler } from 'daf-did-jwt'
-import { DIDCommMessageHandler } from 'daf-did-comm'
-import { MessageHandler } from 'daf-message-handler'
-import { DafResolver } from 'daf-resolver'
-import { IDataStoreORM } from 'daf-typeorm'
+} from '@veramo/core'
+import { ICredentialIssuer, W3cMessageHandler } from '@veramo/credential-w3c'
+import { SdrMessageHandler } from '@veramo/selective-disclosure'
+import { JwtMessageHandler } from '@veramo/did-jwt'
+import { DIDCommMessageHandler } from '@veramo/did-comm'
+import { MessageHandler } from '@veramo/message-handler'
+import { DIDResolverPlugin } from '@veramo/did-resolver'
+import { IDataStoreORM } from '@veramo/data-store'
 import { IdentityProfileManager, IProfileManager } from './ProfileManager'
 import { Resolver } from 'did-resolver'
 import { getResolver as ethrDidResolver } from 'ethr-did-resolver'
@@ -23,7 +23,7 @@ type AgentInterfaces = IProfileManager &
   IDataStore &
   IDataStoreORM &
   ICredentialIssuer &
-  IIdentityManager &
+  IDIDManager &
   IKeyManager &
   IResolver &
   IMessageHandler
@@ -31,32 +31,31 @@ export type Agent = TAgent<AgentInterfaces>
 
 export const enabledMethods = [
   'keyManagerGetKeyManagementSystems',
-  'keyManagerCreateKey',
-  'keyManagerGetKey',
-  'keyManagerDeleteKey',
-  'keyManagerImportKey',
+  'keyManagerCreate',
+  'keyManagerGet',
+  'keyManagerDelete',
+  'keyManagerImport',
   'keyManagerEncryptJWE',
   'keyManagerDecryptJWE',
   'keyManagerSignJWT',
   'keyManagerSignEthTX',
-  'identityManagerGetProviders',
-  'identityManagerGetIdentities',
-  'identityManagerGetIdentity',
-  'identityManagerCreateIdentity',
-  'identityManagerGetOrCreateIdentity',
-  'identityManagerImportIdentity',
-  'identityManagerDeleteIdentity',
-  'identityManagerAddKey',
-  'identityManagerRemoveKey',
-  'identityManagerAddService',
-  'identityManagerRemoveService',
+  'didManagerGetProviders',
+  'didManagerFind',
+  'didManagerGet',
+  'didManagerCreate',
+  'didManagerGetOrCreate',
+  'didManagerImport',
+  'didManagerDelete',
+  'didManagerAddKey',
+  'didManagerRemoveKey',
+  'didManagerAddService',
+  'didManagerRemoveService',
   'resolveDid',
   'dataStoreSaveMessage',
   'dataStoreSaveVerifiableCredential',
-  'dataStoreGetVerifiableCredential',
   'dataStoreSaveVerifiablePresentation',
-  'dataStoreORMGetIdentities',
-  'dataStoreORMGetIdentitiesCount',
+  'dataStoreORMGetIdentifiers',
+  'dataStoreORMGetIdentifiersCount',
   'dataStoreORMGetMessages',
   'dataStoreORMGetMessagesCount',
   'dataStoreORMGetVerifiableCredentialsByClaims',
@@ -78,7 +77,7 @@ export const infuraProjectId = '5ffc47f65c4042ce847ef66a3fa70d4c'
 
 export const defaultAgent = createAgent<AgentInterfaces>({
   plugins: [
-    new DafResolver({
+    new DIDResolverPlugin({
       resolver: new Resolver({
         ethr: ethrDidResolver({
           networks: [

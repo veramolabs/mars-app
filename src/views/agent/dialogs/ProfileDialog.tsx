@@ -84,8 +84,8 @@ function ProfileDialog(props: Props) {
     const getAllManagedIdentifiers = async (): Promise<AgentWithManagedDids[]> => {
       const result: AgentWithManagedDids[] = []
       for (const agentConfig of agentList) {
-        if (agentConfig.agent.availableMethods().includes('identityManagerGetIdentities')) {
-          const identities = await agentConfig.agent.identityManagerGetIdentities()
+        if (agentConfig.agent.availableMethods().includes('didManagerFind')) {
+          const identities = await agentConfig.agent.didManagerFind()
           const profiles = await Promise.all(
             identities.map(({ did }) => agentConfig.agent.getIdentityProfile({ did })),
           )
@@ -109,8 +109,8 @@ function ProfileDialog(props: Props) {
     const getAllKnownIdentifiers = async (): Promise<AgentWithManagedDids[]> => {
       const result: AgentWithManagedDids[] = []
       for (const agentConfig of agentList) {
-        if (agentConfig.agent.availableMethods().includes('dataStoreORMGetIdentities')) {
-          const identities = await agentConfig.agent.dataStoreORMGetIdentities({
+        if (agentConfig.agent.availableMethods().includes('dataStoreORMGetIdentifiers')) {
+          const identities = await agentConfig.agent.dataStoreORMGetIdentifiers({
             where: [{ column: 'did', value: ['did%'], op: 'Like' }],
           })
           const profiles = await Promise.all(

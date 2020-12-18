@@ -6,7 +6,7 @@ import CredentialCard from '../../components/cards/CredentialCard'
 import AppBar from '../../components/nav/AppBar'
 import { useAgent } from '../../agent'
 import { useSnackbar } from 'notistack'
-import { UniqueVerifiableCredential } from 'daf-typeorm'
+import { UniqueVerifiableCredential } from '@veramo/data-store'
 
 function CredentialsView(props: any) {
   const { agent } = useAgent()

@@ -3,7 +3,7 @@ import { IconButton, List, useMediaQuery, useTheme } from '@material-ui/core'
 import Container from '@material-ui/core/Container'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import { useAgent } from '../../agent'
-import { IIdentity } from 'daf-core'
+import { IIdentifier } from '@veramo/core'
 import AppBar from '../../components/nav/AppBar'
 import IdentityListItemLink from '../../components/nav/IdentityListItemLink'
 import { useSnackbar } from 'notistack'
@@ -13,7 +13,7 @@ import NewIdentifierDialog from './dialogs/NewIdentifierDialog'
 function ManagedIdentities(props: any) {
   const { agent } = useAgent()
   const [loading, setLoading] = useState(false)
-  const [identities, setIdentities] = useState<Array<IIdentity>>([])
+  const [identities, setIdentities] = useState<Array<IIdentifier>>([])
   const { enqueueSnackbar } = useSnackbar()
   const [openNewIdentifierModal, setOpenNewIdentifierModal] = React.useState(false)
   const theme = useTheme()
@@ -31,7 +31,7 @@ function ManagedIdentities(props: any) {
     if (agent) {
       setLoading(true)
       agent
-        .identityManagerGetIdentities()
+        .didManagerFind()
         .then(setIdentities)
         .finally(() => setLoading(false))
         .catch((e) => enqueueSnackbar(e.message, { variant: 'error' }))

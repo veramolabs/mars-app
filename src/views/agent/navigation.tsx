@@ -151,7 +151,7 @@ export function AgentDrawer(props: any) {
           </ListItemLink>
         )}
 
-        {agent?.availableMethods().includes('dataStoreORMGetIdentities') && (
+        {agent?.availableMethods().includes('dataStoreORMGetIdentifiers') && (
           <ListItemLink
             to={'/agent/identifiers'}
             selected={identitiesMatch !== null || identityMatch !== null}
@@ -163,7 +163,7 @@ export function AgentDrawer(props: any) {
           </ListItemLink>
         )}
 
-        {agent?.availableMethods().includes('identityManagerGetIdentities') && (
+        {agent?.availableMethods().includes('didManagerFind') && (
           <ListItemLink to={'/agent/managed-identities'} selected={managedIdentitiesMatch !== null}>
             <ListItemIcon>
               <PeopleIcon />

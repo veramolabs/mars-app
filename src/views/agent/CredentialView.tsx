@@ -5,9 +5,9 @@ import LinearProgress from '@material-ui/core/LinearProgress'
 import CredentialCard from '../../components/cards/CredentialCard'
 import AppBar from '../../components/nav/AppBar'
 import { useAgent } from '../../agent'
-import { UniqueVerifiableCredential } from 'daf-typeorm'
+import { UniqueVerifiableCredential } from '@veramo/data-store'
 import { Grid, Typography } from '@material-ui/core'
-import { VerifiableCredential } from 'daf-core'
+import { VerifiableCredential } from '@veramo/core'
 import { useSnackbar } from 'notistack'
 
 function CredentialView(props: any) {

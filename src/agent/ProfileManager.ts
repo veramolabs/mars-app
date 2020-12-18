@@ -1,5 +1,5 @@
-import { IAgentPlugin, IPluginMethodMap, IAgentContext } from 'daf-core'
-import { IDataStoreORM } from 'daf-typeorm'
+import { IAgentPlugin, IPluginMethodMap, IAgentContext } from '@veramo/core'
+import { IDataStoreORM } from '@veramo/data-store'
 import { IdentityProfile } from '../types'
 
 type IContext = IAgentContext<IDataStoreORM>

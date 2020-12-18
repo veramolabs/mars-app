@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Typography, CardContent, makeStyles, Card, Box, Avatar } from '@material-ui/core'
-import { UniqueVerifiableCredential } from 'daf-typeorm'
+import { UniqueVerifiableCredential } from '@veramo/data-store'
 import { IdentityProfile } from '../../../types'
 import { useAgent } from '../../../agent'
 

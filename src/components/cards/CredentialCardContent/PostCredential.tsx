@@ -1,7 +1,7 @@
 import React from 'react'
 import { Typography, CardContent, Link, makeStyles } from '@material-ui/core'
 import Avatar from '@material-ui/core/Avatar'
-import { UniqueVerifiableCredential } from 'daf-typeorm'
+import { UniqueVerifiableCredential } from '@veramo/data-store'
 import { IdentityProfile } from '../../../types'
 
 interface Props {

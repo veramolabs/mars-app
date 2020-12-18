@@ -16,7 +16,7 @@ import {
 
 import { useSnackbar } from 'notistack'
 import { useAgent } from '../../../agent'
-import { IIdentityManagerCreateIdentityArgs } from 'daf-core'
+import { IDIDManagerCreateArgs } from '@veramo/core'
 import { useHistory } from 'react-router-dom'
 
 interface Props {
@@ -52,7 +52,7 @@ function NewAgentDialog(props: Props) {
   useEffect(() => {
     if (agent) {
       setLoading(true)
-      Promise.all([agent.identityManagerGetProviders(), agent.keyManagerGetKeyManagementSystems()])
+      Promise.all([agent.didManagerGetProviders(), agent.keyManagerGetKeyManagementSystems()])
         .then((r) => {
           setProviders(r[0])
           setKeyManagementSystems(r[1])
@@ -64,11 +64,11 @@ function NewAgentDialog(props: Props) {
   }, [agent, enqueueSnackbar])
 
   const handleCreate = () => {
-    const args: IIdentityManagerCreateIdentityArgs = { provider, kms }
+    const args: IDIDManagerCreateArgs = { provider, kms }
     if (alias) args['alias'] = alias
     setLoading(true)
     agent
-      .identityManagerCreateIdentity(args)
+      .didManagerCreate(args)
       .then((identifier) => {
         props.onClose()
         enqueueSnackbar(identifier.did + ' created', { variant: 'success' })

@@ -2,15 +2,15 @@ import React, { useState, useContext, useEffect } from 'react'
 import { AgentProvider } from './AgentProvider'
 import { Agent, defaultAgent, infuraProjectId } from './config'
 import { IdentityProfileManager } from '../agent/ProfileManager'
-import { createAgent, IAgentPlugin, IAgentPluginSchema } from 'daf-core'
-import { AgentRestClient } from 'daf-rest'
+import { createAgent, IAgentPlugin, IAgentPluginSchema } from '@veramo/core'
+import { AgentRestClient } from '@veramo/remote-client'
 import { useSnackbar } from 'notistack'
-import { W3cMessageHandler } from 'daf-w3c'
-import { SdrMessageHandler } from 'daf-selective-disclosure'
-import { JwtMessageHandler } from 'daf-did-jwt'
-import { DIDCommMessageHandler } from 'daf-did-comm'
-import { MessageHandler } from 'daf-message-handler'
-import { DafResolver } from 'daf-resolver'
+import { W3cMessageHandler } from '@veramo/credential-w3c'
+import { SdrMessageHandler } from '@veramo/selective-disclosure'
+import { JwtMessageHandler } from '@veramo/did-jwt'
+import { DIDCommMessageHandler } from '@veramo/did-comm'
+import { MessageHandler } from '@veramo/message-handler'
+import { DIDResolverPlugin } from '@veramo/did-resolver'
 import { Resolver } from 'did-resolver'
 import { getResolver as ethrDidResolver } from 'ethr-did-resolver'
 import { getResolver as webDidResolver } from 'web-did-resolver'
@@ -76,7 +76,7 @@ export const AgentListProvider: React.FC = ({ children }) => {
       plugins.push(new AgentRestClient(options))
     } else {
       plugins.push(
-        new DafResolver({
+        new DIDResolverPlugin({
           resolver: new Resolver({
             ethr: ethrDidResolver({
               networks: [

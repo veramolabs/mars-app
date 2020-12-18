@@ -21,7 +21,7 @@ import {
 } from '@material-ui/core'
 
 import { useSnackbar } from 'notistack'
-import { IMessage } from 'daf-core'
+import { IMessage } from '@veramo/core'
 import { DropzoneDialog } from 'material-ui-dropzone'
 const QrReader = require('react-qr-reader')
 

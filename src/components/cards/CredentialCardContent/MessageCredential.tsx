@@ -1,6 +1,6 @@
 import React from 'react'
 import { Typography, CardContent } from '@material-ui/core'
-import { UniqueVerifiableCredential } from 'daf-typeorm'
+import { UniqueVerifiableCredential } from '@veramo/data-store'
 import { IdentityProfile } from '../../../types'
 
 interface Props {

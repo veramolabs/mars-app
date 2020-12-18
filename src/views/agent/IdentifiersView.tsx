@@ -4,7 +4,7 @@ import Container from '@material-ui/core/Container'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import AppBar from '../../components/nav/AppBar'
 import { useAgent } from '../../agent'
-import { IIdentity } from 'daf-core'
+import { IIdentifier } from '@veramo/core'
 import IdentityListItemLink from '../../components/nav/IdentityListItemLink'
 import { useSnackbar } from 'notistack'
 import CredentialFAB from '../../components/nav/CredentialFAB'
@@ -20,14 +20,14 @@ function IdentitiesView(props: any) {
   const classes = useStyles()
   const { enqueueSnackbar } = useSnackbar()
   const [loading, setLoading] = useState(false)
-  const [identities, setIdentities] = useState<Array<Partial<IIdentity>>>([])
+  const [identities, setIdentities] = useState<Array<Partial<IIdentifier>>>([])
   const [tab, setTab] = React.useState(0)
 
   useEffect(() => {
     if (agent) {
       setLoading(true)
       agent
-        .dataStoreORMGetIdentities({
+        .dataStoreORMGetIdentifiers({
           where: [{ column: 'did', value: [tab === 0 ? 'did%' : 'http%'], op: 'Like' }],
         })
         .then(setIdentities)

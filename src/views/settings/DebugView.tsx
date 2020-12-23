@@ -19,7 +19,7 @@ function DebugView() {
         <Grid item xs={12}>
           <TextField
             variant="outlined"
-            label="Scope"
+            label="Namespace"
             type="text"
             value={namespace}
             onChange={(e) => handleNamespaceChange(e.target.value)}

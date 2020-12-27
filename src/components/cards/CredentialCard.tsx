@@ -31,6 +31,7 @@ import PostCredential from './CredentialCardContent/PostCredential'
 import ProfileCredential from './CredentialCardContent/ProfileCredential'
 import ReactionCredential from './CredentialCardContent/ReactionCredential'
 import MessageCredential from './CredentialCardContent/MessageCredential'
+import GithubEventCredential from './CredentialCardContent/GithubEventCredential'
 import CredentialIcon from '@material-ui/icons/VerifiedUser'
 import ProfileIcon from '@material-ui/icons/PermContactCalendar'
 import ReactionIcon from '@material-ui/icons/ThumbUp'
@@ -148,9 +149,11 @@ function CredentialPostCard(props: Props) {
     setLoading(true)
     Promise.all<IdentityProfile, IdentityProfile>([
       agent.getIdentityProfile({ did: verifiableCredential.issuer.id }),
-      agent.getIdentityProfile({
-        did: verifiableCredential.credentialSubject.id,
-      }),
+      verifiableCredential.credentialSubject.id
+        ? agent.getIdentityProfile({
+            did: verifiableCredential.credentialSubject.id,
+          })
+        : Promise.resolve({ did: '' }),
     ])
       .then((profiles) => {
         setIssuer(profiles[0])
@@ -177,6 +180,9 @@ function CredentialPostCard(props: Props) {
   } else if (verifiableCredential.type.includes('Message')) {
     Icon = MessageIcon
     contents = <MessageCredential {...props} issuer={issuer} subject={subject} />
+  } else if (verifiableCredential.type.includes('GitHubEvent')) {
+    Icon = MessageIcon
+    contents = <GithubEventCredential {...props} issuer={issuer} subject={subject} />
   }
 
   return (

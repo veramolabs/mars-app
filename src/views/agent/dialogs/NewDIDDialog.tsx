@@ -77,7 +77,7 @@ function NewAgentDialog(props: Props) {
       .then((identifier) => {
         props.onClose()
         enqueueSnackbar(identifier.did + ' created', { variant: 'success' })
-        history.push('/agent/identity/' + identifier.did)
+        history.push('/agent/id/' + identifier.did)
       })
       .finally(() => setLoading(false))
       .catch((e) => enqueueSnackbar(e.message, { variant: 'error' }))
@@ -92,7 +92,7 @@ function NewAgentDialog(props: Props) {
       fullWidth
       aria-labelledby="responsive-dialog-title"
     >
-      <DialogTitle id="responsive-dialog-title">New identifier</DialogTitle>
+      <DialogTitle id="responsive-dialog-title">Create new DID</DialogTitle>
       {loading && <LinearProgress />}
       <DialogContent>
       <MissingMethodsAlert methods={['didManagerGetProviders', 'keyManagerGetKeyManagementSystems']} />
@@ -119,7 +119,7 @@ function NewAgentDialog(props: Props) {
           <TextField
             variant="outlined"
             label="Alias"
-            helperText="Optional"
+            helperText="Required only for did:web, otherwise - optional"
             type="text"
             value={alias}
             onChange={(e) => setAlias(e.target.value)}

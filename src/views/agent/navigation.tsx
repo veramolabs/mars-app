@@ -18,7 +18,7 @@ import Messages from './MessagesView'
 import Resolver from './ResolverView'
 import Credentials from './CredentialsView'
 import Identifiers from './IdentifiersView'
-import ManagedIdentities from './ManagedIdentitiesView'
+import ManagedDIDs from './ManagedDIDsView'
 import Identity from './IdentityView'
 import Credential from './CredentialView'
 import { Box, Divider, List, ListItemIcon, ListItemText, ListSubheader } from '@material-ui/core'
@@ -38,8 +38,8 @@ export function AgentSwitch(props: any) {
       <Route path="/agent/resolver" component={Resolver} />
       <Route path="/agent/credentials" component={Credentials} />
       <Route path="/agent/identifiers" component={Identifiers} />
-      <Route path="/agent/managed-identities" component={ManagedIdentities} />
-      <Route path="/agent/identity/:did" component={Identity} />
+      <Route path="/agent/managed-dids" component={ManagedDIDs} />
+      <Route path="/agent/id/:did" component={Identity} />
       <Route path="/agent/credential/:hash" component={Credential} />
     </Switch>
   )
@@ -117,8 +117,8 @@ export function AgentDrawer(props: any) {
   const resolverMatch = useRouteMatch('/agent/resolver')
   const credentialsMatch = useRouteMatch('/agent/credentials')
   const identitiesMatch = useRouteMatch('/agent/identifiers')
-  const managedIdentitiesMatch = useRouteMatch('/agent/managed-identities')
-  const identityMatch = useRouteMatch('/agent/identity/:did')
+  const ManagedDIDsMatch = useRouteMatch('/agent/managed-dids')
+  const identityMatch = useRouteMatch('/agent/id/:did')
 
   return (
     <Box className={classes.mainDrawerContent}>
@@ -190,14 +190,14 @@ export function AgentDrawer(props: any) {
         </ListItemLink>
 
         <ListItemLink
-          to={'/agent/managed-identities'}
-          selected={managedIdentitiesMatch !== null}
+          to={'/agent/managed-dids'}
+          selected={ManagedDIDsMatch !== null}
           disabled={!agent?.availableMethods().includes('didManagerFind')}
         >
           <ListItemIcon>
             <PeopleIcon />
           </ListItemIcon>
-          <ListItemText primary={'Managed identifiers'} />
+          <ListItemText primary={'Managed DIDs'} />
         </ListItemLink>
 
 

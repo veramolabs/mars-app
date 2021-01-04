@@ -8,10 +8,10 @@ import AppBar from '../../components/nav/AppBar'
 import IdentityListItemLink from '../../components/nav/IdentityListItemLink'
 import { useSnackbar } from 'notistack'
 import AddIcon from '@material-ui/icons/Add'
-import NewIdentifierDialog from './dialogs/NewIdentifierDialog'
+import NewDIDDialog from './dialogs/NewDIDDialog'
 import MissingMethodsAlert from '../../components/nav/MissingMethodsAlert'
 
-function ManagedIdentities(props: any) {
+function ManagedDIDs(props: any) {
   const { agent } = useAgent()
   const [loading, setLoading] = useState(false)
   const [identities, setIdentities] = useState<Array<IIdentifier>>([])
@@ -44,7 +44,7 @@ function ManagedIdentities(props: any) {
   return (
     <Container maxWidth="sm">
       <AppBar
-        title="Managed identifiers"
+        title="Managed DIDs"
         button={
           <IconButton onClick={handleOpenNewIdentifierModal} aria-label="delete">
             <AddIcon />
@@ -60,7 +60,7 @@ function ManagedIdentities(props: any) {
         ))}
       </List>
 
-      <NewIdentifierDialog
+      <NewDIDDialog
         fullScreen={fullScreen}
         open={openNewIdentifierModal}
         onClose={handleCloseNewIdentifierModal}
@@ -69,4 +69,4 @@ function ManagedIdentities(props: any) {
   )
 }
 
-export default ManagedIdentities
+export default ManagedDIDs

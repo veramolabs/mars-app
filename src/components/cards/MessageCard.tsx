@@ -146,7 +146,7 @@ function MessageCard(props: Props) {
       </CardContent>
 
       {from && (
-        <CardActionAreaLink to={'/agent/identity/' + from.did}>
+        <CardActionAreaLink to={'/agent/id/' + from.did}>
           <CardHeader
             avatar={<Avatar src={from?.picture} />}
             title={`From: ${from?.name}`}
@@ -155,7 +155,7 @@ function MessageCard(props: Props) {
         </CardActionAreaLink>
       )}
       {to && (
-        <CardActionAreaLink to={'/agent/identity/' + to.did}>
+        <CardActionAreaLink to={'/agent/id/' + to.did}>
           <CardHeader
             avatar={<Avatar src={to?.picture} />}
             title={`To: ${to?.name}`}

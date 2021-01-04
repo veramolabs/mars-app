@@ -189,7 +189,7 @@ function CredentialPostCard(props: Props) {
   return (
     <Card elevation={props.type === 'summary' ? 2 : 10}>
       <CardActionAreaLink
-        to={props.type === 'summary' ? '/agent/credential/' + hash : '/agent/identity/' + subject?.did}
+        to={props.type === 'summary' ? '/agent/credential/' + hash : '/agent/id/' + subject?.did}
       >
         {contents}
       </CardActionAreaLink>
@@ -197,7 +197,7 @@ function CredentialPostCard(props: Props) {
         <Box className={classes.footer}>
           <AvatarLink
             src={issuer.picture}
-            to={'/agent/identity/' + issuer.did}
+            to={'/agent/id/' + issuer.did}
             className={classes.footerAvatar}
           />
 

@@ -9,36 +9,36 @@
 - [ ] keyManagerImportKey
 - [ ] keyManagerEncryptJWE
 - [ ] keyManagerDecryptJWE
-- [ ] keyManagerSignJWT
+- [x] keyManagerSignJWT
 - [ ] keyManagerSignEthTX
-- [x] identityManagerGetProviders
-- [x] identityManagerGetIdentities
-- [ ] identityManagerGetIdentity
-- [ ] identityManagerGetIdentityByAlias
-- [x] identityManagerCreateIdentity
-- [ ] identityManagerSetAlias
-- [ ] identityManagerGetOrCreateIdentity
-- [ ] identityManagerImportIdentity
-- [ ] identityManagerDeleteIdentity
-- [ ] identityManagerAddKey
-- [ ] identityManagerRemoveKey
-- [ ] identityManagerAddService
-- [ ] identityManagerRemoveService
+- [x] didManagerGetProviders
+- [x] didManagerFind
+- [ ] didManagerGet
+- [ ] didManagerGetByAlias
+- [x] didManagerCreate
+- [ ] didManagerSetAlias
+- [ ] didManagerGetOrCreate
+- [ ] didManagerImport
+- [ ] didManagerDelete
+- [ ] didManagerAddKey
+- [ ] didManagerRemoveKey
+- [ ] didManagerAddService
+- [ ] didManagerRemoveService
 - [x] resolveDid
-- [ ] dataStoreSaveMessage
+- [x] dataStoreSaveMessage
 - [ ] dataStoreGetMessage
-- [ ] dataStoreSaveVerifiableCredential
+- [x] dataStoreSaveVerifiableCredential
 - [x] dataStoreGetVerifiableCredential
 - [ ] dataStoreSaveVerifiablePresentation
 - [ ] dataStoreGetVerifiablePresentation
 - [x] dataStoreORMGetIdentities
-- [ ] dataStoreORMGetIdentitiesCount
+- [x] dataStoreORMGetIdentitiesCount
 - [x] dataStoreORMGetMessages
-- [ ] dataStoreORMGetMessagesCount
+- [x] dataStoreORMGetMessagesCount
 - [ ] dataStoreORMGetVerifiableCredentialsByClaims
 - [ ] dataStoreORMGetVerifiableCredentialsByClaimsCount
 - [x] dataStoreORMGetVerifiableCredentials
-- [ ] dataStoreORMGetVerifiableCredentialsCount
+- [x] dataStoreORMGetVerifiableCredentialsCount
 - [ ] dataStoreORMGetVerifiablePresentations
 - [ ] dataStoreORMGetVerifiablePresentationsCount
 - [x] handleMessage

@@ -23,9 +23,10 @@ import {
 import { useSnackbar } from 'notistack'
 import { IMessage } from '@veramo/core'
 import { DropzoneDialog } from 'material-ui-dropzone'
+import MissingMethodsAlert from '../../components/nav/MissingMethodsAlert'
 const QrReader = require('react-qr-reader')
 
-function ImportView(props: any) {
+function VerifyView(props: any) {
   const { enqueueSnackbar } = useSnackbar()
   const { agent } = useAgent()
   const [loading, setLoading] = useState(false)
@@ -78,7 +79,7 @@ function ImportView(props: any) {
   }
 
   useEffect(() => {
-    if (data !== undefined) {
+    if (agent.availableMethods().includes('handleMessage') && data !== undefined) {
       setLoading(true)
       agent
         .handleMessage({
@@ -94,7 +95,9 @@ function ImportView(props: any) {
 
   return (
     <Container maxWidth="sm">
-      <AppBar title="Import" />
+      <AppBar title="Verify" />
+      <MissingMethodsAlert methods={['handleMessage']} />
+
       <Grid container spacing={2} justify="center">
         {message && (
           <Grid item xs={12}>
@@ -201,4 +204,4 @@ function ImportView(props: any) {
   )
 }
 
-export default ImportView
+export default VerifyView

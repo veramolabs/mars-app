@@ -10,6 +10,7 @@ import Paper from '@material-ui/core/Paper'
 import InputBase from '@material-ui/core/InputBase'
 import IconButton from '@material-ui/core/IconButton'
 import SearchIcon from '@material-ui/icons/Search'
+import MissingMethodsAlert from '../../components/nav/MissingMethodsAlert'
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: '2px 4px',
@@ -38,18 +39,23 @@ function ResolverView() {
   const classes = useStyles()
 
   const handleResolve = useCallback(() => {
-    setLoading(true)
-    console.log('here')
-    agent
+    if(agent.availableMethods().includes('resolveDid')) {
+      setLoading(true)
+      agent
       .resolveDid({ didUrl })
       .then(setDidDoc)
       .finally(() => setLoading(false))
       .catch((e) => enqueueSnackbar(e.message, { variant: 'error' }))
+    } else {
+      setDidDoc(undefined)
+    }
   }, [agent, didUrl, enqueueSnackbar])
 
   return (
     <Container maxWidth="sm">
       <AppBar title="Discover" />
+      <MissingMethodsAlert methods={['resolveDid']} />
+
       <Grid container spacing={2} justify="center">
         <Grid item xs={12}>
           <Paper

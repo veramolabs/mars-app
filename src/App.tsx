@@ -103,7 +103,7 @@ export default function ResponsiveDrawer() {
   const { addSerializedAgentConfig, setActiveAgentIndex, agentList, activeAgentIndex } = useAgentList()
   const { mobileOpen, setMobileOpen } = useMobile()
   const history = useHistory()
-  // const agentMatch = useRouteMatch("/agent");
+  const agentMatch = useRouteMatch("/agent");
   const settingsMatch = useRouteMatch('/settings')
 
   const fullScreen = useMediaQuery(theme.breakpoints.down('xs'))
@@ -137,7 +137,9 @@ export default function ResponsiveDrawer() {
             color="inherit"
             onClick={() => {
               setActiveAgentIndex(index)
-              history.push('/agent')
+              if (!agentMatch) {
+                history.push('/agent')
+              }
             }}
             key={index}
           >

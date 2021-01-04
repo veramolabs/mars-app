@@ -11,6 +11,7 @@ import { useAgent } from '../../agent'
 import { IdentityProfile } from '../../types'
 import { useSnackbar } from 'notistack'
 import CredentialFAB from '../../components/nav/CredentialFAB'
+import MissingMethodsAlert from '../../components/nav/MissingMethodsAlert'
 
 const useStyles = makeStyles((theme) => ({
   avatar: {
@@ -66,7 +67,7 @@ function IdentityView() {
   }, [agent, did])
 
   useEffect(() => {
-    if (agent) {
+    if (agent?.availableMethods().includes('dataStoreORMGetVerifiableCredentials')) {
       setLoading(true)
       agent
         .dataStoreORMGetVerifiableCredentials({
@@ -75,6 +76,8 @@ function IdentityView() {
         .then(setCredentials)
         .finally(() => setLoading(false))
         .catch((e) => enqueueSnackbar(e.message, { variant: 'error' }))
+    } else {
+      setCredentials([])
     }
   }, [agent, enqueueSnackbar, tab, did])
 
@@ -95,6 +98,8 @@ function IdentityView() {
       </AppBar>
       {identity && <CredentialFAB subject={identity.did} />}
       {loading && <LinearProgress />}
+      <MissingMethodsAlert methods={['dataStoreORMGetVerifiableCredentials']} />
+
       <Grid container spacing={2} justify="center" className={classes.container}>
         {credentials.map((credential) => (
           <Grid item key={credential.hash} xs={12}>

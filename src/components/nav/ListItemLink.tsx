@@ -7,10 +7,11 @@ export interface Props {
   to?: string | null // because the InferProps props allows alows null value
   onClick?: (event: React.MouseEvent<HTMLElement>) => void
   selected?: boolean
+  disabled?: boolean
 }
 
 const ListItemLink: React.FC<Props> = (props) => {
-  const { className, onClick, to, children, selected } = props
+  const { className, onClick, to, children, selected, disabled } = props
 
   // If link is not set return the orinary ListItem
   if (!to || typeof to !== 'string') {
@@ -27,6 +28,7 @@ const ListItemLink: React.FC<Props> = (props) => {
         <NavLink exact {...props} innerRef={ref} />
       ))}
       selected={selected}
+      disabled={disabled}
       to={to}
     />
   )

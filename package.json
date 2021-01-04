@@ -69,6 +69,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
+    "prettier": "prettier --write --ignore-unknown ./src",
     "upgrade-veramo": "yarn add @veramo/core @veramo/credential-w3c @veramo/data-store @veramo/remote-client @veramo/cli @veramo/selective-disclosure @veramo/did-jwt @veramo/did-comm @veramo/message-handler @veramo/did-resolver",
     "build-electron": "cross-env PUBLIC_URL=./ react-scripts build",
     "electron": "electron .",

@@ -36,6 +36,7 @@ import CredentialIcon from '@material-ui/icons/VerifiedUser'
 import ProfileIcon from '@material-ui/icons/PermContactCalendar'
 import ReactionIcon from '@material-ui/icons/ThumbUp'
 import MessageIcon from '@material-ui/icons/Message'
+import VerifiedUserIcon from '@material-ui/icons/VerifiedUser'
 import MoreIcon from '@material-ui/icons/MoreVert'
 import QrIcon from '@material-ui/icons/CropFree'
 import DownloadIcon from '@material-ui/icons/CloudDownload'
@@ -85,7 +86,7 @@ const useStyles = makeStyles((theme) => ({
     width: theme.spacing(1.5),
     height: theme.spacing(1.5),
     color: theme.palette.text.secondary,
-    marginLeft: 3,
+    marginRight: 3,
   },
   moreButton: {
     // flex: 1
@@ -151,8 +152,8 @@ function CredentialPostCard(props: Props) {
       agent.getIdentityProfile({ did: verifiableCredential.issuer.id }),
       verifiableCredential.credentialSubject.id
         ? agent.getIdentityProfile({
-            did: verifiableCredential.credentialSubject.id,
-          })
+          did: verifiableCredential.credentialSubject.id,
+        })
         : Promise.resolve({ did: '' }),
     ])
       .then((profiles) => {
@@ -205,11 +206,16 @@ function CredentialPostCard(props: Props) {
               <Typography variant="body2" color="textSecondary" title={issuer.nickname}>
                 {issuer.name}
               </Typography>
-              <Icon fontSize="small" color="disabled" className={classes.icon} />
+
             </Box>
-            <Typography variant="caption" color="textSecondary">{`${formatDistanceToNow(
-              Date.parse(verifiableCredential.issuanceDate),
-            )} ago`}</Typography>
+            <Box className={classes.footerBottom}>
+
+              <VerifiedUserIcon fontSize="small" color="disabled" className={classes.icon} />
+              <Icon fontSize="small" color="disabled" className={classes.icon} />
+              <Typography variant="caption" color="textSecondary">{`${formatDistanceToNow(
+                Date.parse(verifiableCredential.issuanceDate),
+              )} ago`}</Typography>
+            </Box>
           </Box>
 
           <IconButton aria-label="More" className={classes.moreButton} onClick={handleClickCopyButton}>

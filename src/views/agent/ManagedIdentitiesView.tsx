@@ -9,6 +9,7 @@ import IdentityListItemLink from '../../components/nav/IdentityListItemLink'
 import { useSnackbar } from 'notistack'
 import AddIcon from '@material-ui/icons/Add'
 import NewIdentifierDialog from './dialogs/NewIdentifierDialog'
+import MissingMethodsAlert from '../../components/nav/MissingMethodsAlert'
 
 function ManagedIdentities(props: any) {
   const { agent } = useAgent()
@@ -28,13 +29,15 @@ function ManagedIdentities(props: any) {
   }
 
   useEffect(() => {
-    if (agent) {
+    if (agent?.availableMethods().includes('didManagerFind')) {
       setLoading(true)
       agent
         .didManagerFind()
         .then(setIdentities)
         .finally(() => setLoading(false))
         .catch((e) => enqueueSnackbar(e.message, { variant: 'error' }))
+    } else {
+      setIdentities([])
     }
   }, [agent, enqueueSnackbar])
 
@@ -49,6 +52,8 @@ function ManagedIdentities(props: any) {
         }
       />
       {loading && <LinearProgress />}
+      <MissingMethodsAlert methods={['didManagerFind']} />
+
       <List>
         {identities.map((identity) => (
           <IdentityListItemLink key={identity.did} did={identity.did} type="summary" />

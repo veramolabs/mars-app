@@ -4,6 +4,7 @@ import Container from '@material-ui/core/Container'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import MessageCard from '../../components/cards/MessageCard'
 import AppBar from '../../components/nav/AppBar'
+import MissingMethodsAlert from '../../components/nav/MissingMethodsAlert'
 import { useAgent } from '../../agent'
 import { IMessage } from '@veramo/core'
 import { useSnackbar } from 'notistack'
@@ -15,7 +16,7 @@ function MessagesView(props: any) {
   const [messages, setMessages] = useState<Array<IMessage>>([])
 
   useEffect(() => {
-    if (agent) {
+    if (agent?.availableMethods().includes('dataStoreORMGetMessages')) {
       setLoading(true)
       agent
         .dataStoreORMGetMessages({
@@ -24,6 +25,8 @@ function MessagesView(props: any) {
         .then(setMessages)
         .finally(() => setLoading(false))
         .catch((e) => enqueueSnackbar(e.message, { variant: 'error' }))
+    } else {
+      setMessages([])
     }
   }, [agent, enqueueSnackbar])
 
@@ -31,6 +34,7 @@ function MessagesView(props: any) {
     <Container maxWidth="sm">
       <AppBar title="Messages" />
       {loading && <LinearProgress />}
+      <MissingMethodsAlert methods={['dataStoreORMGetMessages']} />
       <Grid container spacing={2} justify="center">
         {messages.map((message) => (
           <Grid item key={message.id} xs={12}>

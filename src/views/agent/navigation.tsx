@@ -9,11 +9,11 @@ import RecentActorsIcon from '@material-ui/icons/RecentActors'
 import MessageIcon from '@material-ui/icons/Message'
 import VerifiedUserIcon from '@material-ui/icons/VerifiedUser'
 import DescriptionIcon from '@material-ui/icons/Search'
-import ImportIcon from '@material-ui/icons/Backup'
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import CodeIcon from '@material-ui/icons/Code'
 
 import ApiView from './ApiView'
-import ImportView from './ImportView'
+import VerifyView from './VerifyView'
 import Messages from './MessagesView'
 import Resolver from './ResolverView'
 import Credentials from './CredentialsView'
@@ -33,7 +33,7 @@ export function AgentSwitch(props: any) {
     <Switch>
       <Route exact path="/agent" render={() => <Redirect to="/agent/resolver" />} />
       <Route path="/agent/api" component={ApiView} />
-      <Route path="/agent/import" component={ImportView} />
+      <Route path="/agent/verify" component={VerifyView} />
       <Route path="/agent/messages" component={Messages} />
       <Route path="/agent/resolver" component={Resolver} />
       <Route path="/agent/credentials" component={Credentials} />
@@ -112,7 +112,7 @@ export function AgentDrawer(props: any) {
   const classes = useStyles()
 
   const apiMatch = useRouteMatch('/agent/api')
-  const importMatch = useRouteMatch('/agent/import')
+  const importMatch = useRouteMatch('/agent/verify')
   const messagesMatch = useRouteMatch('/agent/messages')
   const resolverMatch = useRouteMatch('/agent/resolver')
   const credentialsMatch = useRouteMatch('/agent/credentials')
@@ -133,62 +133,75 @@ export function AgentDrawer(props: any) {
       >
         <Divider />
 
-        {agent?.availableMethods().includes('dataStoreORMGetMessages') && (
-          <ListItemLink to={'/agent/messages'} selected={messagesMatch !== null}>
-            <ListItemIcon>
-              <MessageIcon />
-            </ListItemIcon>
-            <ListItemText primary={'Messages'} />
-          </ListItemLink>
-        )}
+        <ListItemLink
+          to={'/agent/resolver'}
+          selected={resolverMatch !== null}
+          disabled={!agent?.availableMethods().includes('resolveDid')}
+        >
+          <ListItemIcon>
+            <DescriptionIcon />
+          </ListItemIcon>
+          <ListItemText primary={'Discover'} />
+        </ListItemLink>
 
-        {agent?.availableMethods().includes('dataStoreORMGetVerifiableCredentials') && (
-          <ListItemLink to={'/agent/credentials'} selected={credentialsMatch !== null}>
-            <ListItemIcon>
-              <VerifiedUserIcon />
-            </ListItemIcon>
-            <ListItemText primary={'Credentials'} />
-          </ListItemLink>
-        )}
 
-        {agent?.availableMethods().includes('dataStoreORMGetIdentifiers') && (
-          <ListItemLink
-            to={'/agent/identifiers'}
-            selected={identitiesMatch !== null || identityMatch !== null}
-          >
-            <ListItemIcon>
-              <RecentActorsIcon />
-            </ListItemIcon>
-            <ListItemText primary={'Known identifiers'} />
-          </ListItemLink>
-        )}
+        <ListItemLink
+          to={'/agent/verify'}
+          selected={importMatch !== null}
+          disabled={!agent?.availableMethods().includes('handleMessage')}
+        >
+          <ListItemIcon>
+            <CheckCircleIcon />
+          </ListItemIcon>
+          <ListItemText primary={'Verify'} />
+        </ListItemLink>
 
-        {agent?.availableMethods().includes('didManagerFind') && (
-          <ListItemLink to={'/agent/managed-identities'} selected={managedIdentitiesMatch !== null}>
-            <ListItemIcon>
-              <PeopleIcon />
-            </ListItemIcon>
-            <ListItemText primary={'Managed identifiers'} />
-          </ListItemLink>
-        )}
+        <ListItemLink
+          to={'/agent/messages'}
+          selected={messagesMatch !== null}
+          disabled={!agent?.availableMethods().includes('dataStoreORMGetMessages')}
+        >
+          <ListItemIcon>
+            <MessageIcon />
+          </ListItemIcon>
+          <ListItemText primary={'Messages'} />
+        </ListItemLink>
 
-        {agent?.availableMethods().includes('resolveDid') && (
-          <ListItemLink to={'/agent/resolver'} selected={resolverMatch !== null}>
-            <ListItemIcon>
-              <DescriptionIcon />
-            </ListItemIcon>
-            <ListItemText primary={'Discover'} />
-          </ListItemLink>
-        )}
+        <ListItemLink
+          to={'/agent/credentials'}
+          selected={credentialsMatch !== null}
+          disabled={!agent?.availableMethods().includes('dataStoreORMGetVerifiableCredentials')}
+        >
+          <ListItemIcon>
+            <VerifiedUserIcon />
+          </ListItemIcon>
+          <ListItemText primary={'Credentials'} />
+        </ListItemLink>
 
-        {agent?.availableMethods().includes('handleMessage') && (
-          <ListItemLink to={'/agent/import'} selected={importMatch !== null}>
-            <ListItemIcon>
-              <ImportIcon />
-            </ListItemIcon>
-            <ListItemText primary={'Import'} />
-          </ListItemLink>
-        )}
+        <ListItemLink
+          to={'/agent/identifiers'}
+          selected={identitiesMatch !== null || identityMatch !== null}
+          disabled={!agent?.availableMethods().includes('dataStoreORMGetIdentifiers')}
+        >
+          <ListItemIcon>
+            <RecentActorsIcon />
+          </ListItemIcon>
+          <ListItemText primary={'Known identifiers'} />
+        </ListItemLink>
+
+        <ListItemLink
+          to={'/agent/managed-identities'}
+          selected={managedIdentitiesMatch !== null}
+          disabled={!agent?.availableMethods().includes('didManagerFind')}
+        >
+          <ListItemIcon>
+            <PeopleIcon />
+          </ListItemIcon>
+          <ListItemText primary={'Managed identifiers'} />
+        </ListItemLink>
+
+
+
 
         <ListItemLink to={'/agent/api'} selected={apiMatch !== null}>
           <ListItemIcon>

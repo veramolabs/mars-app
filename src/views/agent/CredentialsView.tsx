@@ -7,6 +7,7 @@ import AppBar from '../../components/nav/AppBar'
 import { useAgent } from '../../agent'
 import { useSnackbar } from 'notistack'
 import { UniqueVerifiableCredential } from '@veramo/data-store'
+import MissingMethodsAlert from '../../components/nav/MissingMethodsAlert'
 
 function CredentialsView(props: any) {
   const { agent } = useAgent()
@@ -15,7 +16,7 @@ function CredentialsView(props: any) {
   const [credentials, setCredentials] = useState<Array<UniqueVerifiableCredential>>([])
 
   useEffect(() => {
-    if (agent) {
+    if (agent?.availableMethods().includes('dataStoreORMGetVerifiableCredentials')) {
       setLoading(true)
       agent
         .dataStoreORMGetVerifiableCredentials({
@@ -24,6 +25,8 @@ function CredentialsView(props: any) {
         .then(setCredentials)
         .finally(() => setLoading(false))
         .catch((e) => enqueueSnackbar(e.message, { variant: 'error' }))
+    } else {
+      setCredentials([])
     }
   }, [agent, enqueueSnackbar])
 
@@ -31,6 +34,7 @@ function CredentialsView(props: any) {
     <Container maxWidth="sm">
       <AppBar title="Credentials" />
       {loading && <LinearProgress />}
+      <MissingMethodsAlert methods={['dataStoreORMGetVerifiableCredentials']} />
       <Grid container spacing={2} justify="center">
         {credentials.map((credential) => (
           <Grid

@@ -9,6 +9,7 @@ import { UniqueVerifiableCredential } from '@veramo/data-store'
 import { Grid, Typography } from '@material-ui/core'
 import { VerifiableCredential } from '@veramo/core'
 import { useSnackbar } from 'notistack'
+import MissingMethodsAlert from '../../components/nav/MissingMethodsAlert'
 
 function CredentialView(props: any) {
   const { hash } = useParams<{ hash: string }>()
@@ -18,17 +19,19 @@ function CredentialView(props: any) {
   const [credential, setCredential] = useState<VerifiableCredential | undefined>(undefined)
   const [credentials, setCredentials] = useState<Array<UniqueVerifiableCredential>>([])
   useEffect(() => {
-    if (agent) {
+    if (agent?.availableMethods().includes('dataStoreGetVerifiableCredential')) {
       setLoading(true)
       agent
         .dataStoreGetVerifiableCredential({ hash })
         .then(setCredential)
         .catch((e) => enqueueSnackbar(e.message, { variant: 'error' }))
+    } else {
+      setCredential(undefined)
     }
   }, [agent, hash, enqueueSnackbar])
 
   useEffect(() => {
-    if (agent && credential) {
+    if (agent?.availableMethods().includes('dataStoreORMGetVerifiableCredentials') && credential) {
       agent
         .dataStoreORMGetVerifiableCredentials({
           where: [
@@ -41,6 +44,8 @@ function CredentialView(props: any) {
         .then((c) => c.filter((i) => i.hash !== hash))
         .then(setCredentials)
         .finally(() => setLoading(false))
+    } else {
+      setCredentials([])
     }
   }, [agent, credential, hash])
 
@@ -48,6 +53,8 @@ function CredentialView(props: any) {
     <Container maxWidth="sm">
       <AppBar title="Verifiable credential" />
       {loading && <LinearProgress />}
+      <MissingMethodsAlert methods={['dataStoreORMGetVerifiableCredentials', 'dataStoreGetVerifiableCredential']} />
+
       {credential && (
         <Grid container spacing={2} justify="center">
           <Grid item xs={12}>

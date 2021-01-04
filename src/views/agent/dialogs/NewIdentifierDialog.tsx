@@ -18,6 +18,7 @@ import { useSnackbar } from 'notistack'
 import { useAgent } from '../../../agent'
 import { IDIDManagerCreateArgs } from '@veramo/core'
 import { useHistory } from 'react-router-dom'
+import MissingMethodsAlert from '../../../components/nav/MissingMethodsAlert'
 
 interface Props {
   fullScreen: boolean
@@ -50,7 +51,7 @@ function NewAgentDialog(props: Props) {
   const [providers, setProviders] = useState<string[]>([])
 
   useEffect(() => {
-    if (agent) {
+    if (agent?.availableMethods().includes('didManagerGetProviders') && agent?.availableMethods().includes('keyManagerGetKeyManagementSystems')) {
       setLoading(true)
       Promise.all([agent.didManagerGetProviders(), agent.keyManagerGetKeyManagementSystems()])
         .then((r) => {
@@ -60,6 +61,10 @@ function NewAgentDialog(props: Props) {
         })
         .finally(() => setLoading(false))
         .catch((e) => enqueueSnackbar(e.message, { variant: 'error' }))
+    } else {
+      setProvider('')
+      setProviders([])
+      setKms(undefined)
     }
   }, [agent, enqueueSnackbar])
 
@@ -90,6 +95,8 @@ function NewAgentDialog(props: Props) {
       <DialogTitle id="responsive-dialog-title">New identifier</DialogTitle>
       {loading && <LinearProgress />}
       <DialogContent>
+      <MissingMethodsAlert methods={['didManagerGetProviders', 'keyManagerGetKeyManagementSystems']} />
+
         <form className={classes.form}>
           <FormControl className={classes.formControl} variant="outlined" margin="normal">
             <InputLabel htmlFor="age-native-simple">Provider</InputLabel>

@@ -8,6 +8,7 @@ import { IIdentifier } from '@veramo/core'
 import IdentityListItemLink from '../../components/nav/IdentityListItemLink'
 import { useSnackbar } from 'notistack'
 import CredentialFAB from '../../components/nav/CredentialFAB'
+import MissingMethodsAlert from '../../components/nav/MissingMethodsAlert'
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -24,7 +25,7 @@ function IdentitiesView(props: any) {
   const [tab, setTab] = React.useState(0)
 
   useEffect(() => {
-    if (agent) {
+    if (agent?.availableMethods().includes('dataStoreORMGetIdentifiers')) {
       setLoading(true)
       agent
         .dataStoreORMGetIdentifiers({
@@ -33,6 +34,8 @@ function IdentitiesView(props: any) {
         .then(setIdentities)
         .finally(() => setLoading(false))
         .catch((e) => enqueueSnackbar(e.message, { variant: 'error' }))
+    } else {
+      setIdentities([])
     }
   }, [agent, tab, enqueueSnackbar])
 
@@ -53,6 +56,8 @@ function IdentitiesView(props: any) {
       </AppBar>
       <CredentialFAB />
       {loading && <LinearProgress />}
+      <MissingMethodsAlert methods={['dataStoreORMGetIdentifiers']} />
+
       <List>
         {identities.map((identity) => (
           <IdentityListItemLink key={identity.did} did={identity.did as string} type="summary" />

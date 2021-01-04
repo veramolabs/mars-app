@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Route, Redirect, Switch, useRouteMatch } from 'react-router-dom'
 // import { useAgent } from '../../agent'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
@@ -21,8 +21,9 @@ import Identifiers from './IdentifiersView'
 import ManagedDIDs from './ManagedDIDsView'
 import Identity from './IdentityView'
 import Credential from './CredentialView'
-import { Box, Divider, List, ListItemIcon, ListItemText, ListSubheader } from '@material-ui/core'
+import { Badge, Box, Divider, List, ListItemIcon, ListItemText, ListSubheader } from '@material-ui/core'
 import ListItemLink from '../../components/nav/ListItemLink'
+import { useSnackbar } from 'notistack'
 
 const drawerWidth = 312
 
@@ -110,6 +111,48 @@ export function AgentDrawer(props: any) {
   const { agentList, activeAgentIndex } = useAgentList()
   const { agent } = useAgent()
   const classes = useStyles()
+  const { enqueueSnackbar } = useSnackbar()
+  const [messageCount, setMessageCount] = useState<number>(0)
+  const [credentialCount, setCredentialCount] = useState<number>(0)
+  const [identifiersCount, setIdentifiersCount] = useState<number>(0)
+  const [managedDIDsCount, setManagedDIDsCount] = useState<number>(0)
+
+  useEffect(() => {
+    setMessageCount(0)
+    if (agent.availableMethods().includes('dataStoreORMGetMessagesCount')) {
+      agent.dataStoreORMGetMessagesCount()
+        .then(setMessageCount)
+        .catch((e) => enqueueSnackbar(e.message, { variant: 'error' }))
+    }
+  }, [agent, enqueueSnackbar])
+
+  useEffect(() => {
+    setCredentialCount(0)
+    if (agent.availableMethods().includes('dataStoreORMGetVerifiableCredentialsCount')) {
+      agent.dataStoreORMGetVerifiableCredentialsCount()
+        .then(setCredentialCount)
+    }
+  }, [agent, enqueueSnackbar])
+
+
+  useEffect(() => {
+    setIdentifiersCount(0)
+    if (agent.availableMethods().includes('dataStoreORMGetIdentifiersCount')) {
+      agent.dataStoreORMGetIdentifiersCount()
+        .then(setIdentifiersCount)
+    }
+  }, [agent, enqueueSnackbar])
+
+
+  useEffect(() => {
+    setManagedDIDsCount(0)
+    if (agent.availableMethods().includes('didManagerFind')) {
+      agent.didManagerFind()
+        .then(dids => dids.length)
+        .then(setManagedDIDsCount)
+    }
+  }, [agent, enqueueSnackbar])
+
 
   const apiMatch = useRouteMatch('/agent/api')
   const importMatch = useRouteMatch('/agent/verify')
@@ -162,7 +205,9 @@ export function AgentDrawer(props: any) {
           disabled={!agent?.availableMethods().includes('dataStoreORMGetMessages')}
         >
           <ListItemIcon>
-            <MessageIcon />
+            <Badge color="secondary" badgeContent={messageCount}>
+              <MessageIcon />
+            </Badge>
           </ListItemIcon>
           <ListItemText primary={'Messages'} />
         </ListItemLink>
@@ -173,7 +218,9 @@ export function AgentDrawer(props: any) {
           disabled={!agent?.availableMethods().includes('dataStoreORMGetVerifiableCredentials')}
         >
           <ListItemIcon>
-            <VerifiedUserIcon />
+            <Badge color="secondary" badgeContent={credentialCount}>
+              <VerifiedUserIcon />
+            </Badge>
           </ListItemIcon>
           <ListItemText primary={'Credentials'} />
         </ListItemLink>
@@ -184,7 +231,9 @@ export function AgentDrawer(props: any) {
           disabled={!agent?.availableMethods().includes('dataStoreORMGetIdentifiers')}
         >
           <ListItemIcon>
-            <RecentActorsIcon />
+            <Badge color="secondary" badgeContent={identifiersCount}>
+              <RecentActorsIcon />
+            </Badge>
           </ListItemIcon>
           <ListItemText primary={'Known identifiers'} />
         </ListItemLink>
@@ -195,7 +244,9 @@ export function AgentDrawer(props: any) {
           disabled={!agent?.availableMethods().includes('didManagerFind')}
         >
           <ListItemIcon>
-            <PeopleIcon />
+            <Badge color="secondary" badgeContent={managedDIDsCount}>
+              <PeopleIcon />
+            </Badge>
           </ListItemIcon>
           <ListItemText primary={'Managed DIDs'} />
         </ListItemLink>

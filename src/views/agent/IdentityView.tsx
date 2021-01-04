@@ -55,8 +55,32 @@ function IdentityView() {
   const [identity, setIdentity] = useState<IdentityProfile | undefined>(undefined)
   const [loading, setLoading] = useState(false)
   const [credentials, setCredentials] = useState<Array<UniqueVerifiableCredential>>([])
-
   const [tab, setTab] = React.useState(did.substr(0, 3) === 'did' ? 0 : 1)
+
+  const [issuerCredentialCount, setIssuerCredentialCount] = useState<number>(0)
+  const [subjectCredentialCount, setSubjectCredentialCount] = useState<number>(0)
+
+
+  useEffect(() => {
+    setIssuerCredentialCount(0)
+    if (agent.availableMethods().includes('dataStoreORMGetVerifiableCredentialsCount')) {
+      agent.dataStoreORMGetVerifiableCredentialsCount({
+        where: [{ column: 'issuer', value: [did] }],
+      })
+        .then(setIssuerCredentialCount)
+    }
+  }, [agent, did, enqueueSnackbar])
+
+
+  useEffect(() => {
+    setSubjectCredentialCount(0)
+    if (agent.availableMethods().includes('dataStoreORMGetVerifiableCredentialsCount')) {
+      agent.dataStoreORMGetVerifiableCredentialsCount({
+        where: [{ column: 'subject', value: [did] }],
+      })
+        .then(setSubjectCredentialCount)
+    }
+  }, [agent, did, enqueueSnackbar])
 
   const handleChange = (event: any, newValue: any) => {
     setTab(newValue)
@@ -91,8 +115,8 @@ function IdentityView() {
       >
         {did.substr(0, 3) === 'did' && (
           <Tabs value={tab} onChange={handleChange} indicatorColor="primary" textColor="primary">
-            <Tab label="Issuer" />
-            <Tab label="Subject" />
+            <Tab label={`Issuer (${issuerCredentialCount})`} />
+            <Tab label={`Subject (${subjectCredentialCount})`} />
           </Tabs>
         )}
       </AppBar>

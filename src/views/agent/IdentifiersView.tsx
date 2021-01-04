@@ -22,11 +22,14 @@ function IdentitiesView(props: any) {
   const { enqueueSnackbar } = useSnackbar()
   const [loading, setLoading] = useState(false)
   const [identities, setIdentities] = useState<Array<Partial<IIdentifier>>>([])
+  const [didCount, setDidCount] = useState<number>(0)
+  const [httpCount, setHttpCount] = useState<number>(0)
   const [tab, setTab] = React.useState(0)
 
   useEffect(() => {
     if (agent?.availableMethods().includes('dataStoreORMGetIdentifiers')) {
       setLoading(true)
+      setIdentities([])
       agent
         .dataStoreORMGetIdentifiers({
           where: [{ column: 'did', value: [tab === 0 ? 'did%' : 'http%'], op: 'Like' }],
@@ -34,10 +37,29 @@ function IdentitiesView(props: any) {
         .then(setIdentities)
         .finally(() => setLoading(false))
         .catch((e) => enqueueSnackbar(e.message, { variant: 'error' }))
-    } else {
-      setIdentities([])
     }
   }, [agent, tab, enqueueSnackbar])
+
+
+  useEffect(() => {
+    setDidCount(0)
+    if (agent.availableMethods().includes('dataStoreORMGetIdentifiersCount')) {
+      agent.dataStoreORMGetIdentifiersCount({
+        where: [{ column: 'did', value: ['did%'], op: 'Like' }],
+      })
+        .then(setDidCount)
+    }
+  }, [agent, enqueueSnackbar])
+
+  useEffect(() => {
+    setHttpCount(0)
+    if (agent.availableMethods().includes('dataStoreORMGetIdentifiersCount')) {
+      agent.dataStoreORMGetIdentifiersCount({
+        where: [{ column: 'did', value: ['http%'], op: 'Like' }],
+      })
+        .then(setHttpCount)
+    }
+  }, [agent, enqueueSnackbar])
 
   return (
     <Container maxWidth="sm" className={classes.container}>
@@ -50,8 +72,8 @@ function IdentitiesView(props: any) {
           indicatorColor="primary"
           textColor="primary"
         >
-          <Tab label="DID" />
-          <Tab label="HTTP" />
+          <Tab label={`DID (${didCount})`}/>
+          <Tab label={`HTTP (${httpCount})`}/>
         </Tabs>
       </AppBar>
       <CredentialFAB />

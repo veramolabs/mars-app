@@ -8,6 +8,7 @@ import MissingMethodsAlert from '../../components/nav/MissingMethodsAlert'
 import { useAgent } from '../../agent'
 import { IMessage } from '@veramo/core'
 import { useSnackbar } from 'notistack'
+import { Alert } from '@material-ui/lab'
 
 function MessagesView(props: any) {
   const { agent } = useAgent()
@@ -35,6 +36,7 @@ function MessagesView(props: any) {
       <AppBar title="Messages" />
       {loading && <LinearProgress />}
       <MissingMethodsAlert methods={['dataStoreORMGetMessages']} />
+      {!loading && messages.length === 0 && <Alert severity="success">There are no messages</Alert>}
       <Grid container spacing={2} justify="center">
         {messages.map((message) => (
           <Grid item key={message.id} xs={12}>

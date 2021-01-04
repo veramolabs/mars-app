@@ -8,6 +8,7 @@ import { useAgent } from '../../agent'
 import { useSnackbar } from 'notistack'
 import { UniqueVerifiableCredential } from '@veramo/data-store'
 import MissingMethodsAlert from '../../components/nav/MissingMethodsAlert'
+import { Alert } from '@material-ui/lab'
 
 function CredentialsView(props: any) {
   const { agent } = useAgent()
@@ -35,6 +36,7 @@ function CredentialsView(props: any) {
       <AppBar title="Credentials" />
       {loading && <LinearProgress />}
       <MissingMethodsAlert methods={['dataStoreORMGetVerifiableCredentials']} />
+      {!loading && credentials.length === 0 && <Alert severity="success">There are no credentials</Alert>}
       <Grid container spacing={2} justify="center">
         {credentials.map((credential) => (
           <Grid

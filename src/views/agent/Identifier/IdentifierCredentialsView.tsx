@@ -1,17 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { Grid, makeStyles, Tabs, Tab } from '@material-ui/core'
 import { useParams } from 'react-router-dom'
-import Avatar from '@material-ui/core/Avatar'
-import Container from '@material-ui/core/Container'
 import LinearProgress from '@material-ui/core/LinearProgress'
-import CredentialCard from '../../components/cards/CredentialCard'
-import AppBar from '../../components/nav/AppBar'
+import CredentialCard from '../../../components/cards/CredentialCard'
 import { UniqueVerifiableCredential } from '@veramo/data-store'
-import { useAgent } from '../../agent'
-import { IdentityProfile } from '../../types'
+import { useAgent } from '../../../agent'
 import { useSnackbar } from 'notistack'
-import CredentialFAB from '../../components/nav/CredentialFAB'
-import MissingMethodsAlert from '../../components/nav/MissingMethodsAlert'
+import MissingMethodsAlert from '../../../components/nav/MissingMethodsAlert'
 
 const useStyles = makeStyles((theme) => ({
   avatar: {
@@ -46,13 +41,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-function IdentityView() {
+function IdentifierCredentialsView() {
   const { did: rawDid } = useParams<{ did: string }>()
   const did = decodeURIComponent(rawDid)
   const classes = useStyles()
   const { agent } = useAgent()
   const { enqueueSnackbar } = useSnackbar()
-  const [identity, setIdentity] = useState<IdentityProfile | undefined>(undefined)
   const [loading, setLoading] = useState(false)
   const [credentials, setCredentials] = useState<Array<UniqueVerifiableCredential>>([])
   const [tab, setTab] = React.useState(did.substr(0, 3) === 'did' ? 0 : 1)
@@ -87,10 +81,6 @@ function IdentityView() {
   }
 
   useEffect(() => {
-    agent.getIdentityProfile({ did }).then(setIdentity)
-  }, [agent, did])
-
-  useEffect(() => {
     if (agent?.availableMethods().includes('dataStoreORMGetVerifiableCredentials')) {
       setLoading(true)
       agent
@@ -106,33 +96,24 @@ function IdentityView() {
   }, [agent, enqueueSnackbar, tab, did])
 
   return (
-    <Container maxWidth="sm">
-      <AppBar
-        title={identity?.name || ''}
-        avatar={<Avatar src={identity?.picture} />}
-        primary={identity?.name}
-        secondary={identity?.nickname}
-      >
-        {did.substr(0, 3) === 'did' && (
-          <Tabs value={tab} onChange={handleChange} indicatorColor="primary" textColor="primary">
-            <Tab label={`Issuer (${issuerCredentialCount})`} />
-            <Tab label={`Subject (${subjectCredentialCount})`} />
-          </Tabs>
-        )}
-      </AppBar>
-      {identity && <CredentialFAB subject={identity.did} />}
+    <Grid container spacing={2} justify="center" className={classes.container}>
       {loading && <LinearProgress />}
       <MissingMethodsAlert methods={['dataStoreORMGetVerifiableCredentials']} />
 
-      <Grid container spacing={2} justify="center" className={classes.container}>
-        {credentials.map((credential) => (
-          <Grid item key={credential.hash} xs={12}>
-            <CredentialCard credential={credential} type="summary" />
-          </Grid>
-        ))}
-      </Grid>
-    </Container>
+      {did.substr(0, 3) === 'did' && (
+        <Tabs value={tab} onChange={handleChange} indicatorColor="primary" textColor="primary">
+          <Tab label={`Issuer (${issuerCredentialCount})`} />
+          <Tab label={`Subject (${subjectCredentialCount})`} />
+        </Tabs>
+      )}
+
+      {credentials.map((credential) => (
+        <Grid item key={credential.hash} xs={12}>
+          <CredentialCard credential={credential} type="summary" />
+        </Grid>
+      ))}
+    </Grid>
   )
 }
 
-export default IdentityView
+export default IdentifierCredentialsView

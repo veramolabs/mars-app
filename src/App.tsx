@@ -140,6 +140,7 @@ export default function ResponsiveDrawer() {
               if (!agentMatch) {
                 history.push('/agent')
               }
+              handleDrawerToggle()
             }}
             key={index}
           >

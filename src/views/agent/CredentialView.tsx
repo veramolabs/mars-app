@@ -1,12 +1,9 @@
 import React, { useEffect, useState } from 'react'
-
-import Container from '@material-ui/core/Container'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import CredentialCard from '../../components/cards/CredentialCard'
-import AppBar from '../../components/nav/AppBar'
 import { useAgent } from '../../agent'
 import { UniqueVerifiableCredential } from '@veramo/data-store'
-import { Grid, Typography } from '@material-ui/core'
+import { Box, Grid, Typography } from '@material-ui/core'
 import { VerifiableCredential } from '@veramo/core'
 import { useSnackbar } from 'notistack'
 import MissingMethodsAlert from '../../components/nav/MissingMethodsAlert'
@@ -50,7 +47,7 @@ function CredentialView(props: { hash: string }) {
   }, [agent, credential, hash])
 
   return (
-    <Container maxWidth="sm">
+    <Box>
       {loading && <LinearProgress />}
       <MissingMethodsAlert methods={['dataStoreORMGetVerifiableCredentials', 'dataStoreGetVerifiableCredential']} />
 
@@ -76,12 +73,12 @@ function CredentialView(props: { hash: string }) {
 
           {credentials.map((credential) => (
             <Grid item key={credential.hash} xs={12}>
-              <CredentialCard credential={credential} type="summary" />
+              <CredentialCard credential={credential} type="details" />
             </Grid>
           ))}
         </Grid>
       )}
-    </Container>
+    </Box>
   )
 }
 

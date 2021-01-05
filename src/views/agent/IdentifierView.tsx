@@ -27,7 +27,7 @@ function IdentifierView() {
   }
 
   return (
-    <Container maxWidth="sm">
+    <Container maxWidth="md">
       <AppBar
         title={identity?.name || ''}
         avatar={<Avatar src={identity?.picture} />}

@@ -5,12 +5,12 @@ import CredentialView from '../../views/agent/CredentialView'
 
 interface CredentialContextValue {
   hash?: string
-  showCredential: (hash: string) => void
+  showCredential: (hash?: string) => void
 }
 
 export const CredentialModalContext = React.createContext<CredentialContextValue>({
   hash: undefined,
-  showCredential: (hash: string) => { },
+  showCredential: (hash?: string) => { },
 })
 export const useCredentialModal = () => useContext(CredentialModalContext)
 

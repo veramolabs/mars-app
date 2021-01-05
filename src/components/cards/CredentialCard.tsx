@@ -45,7 +45,6 @@ import CodeIcon from '@material-ui/icons/Code'
 import LinkIcon from '@material-ui/icons/Link'
 import AvatarLink from '../nav/AvatarLink'
 import { useCredentialModal } from '../nav/CredentialModalProvider'
-import { NavLink, NavLinkProps } from 'react-router-dom'
 const QRCode = require('qrcode-react')
 
 interface Props {
@@ -72,7 +71,6 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: theme.spacing(1),
   },
   footerDetails: {
-    marginLeft: theme.spacing(1),
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'flex-start',
@@ -168,9 +166,6 @@ function CredentialPostCard(props: Props) {
       .finally(() => setLoading(false))
   }, [agent, verifiableCredential])
 
-  if (loading) {
-    return <LinearProgress />
-  }
 
   let contents
   let Icon = CredentialIcon
@@ -193,6 +188,7 @@ function CredentialPostCard(props: Props) {
 
   return (
     <Card elevation={props.type === 'summary' ? 1 : 4}>
+      {loading && <LinearProgress />}
       {props.type === 'details' && <CardActionAreaLink
         onClick={() => showCredential(hash)}
         // to={props.type === 'summary' ? '/agent/credential/' + hash : '/agent/id/' + subject?.did}
@@ -204,6 +200,7 @@ function CredentialPostCard(props: Props) {
           <AvatarLink
             src={issuer.picture}
             to={'/agent/id/' + issuer.did}
+            onClick={() => showCredential(undefined)}
             className={classes.footerAvatar}
           />
 
@@ -211,7 +208,7 @@ function CredentialPostCard(props: Props) {
           <ListItem button onClick={() => showCredential(hash)} className={classes.footerDetails}>
             <Box className={classes.footerBottom}>
               <Typography variant="body2" color="textSecondary" title={issuer.nickname}>
-                {issuer.name}
+                {issuer.name || issuer.nickname}
               </Typography>
 
             </Box>

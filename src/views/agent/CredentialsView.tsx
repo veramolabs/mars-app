@@ -8,13 +8,17 @@ import { useAgent } from '../../agent'
 import { useSnackbar } from 'notistack'
 import { UniqueVerifiableCredential } from '@veramo/data-store'
 import MissingMethodsAlert from '../../components/nav/MissingMethodsAlert'
-import { Alert } from '@material-ui/lab'
+import { Alert, ToggleButton, ToggleButtonGroup } from '@material-ui/lab'
+import ListIcon from '@material-ui/icons/List'
+import ViewAgendaIcon from '@material-ui/icons/ViewAgenda'
 
 function CredentialsView(props: any) {
   const { agent } = useAgent()
   const { enqueueSnackbar } = useSnackbar()
   const [loading, setLoading] = useState(false)
   const [credentials, setCredentials] = useState<Array<UniqueVerifiableCredential>>([])
+
+  const [cardType, setCardType] = React.useState<'summary' | 'details'>('summary')
 
   useEffect(() => {
     if (agent?.availableMethods().includes('dataStoreORMGetVerifiableCredentials')) {
@@ -33,7 +37,27 @@ function CredentialsView(props: any) {
 
   return (
     <Container maxWidth="md">
-      <AppBar title="Credentials" />
+      <AppBar
+        title="Credentials"
+        button={<ToggleButtonGroup
+          value={cardType}
+          exclusive
+          size="small"
+          onChange={(event, newCardType) => { setCardType(newCardType) }}
+          aria-label="text alignment"
+        >
+          <ToggleButton value="summary" aria-label="summary">
+            <ListIcon />
+          </ToggleButton>
+          <ToggleButton value="details" aria-label="details">
+            <ViewAgendaIcon />
+          </ToggleButton>
+
+        </ToggleButtonGroup>}
+      />
+
+
+
       {loading && <LinearProgress />}
       <MissingMethodsAlert methods={['dataStoreORMGetVerifiableCredentials']} />
       {!loading && credentials.length === 0 && <Alert severity="success">There are no credentials</Alert>}
@@ -44,7 +68,7 @@ function CredentialsView(props: any) {
             key={credential.hash}
             xs={12} //sm={6} md={4} lg={3} xl={2}
           >
-            <CredentialCard credential={credential} type="summary" />
+            <CredentialCard credential={credential} type={cardType} />
           </Grid>
         ))}
       </Grid>

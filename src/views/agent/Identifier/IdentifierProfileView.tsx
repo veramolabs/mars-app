@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Grid, makeStyles, List, ListItemText, ListItemAvatar } from '@material-ui/core'
+import { Grid, makeStyles, List, ListItemText, CardContent, Card, Box, Typography, ListItem } from '@material-ui/core'
 import { useParams } from 'react-router-dom'
 import Avatar from '@material-ui/core/Avatar'
 import LinearProgress from '@material-ui/core/LinearProgress'
@@ -12,35 +12,18 @@ import { useCredentialModal } from '../../../components/nav/CredentialModalProvi
 
 const useStyles = makeStyles((theme) => ({
   avatar: {
-    width: 150,
-    height: 150,
-  },
-  header: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    padding: theme.spacing(2),
-  },
-  collapse: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    padding: theme.spacing(2),
-  },
-  expand: {
-    transform: 'rotate(0deg)',
-    marginLeft: 'auto',
-    transition: theme.transitions.create('transform', {
-      duration: theme.transitions.duration.shortest,
-    }),
-  },
-  expandOpen: {
-    transform: 'rotate(180deg)',
+    width: 100,
+    height: 100,
   },
 
   container: {
     paddingTop: theme.spacing(6),
   },
+
+  cardContent: {
+    display: 'flex',
+    flexDirection: 'row'
+  }
 }))
 
 interface ProfileItem {
@@ -61,13 +44,13 @@ function IdentifierProfileView() {
 
   const generateProfileItems = (credentials: UniqueVerifiableCredential[]): ProfileItem[] => {
     const items: ProfileItem[] = []
-    const all: Record<string,ProfileItem> = {}
+    const all: Record<string, ProfileItem> = {}
 
     credentials.forEach(credential => {
       const { credentialSubject } = credential.verifiableCredential
       for (const type of Object.keys(credentialSubject)) {
         const value = credentialSubject[type]
-        all[type] = { type, value, credential } 
+        all[type] = { type, value, credential }
       }
     })
 
@@ -96,24 +79,46 @@ function IdentifierProfileView() {
     }
   }, [agent, enqueueSnackbar, did])
 
+  const filteredItems = profileItems.filter(i => i.type !== 'picture' && i.type !== 'id')
   return (
     <Grid container spacing={2} justify="space-evenly" className={classes.container}>
       {loading && <LinearProgress />}
       <MissingMethodsAlert methods={['dataStoreORMGetVerifiableCredentials']} />
-      <List>
-        {profileItems.map((item) => (
-          <ListItemLink key={item.type} onClick={() => showCredential(item.credential.hash)}>
-            {item.type === 'picture' && <ListItemAvatar>
-              <Avatar src={item.value} />
-            </ListItemAvatar>}
+      <Grid item sm={12}>
+        <Card>
+          <CardContent>
+            <Typography color='textSecondary' variant='caption'>
+              {did}
+            </Typography>
+          </CardContent>
+          <Box className={classes.cardContent}>
+            <Box>
+              {profileItems.filter(i => i.type === 'picture').map((item) => (
+                <ListItemLink key={item.type} onClick={() => showCredential(item.credential.hash)}>
+                  <Avatar src={item.value} className={classes.avatar} variant='rounded' />
+                </ListItemLink>
+              ))}
+            </Box>
+            <List style={{flex: 1}}>
+              {filteredItems.map((item, key) => (
+                <ListItem 
+                  button 
+                  divider={key < filteredItems.length - 1}
+                  dense key={item.type} onClick={() => showCredential(item.credential.hash)}>
+                  <ListItemText
+                    primary={item.value}
+                    secondary={item.type}
+                  />
+                </ListItem>
+              ))}
+            </List>
+          </Box>
 
-            <ListItemText
-              primary={item.type}
-              secondary={item.type !== 'picture' && item.value}
-            />
-          </ListItemLink>
-        ))}
-      </List>
+
+        </Card>
+
+
+      </Grid>
     </Grid>
   )
 }

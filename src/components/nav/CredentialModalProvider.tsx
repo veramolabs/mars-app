@@ -1,4 +1,4 @@
-import { useTheme, useMediaQuery, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@material-ui/core'
+import { useTheme, useMediaQuery, Dialog, DialogTitle, DialogContent, DialogActions, Button, Slide } from '@material-ui/core'
 import React, { useContext } from 'react'
 import CredentialView from '../../views/agent/CredentialView'
 
@@ -19,7 +19,7 @@ const CredentialModalProvider: React.FC = ({ children }) => {
   const theme = useTheme()
   const fullScreen = useMediaQuery(theme.breakpoints.down('xs'))
 
-
+  
   return (
     <CredentialModalContext.Provider
       value={{
@@ -28,24 +28,30 @@ const CredentialModalProvider: React.FC = ({ children }) => {
       }}
     >
       {children}
-      {hash && <Dialog
+      
+      <Dialog
         fullScreen={fullScreen}
-        open
+        // keepMounted
+        // TransitionComponent={React.forwardRef(function Transition(props, ref) {
+        //   return <Slide direction="up" ref={ref} {...props} />;
+        // })}
+        open={hash !== undefined}
         onClose={() => showCredential(undefined)}
         maxWidth="sm"
         fullWidth
-        aria-labelledby="responsive-dialog-title"
       >
-        <DialogTitle id="responsive-dialog-title">Verifiable credential</DialogTitle>
-        <DialogContent>
-          <CredentialView hash={hash} />
+        <DialogTitle>Verifiable credential</DialogTitle>
+        <DialogContent dividers>
+          {hash && <CredentialView hash={hash} />}
         </DialogContent>
         <DialogActions>
           <Button autoFocus onClick={() => showCredential(undefined)} color="default">
             Close
         </Button>
         </DialogActions>
-      </Dialog>}
+      </Dialog>
+
+
     </CredentialModalContext.Provider>
   )
 }

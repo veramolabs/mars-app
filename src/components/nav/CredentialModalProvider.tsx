@@ -32,6 +32,7 @@ const CredentialModalProvider: React.FC = ({ children }) => {
       <Dialog
         fullScreen={fullScreen}
         // keepMounted
+        // FIXME
         // TransitionComponent={React.forwardRef(function Transition(props, ref) {
         //   return <Slide direction="up" ref={ref} {...props} />;
         // })}

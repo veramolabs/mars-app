@@ -4,6 +4,7 @@ import Avatar from '@material-ui/core/Avatar'
 import { IdentityProfile } from '../../types'
 import { useAgent } from '../../agent'
 import ListItemLink from './ListItemLink'
+import { useIdModal } from './IdentifierModalProvider'
 
 interface Props {
   did: string
@@ -15,7 +16,8 @@ function IdentityListItemLink(props: Props) {
   const { agent } = useAgent()
   const [loading, setLoading] = useState(false)
   const [identity, setIdentity] = useState<IdentityProfile>({ did, name: did })
-
+  const { showDid } = useIdModal()
+  
   useEffect(() => {
     if (did) {
       setLoading(true)
@@ -27,7 +29,7 @@ function IdentityListItemLink(props: Props) {
   }, [agent, did])
 
   return (
-    <ListItemLink divider to={'/agent/id/' + encodeURIComponent(identity.did)}>
+    <ListItemLink divider onClick={() => showDid(did)}>
       {loading && <LinearProgress />}
       <ListItemAvatar>
         <Avatar src={identity.picture} />

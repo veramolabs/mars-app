@@ -19,7 +19,7 @@ function ManagedDIDs(props: any) {
   const [openNewIdentifierModal, setOpenNewIdentifierModal] = React.useState(false)
   const theme = useTheme()
   const fullScreen = useMediaQuery(theme.breakpoints.down('xs'))
-
+  
   const handleOpenNewIdentifierModal = () => {
     setOpenNewIdentifierModal(true)
   }

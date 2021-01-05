@@ -7,7 +7,7 @@ import { useAgent } from '../../agent'
 import { IIdentifier } from '@veramo/core'
 import IdentityListItemLink from '../../components/nav/IdentityListItemLink'
 import { useSnackbar } from 'notistack'
-import CredentialFAB from '../../components/nav/CredentialFAB'
+
 import MissingMethodsAlert from '../../components/nav/MissingMethodsAlert'
 
 const useStyles = makeStyles((theme) => ({
@@ -76,7 +76,6 @@ function IdentitiesView(props: any) {
           <Tab label={`HTTP (${httpCount})`}/>
         </Tabs>
       </AppBar>
-      <CredentialFAB />
       {loading && <LinearProgress />}
       <MissingMethodsAlert methods={['dataStoreORMGetIdentifiers']} />
 

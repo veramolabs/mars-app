@@ -1,4 +1,4 @@
-import { useTheme, useMediaQuery, Dialog, DialogTitle, DialogContent, DialogActions, Button, Slide } from '@material-ui/core'
+import { useTheme, useMediaQuery, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@material-ui/core'
 import React, { useContext } from 'react'
 import CredentialView from '../../views/agent/CredentialView'
 

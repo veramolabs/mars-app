@@ -19,7 +19,6 @@ import Resolver from './ResolverView'
 import Credentials from './CredentialsView'
 import Identifiers from './IdentifiersView'
 import ManagedDIDs from './ManagedDIDsView'
-import Identity from './IdentifierView'
 import Credential from './CredentialView'
 import { Badge, Box, Divider, List, ListItemIcon, ListItemText, ListSubheader } from '@material-ui/core'
 import ListItemLink from '../../components/nav/ListItemLink'
@@ -40,7 +39,6 @@ export function AgentSwitch(props: any) {
       <Route path="/agent/credentials" component={Credentials} />
       <Route path="/agent/identifiers" component={Identifiers} />
       <Route path="/agent/managed-dids" component={ManagedDIDs} />
-      <Route path="/agent/id/:did" component={Identity} />
       <Route path="/agent/credential/:hash" component={Credential} />
     </Switch>
   )

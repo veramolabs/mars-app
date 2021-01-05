@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react'
-import { Grid, makeStyles, Tabs, Tab } from '@material-ui/core'
-import { useParams } from 'react-router-dom'
+import { Grid, makeStyles, Typography, Box } from '@material-ui/core'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import CredentialCard from '../../../components/cards/CredentialCard'
 import { UniqueVerifiableCredential } from '@veramo/data-store'
 import { useAgent } from '../../../agent'
 import { useSnackbar } from 'notistack'
 import MissingMethodsAlert from '../../../components/nav/MissingMethodsAlert'
+import { ToggleButtonGroup, ToggleButton } from '@material-ui/lab'
 
 const useStyles = makeStyles((theme) => ({
   avatar: {
@@ -37,13 +37,12 @@ const useStyles = makeStyles((theme) => ({
   },
 
   container: {
-    paddingTop: theme.spacing(6),
+
   },
 }))
 
-function IdentifierCredentialsView() {
-  const { did: rawDid } = useParams<{ did: string }>()
-  const did = decodeURIComponent(rawDid)
+function IdentifierCredentialsView(props: { did: string }) {
+  const { did } = props
   const classes = useStyles()
   const { agent } = useAgent()
   const { enqueueSnackbar } = useSnackbar()
@@ -83,6 +82,7 @@ function IdentifierCredentialsView() {
   useEffect(() => {
     if (agent?.availableMethods().includes('dataStoreORMGetVerifiableCredentials')) {
       setLoading(true)
+      setCredentials([])
       agent
         .dataStoreORMGetVerifiableCredentials({
           where: [{ column: tab === 0 ? 'issuer' : 'subject', value: [did] }],
@@ -90,22 +90,29 @@ function IdentifierCredentialsView() {
         .then(setCredentials)
         .finally(() => setLoading(false))
         .catch((e) => enqueueSnackbar(e.message, { variant: 'error' }))
-    } else {
-      setCredentials([])
     }
   }, [agent, enqueueSnackbar, tab, did])
 
   return (
-    <Grid container spacing={2} justify="center" className={classes.container}>
+    <Grid container spacing={2} className={classes.container}>
       {loading && <LinearProgress />}
       <MissingMethodsAlert methods={['dataStoreORMGetVerifiableCredentials']} />
 
-      {did.substr(0, 3) === 'did' && (
-        <Tabs value={tab} onChange={handleChange} indicatorColor="primary" textColor="primary">
-          <Tab label={`Issuer (${issuerCredentialCount})`} />
-          <Tab label={`Subject (${subjectCredentialCount})`} />
-        </Tabs>
-      )}
+      {did.substr(0, 3) === 'did' && <Box margin={1} >
+        <ToggleButtonGroup
+          value={tab}
+          size='small'
+          exclusive
+          onChange={handleChange}
+        >
+          <ToggleButton value={0}>
+            <Typography variant='caption'>{`Issuer (${issuerCredentialCount})`} </Typography>
+          </ToggleButton>
+          <ToggleButton value={1}>
+            <Typography variant='caption'>{`Subject (${subjectCredentialCount})`} </Typography>
+          </ToggleButton>
+        </ToggleButtonGroup>
+      </Box>}
 
       {credentials.map((credential) => (
         <Grid item key={credential.hash} xs={12}>

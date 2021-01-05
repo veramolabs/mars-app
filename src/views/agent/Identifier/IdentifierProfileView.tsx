@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Grid, makeStyles, List, ListItemText, CardContent, Card, Box, Typography, ListItem } from '@material-ui/core'
-import { useParams } from 'react-router-dom'
+import { makeStyles, List, ListItemText, Box, ListItem } from '@material-ui/core'
 import Avatar from '@material-ui/core/Avatar'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import { UniqueVerifiableCredential } from '@veramo/data-store'
@@ -9,21 +8,13 @@ import { useSnackbar } from 'notistack'
 import MissingMethodsAlert from '../../../components/nav/MissingMethodsAlert'
 import ListItemLink from '../../../components/nav/ListItemLink'
 import { useCredentialModal } from '../../../components/nav/CredentialModalProvider'
+import ProfileCredentialButton from '../../../components/nav/ProfileCredentialButton'
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   avatar: {
     width: 100,
     height: 100,
   },
-
-  container: {
-    paddingTop: theme.spacing(6),
-  },
-
-  cardContent: {
-    display: 'flex',
-    flexDirection: 'row'
-  }
 }))
 
 interface ProfileItem {
@@ -32,9 +23,8 @@ interface ProfileItem {
   credential: UniqueVerifiableCredential
 }
 
-function IdentifierProfileView() {
-  const { did: rawDid } = useParams<{ did: string }>()
-  const did = decodeURIComponent(rawDid)
+function IdentifierProfileView(props: { did: string }) {
+  const { did } = props
   const classes = useStyles()
   const { agent } = useAgent()
   const { enqueueSnackbar } = useSnackbar()
@@ -81,45 +71,34 @@ function IdentifierProfileView() {
 
   const filteredItems = profileItems.filter(i => i.type !== 'picture' && i.type !== 'id')
   return (
-    <Grid container spacing={2} justify="space-evenly" className={classes.container}>
+    <Box>
       {loading && <LinearProgress />}
       <MissingMethodsAlert methods={['dataStoreORMGetVerifiableCredentials']} />
-      <Grid item sm={12}>
-        <Card>
-          <CardContent>
-            <Typography color='textSecondary' variant='caption'>
-              {did}
-            </Typography>
-          </CardContent>
-          <Box className={classes.cardContent} marginRight={2}>
-            <Box>
-              {profileItems.filter(i => i.type === 'picture').map((item) => (
-                <ListItemLink key={item.type} onClick={() => showCredential(item.credential.hash)}>
-                  <Avatar src={item.value} className={classes.avatar} variant='rounded' />
-                </ListItemLink>
-              ))}
-            </Box>
-            <List style={{flex: 1}}>
-              {filteredItems.map((item, key) => (
-                <ListItem 
-                  button 
-                  divider={key < filteredItems.length - 1}
-                  dense key={item.type} onClick={() => showCredential(item.credential.hash)}>
-                  <ListItemText
-                    primary={item.value}
-                    secondary={item.type}
-                  />
-                </ListItem>
-              ))}
-            </List>
+        <Box flexDirection='row' display='flex'>
+          <Box>
+            {profileItems.filter(i => i.type === 'picture').map((item) => (
+              <ListItemLink key={item.type} onClick={() => showCredential(item.credential.hash)}>
+                <Avatar src={item.value} className={classes.avatar} variant='rounded'/>
+              </ListItemLink>
+            ))}
           </Box>
+          <List style={{ flex: 1 }}>
+            {filteredItems.map((item, key) => (
+              <ListItem
+                button
+                divider={key < filteredItems.length - 1}
+                dense key={item.type} onClick={() => showCredential(item.credential.hash)}>
+                <ListItemText
+                  primary={item.value}
+                  secondary={item.type}
+                />
+              </ListItem>
+            ))}
+          </List>
+        </Box>
+        <ProfileCredentialButton subject={did}/>
 
-
-        </Card>
-
-
-      </Grid>
-    </Grid>
+    </Box>
   )
 }
 

@@ -7,6 +7,7 @@ import AddIcon from '@material-ui/icons/Add'
 import { useMobile } from './components/nav/MobileProvider'
 import NewAgentModal from './views/agent/dialogs/NewAgentDialog'
 import { useHistory, useRouteMatch } from 'react-router-dom'
+import CredentialModalProvider from './components/nav/CredentialModalProvider'
 
 import { makeStyles, useTheme, Theme, createStyles } from '@material-ui/core/styles'
 import { Route, Redirect, Switch } from 'react-router-dom'
@@ -170,59 +171,61 @@ export default function ResponsiveDrawer() {
   const container = window.document.body
 
   return (
-    <div className={classes.root}>
-      <CssBaseline />
+    <CredentialModalProvider>
+      <div className={classes.root}>
+        <CssBaseline />
 
-      <nav className={classes.drawer} aria-label="mailbox folders">
-        {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
-        <Hidden smUp implementation="css">
-          <Drawer
-            container={container}
-            variant="temporary"
-            anchor={theme.direction === 'rtl' ? 'right' : 'left'}
-            open={mobileOpen}
-            onClose={handleDrawerToggle}
-            classes={{
-              paper: classes.drawerPaper,
-            }}
-            ModalProps={{
-              keepMounted: true, // Better open performance on mobile.
-            }}
-          >
-            {drawer}
-          </Drawer>
-        </Hidden>
-        <Hidden xsDown implementation="css">
-          <Drawer
-            classes={{
-              paper: classes.drawerPaper,
-            }}
-            variant="permanent"
-            open
-          >
-            {drawer}
-          </Drawer>
-        </Hidden>
-      </nav>
-      <main className={classes.content}>
-        <div className={classes.toolbar} />
-        <NewAgentModal
-          fullScreen={fullScreen}
-          open={openNewAgentModal}
-          onClose={handleCloseNewAgentModal}
-          saveAgentConfig={saveAgentConfig}
-        />
-
-        <Switch>
-          <Route
-            exact
-            path="/"
-            render={() => <Redirect to={agentList.length > 0 ? '/agent' : '/settings'} />}
+        <nav className={classes.drawer} aria-label="mailbox folders">
+          {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
+          <Hidden smUp implementation="css">
+            <Drawer
+              container={container}
+              variant="temporary"
+              anchor={theme.direction === 'rtl' ? 'right' : 'left'}
+              open={mobileOpen}
+              onClose={handleDrawerToggle}
+              classes={{
+                paper: classes.drawerPaper,
+              }}
+              ModalProps={{
+                keepMounted: true, // Better open performance on mobile.
+              }}
+            >
+              {drawer}
+            </Drawer>
+          </Hidden>
+          <Hidden xsDown implementation="css">
+            <Drawer
+              classes={{
+                paper: classes.drawerPaper,
+              }}
+              variant="permanent"
+              open
+            >
+              {drawer}
+            </Drawer>
+          </Hidden>
+        </nav>
+        <main className={classes.content}>
+          <div className={classes.toolbar} />
+          <NewAgentModal
+            fullScreen={fullScreen}
+            open={openNewAgentModal}
+            onClose={handleCloseNewAgentModal}
+            saveAgentConfig={saveAgentConfig}
           />
-          <Route path={'/agent'} component={AgentSwitch} />
-          <Route path={'/settings'} component={SettingsSwitch} />
-        </Switch>
-      </main>
-    </div>
+
+          <Switch>
+            <Route
+              exact
+              path="/"
+              render={() => <Redirect to={agentList.length > 0 ? '/agent' : '/settings'} />}
+            />
+            <Route path={'/agent'} component={AgentSwitch} />
+            <Route path={'/settings'} component={SettingsSwitch} />
+          </Switch>
+        </main>
+      </div>
+    </CredentialModalProvider>
   )
 }

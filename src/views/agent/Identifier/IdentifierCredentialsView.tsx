@@ -109,7 +109,7 @@ function IdentifierCredentialsView() {
 
       {credentials.map((credential) => (
         <Grid item key={credential.hash} xs={12}>
-          <CredentialCard credential={credential} type="summary" />
+          <CredentialCard credential={credential} type="details" />
         </Grid>
       ))}
     </Grid>

@@ -32,12 +32,12 @@ function CredentialsView(props: any) {
   }, [agent, enqueueSnackbar])
 
   return (
-    <Container maxWidth="sm">
+    <Container maxWidth="md">
       <AppBar title="Credentials" />
       {loading && <LinearProgress />}
       <MissingMethodsAlert methods={['dataStoreORMGetVerifiableCredentials']} />
       {!loading && credentials.length === 0 && <Alert severity="success">There are no credentials</Alert>}
-      <Grid container spacing={2} justify="center">
+      <Grid container spacing={1} justify="center">
         {credentials.map((credential) => (
           <Grid
             item

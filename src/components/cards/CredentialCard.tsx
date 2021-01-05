@@ -18,6 +18,7 @@ import {
   DialogTitle,
   useMediaQuery,
   useTheme,
+  ListItem,
 } from '@material-ui/core'
 import Card from '@material-ui/core/Card'
 import CardActionAreaLink from '../nav/CardActionAreaLink'
@@ -43,6 +44,8 @@ import DownloadIcon from '@material-ui/icons/CloudDownload'
 import CodeIcon from '@material-ui/icons/Code'
 import LinkIcon from '@material-ui/icons/Link'
 import AvatarLink from '../nav/AvatarLink'
+import { useCredentialModal } from '../nav/CredentialModalProvider'
+import { NavLink, NavLinkProps } from 'react-router-dom'
 const QRCode = require('qrcode-react')
 
 interface Props {
@@ -72,6 +75,7 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: theme.spacing(1),
     display: 'flex',
     flexDirection: 'column',
+    alignItems: 'flex-start',
     overflow: 'hidden',
     textOverflow: 'ellipses',
     flexGrow: 1,
@@ -111,6 +115,7 @@ function CredentialPostCard(props: Props) {
   const [anchorEl, setAnchorEl] = React.useState(null)
   const theme = useTheme()
   const fullScreen = useMediaQuery(theme.breakpoints.down('xs'))
+  const { showCredential } = useCredentialModal()
 
   const handleClickCopyButton = (event: any) => {
     setAnchorEl(event.currentTarget)
@@ -187,12 +192,13 @@ function CredentialPostCard(props: Props) {
   }
 
   return (
-    <Card elevation={props.type === 'summary' ? 2 : 10}>
-      <CardActionAreaLink
-        to={props.type === 'summary' ? '/agent/credential/' + hash : '/agent/id/' + subject?.did}
+    <Card elevation={props.type === 'summary' ? 1 : 4}>
+      {props.type === 'details' && <CardActionAreaLink
+        onClick={() => showCredential(hash)}
+        // to={props.type === 'summary' ? '/agent/credential/' + hash : '/agent/id/' + subject?.did}
       >
         {contents}
-      </CardActionAreaLink>
+      </CardActionAreaLink>}
       <CardActions disableSpacing>
         <Box className={classes.footer}>
           <AvatarLink
@@ -201,7 +207,8 @@ function CredentialPostCard(props: Props) {
             className={classes.footerAvatar}
           />
 
-          <Box className={classes.footerDetails}>
+       
+          <ListItem button onClick={() => showCredential(hash)} className={classes.footerDetails}>
             <Box className={classes.footerBottom}>
               <Typography variant="body2" color="textSecondary" title={issuer.nickname}>
                 {issuer.name}
@@ -214,9 +221,10 @@ function CredentialPostCard(props: Props) {
               <Icon fontSize="small" color="disabled" className={classes.icon} />
               <Typography variant="caption" color="textSecondary">{`${formatDistanceToNow(
                 Date.parse(verifiableCredential.issuanceDate),
-              )} ago`}</Typography>
+                )} ago`}</Typography>
             </Box>
-          </Box>
+          </ListItem>
+
 
           <IconButton aria-label="More" className={classes.moreButton} onClick={handleClickCopyButton}>
             <MoreIcon />

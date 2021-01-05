@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+
 import Container from '@material-ui/core/Container'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import CredentialCard from '../../components/cards/CredentialCard'
@@ -11,8 +11,8 @@ import { VerifiableCredential } from '@veramo/core'
 import { useSnackbar } from 'notistack'
 import MissingMethodsAlert from '../../components/nav/MissingMethodsAlert'
 
-function CredentialView(props: any) {
-  const { hash } = useParams<{ hash: string }>()
+function CredentialView(props: { hash: string }) {
+  const { hash } = props
   const { enqueueSnackbar } = useSnackbar()
   const { agent } = useAgent()
   const [loading, setLoading] = useState(false)
@@ -51,7 +51,6 @@ function CredentialView(props: any) {
 
   return (
     <Container maxWidth="sm">
-      <AppBar title="Verifiable credential" />
       {loading && <LinearProgress />}
       <MissingMethodsAlert methods={['dataStoreORMGetVerifiableCredentials', 'dataStoreGetVerifiableCredential']} />
 

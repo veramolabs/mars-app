@@ -8,6 +8,7 @@ import { useAgent } from '../../../agent'
 import { useSnackbar } from 'notistack'
 import MissingMethodsAlert from '../../../components/nav/MissingMethodsAlert'
 import ListItemLink from '../../../components/nav/ListItemLink'
+import { useCredentialModal } from '../../../components/nav/CredentialModalProvider'
 
 const useStyles = makeStyles((theme) => ({
   avatar: {
@@ -56,6 +57,7 @@ function IdentifierProfileView() {
   const { enqueueSnackbar } = useSnackbar()
   const [loading, setLoading] = useState(false)
   const [profileItems, setProfileItems] = useState<Array<ProfileItem>>([])
+  const { showCredential } = useCredentialModal()
 
   const generateProfileItems = (credentials: UniqueVerifiableCredential[]): ProfileItem[] => {
     const items: ProfileItem[] = []
@@ -100,7 +102,7 @@ function IdentifierProfileView() {
       <MissingMethodsAlert methods={['dataStoreORMGetVerifiableCredentials']} />
       <List>
         {profileItems.map((item) => (
-          <ListItemLink key={item.type} to={'/agent/credential/' + encodeURIComponent(item.credential.hash)}>
+          <ListItemLink key={item.type} onClick={() => showCredential(item.credential.hash)}>
             {item.type === 'picture' && <ListItemAvatar>
               <Avatar src={item.value} />
             </ListItemAvatar>}

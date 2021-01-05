@@ -74,14 +74,10 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'flex-start',
-    overflow: 'hidden',
-    textOverflow: 'ellipses',
-    flexGrow: 1,
+    flexShrink: 1,
   },
   footerBottom: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
+
   },
   icon: {
     // flex: 1
@@ -207,7 +203,7 @@ function CredentialPostCard(props: Props) {
        
           <ListItem button onClick={() => showCredential(hash)} className={classes.footerDetails}>
             <Box className={classes.footerBottom}>
-              <Typography variant="body2" color="textSecondary" title={issuer.nickname}>
+              <Typography noWrap display='block' variant="body2" color="textSecondary" title={issuer.nickname}>
                 {issuer.name || issuer.nickname}
               </Typography>
 

@@ -91,7 +91,7 @@ function IdentifierProfileView() {
               {did}
             </Typography>
           </CardContent>
-          <Box className={classes.cardContent}>
+          <Box className={classes.cardContent} marginRight={2}>
             <Box>
               {profileItems.filter(i => i.type === 'picture').map((item) => (
                 <ListItemLink key={item.type} onClick={() => showCredential(item.credential.hash)}>

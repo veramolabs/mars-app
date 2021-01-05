@@ -62,7 +62,7 @@ function IdentitiesView(props: any) {
   }, [agent, enqueueSnackbar])
 
   return (
-    <Container maxWidth="sm" className={classes.container}>
+    <Container maxWidth="md" className={classes.container}>
       <AppBar title="Known identifiers">
         <Tabs
           value={tab}

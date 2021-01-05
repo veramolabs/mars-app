@@ -9,10 +9,11 @@ export interface Props {
   onClick?: (event: React.MouseEvent<HTMLElement>) => void
   selected?: boolean
   disabled?: boolean
+  divider?: boolean
 }
 
 const ListItemLink: React.FC<Props> = (props) => {
-  const { className, onClick, to, children, selected, disabled } = props
+  const { className, onClick, to, children, selected, disabled, divider } = props
   const { mobileOpen, setMobileOpen } = useMobile()
 
   const closeMobileAndClick = (e: React.MouseEvent<HTMLElement>) => {
@@ -22,7 +23,7 @@ const ListItemLink: React.FC<Props> = (props) => {
 
   // If link is not set return the orinary ListItem
   if (!to || typeof to !== 'string') {
-    return <ListItem button className={className} children={children} onClick={closeMobileAndClick} selected={selected} />
+    return <ListItem button className={className} children={children} onClick={closeMobileAndClick} selected={selected} divider={divider} disabled={disabled} />
   }
 
   // Return a LitItem with a link component
@@ -37,6 +38,7 @@ const ListItemLink: React.FC<Props> = (props) => {
       ))}
       selected={selected}
       disabled={disabled}
+      divider={divider}
       to={to}
     />
   )

@@ -39,7 +39,7 @@ function ProfileCredential(props: Props) {
   return (
     <CardContent className={classes.content}>
       <Typography variant="body1" color="textPrimary">
-        Contact information
+        Profile information
       </Typography>
       <Typography variant="caption" color="textSecondary">
         {verifiableCredential.credentialSubject.id}

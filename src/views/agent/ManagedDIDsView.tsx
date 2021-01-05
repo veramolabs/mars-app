@@ -42,7 +42,7 @@ function ManagedDIDs(props: any) {
   }, [agent, enqueueSnackbar])
 
   return (
-    <Container maxWidth="sm">
+    <Container maxWidth="md">
       <AppBar
         title="Managed DIDs"
         button={

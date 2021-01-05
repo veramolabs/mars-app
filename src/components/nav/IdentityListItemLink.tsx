@@ -27,7 +27,7 @@ function IdentityListItemLink(props: Props) {
   }, [agent, did])
 
   return (
-    <ListItemLink to={'/agent/id/' + encodeURIComponent(identity.did)}>
+    <ListItemLink divider to={'/agent/id/' + encodeURIComponent(identity.did)}>
       {loading && <LinearProgress />}
       <ListItemAvatar>
         <Avatar src={identity.picture} />

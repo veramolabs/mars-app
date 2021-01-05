@@ -30,6 +30,7 @@ function ApiView() {
         {Object.keys(schema.components.methods).map((method) => (
           <ListItem
             button
+            divider
             key={method}
             disabled={!agent.availableMethods().includes(method)}
             onClick={() => handleOpenMethodModal(method)}

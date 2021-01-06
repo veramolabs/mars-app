@@ -136,7 +136,11 @@ export function AgentDrawer(props: any) {
   useEffect(() => {
     setIdentifiersCount(0)
     if (agent.availableMethods().includes('dataStoreORMGetIdentifiersCount')) {
-      agent.dataStoreORMGetIdentifiersCount()
+      agent.dataStoreORMGetIdentifiersCount({
+        where: [
+          { column: 'provider', value: [], op: 'IsNull' },
+        ],
+      })
         .then(setIdentifiersCount)
     }
   }, [agent, enqueueSnackbar])
@@ -223,6 +227,20 @@ export function AgentDrawer(props: any) {
         </ListItemLink>
 
         <ListItemLink
+          to={'/agent/managed-dids'}
+          selected={ManagedDIDsMatch !== null}
+          disabled={!agent?.availableMethods().includes('didManagerFind')}
+        >
+          <ListItemIcon>
+            <Badge color="secondary" badgeContent={managedDIDsCount}>
+              <PeopleIcon />
+            </Badge>
+          </ListItemIcon>
+          <ListItemText primary={'Managed DIDs'} />
+        </ListItemLink>
+
+
+        <ListItemLink
           to={'/agent/identifiers'}
           selected={identitiesMatch !== null}
           disabled={!agent?.availableMethods().includes('dataStoreORMGetIdentifiers')}
@@ -235,18 +253,6 @@ export function AgentDrawer(props: any) {
           <ListItemText primary={'Known identifiers'} />
         </ListItemLink>
 
-        <ListItemLink
-          to={'/agent/managed-dids'}
-          selected={ManagedDIDsMatch !== null}
-          disabled={!agent?.availableMethods().includes('didManagerFind')}
-        >
-          <ListItemIcon>
-            <Badge color="secondary" badgeContent={managedDIDsCount}>
-              <PeopleIcon />
-            </Badge>
-          </ListItemIcon>
-          <ListItemText primary={'Managed DIDs'} />
-        </ListItemLink>
 
 
 

@@ -23,7 +23,7 @@ function IdentitiesView(props: any) {
   const [loading, setLoading] = useState(false)
   const [identities, setIdentities] = useState<Array<Partial<IIdentifier>>>([])
   const [didCount, setDidCount] = useState<number>(0)
-  const [httpCount, setHttpCount] = useState<number>(0)
+  const [otherCount, setOtherCount] = useState<number>(0)
   const [tab, setTab] = React.useState(0)
 
   useEffect(() => {
@@ -32,7 +32,10 @@ function IdentitiesView(props: any) {
       setIdentities([])
       agent
         .dataStoreORMGetIdentifiers({
-          where: [{ column: 'did', value: [tab === 0 ? 'did%' : 'http%'], op: 'Like' }],
+          where: [
+            { column: 'did', value: ['did%'], op: 'Like', not: tab === 1 },
+            { column: 'provider', value: [], op: 'IsNull' },
+          ],
         })
         .then(setIdentities)
         .finally(() => setLoading(false))
@@ -45,19 +48,25 @@ function IdentitiesView(props: any) {
     setDidCount(0)
     if (agent.availableMethods().includes('dataStoreORMGetIdentifiersCount')) {
       agent.dataStoreORMGetIdentifiersCount({
-        where: [{ column: 'did', value: ['did%'], op: 'Like' }],
+        where: [
+          { column: 'did', value: ['did%'], op: 'Like' },
+          { column: 'provider', value: [], op: 'IsNull' },
+        ],
       })
         .then(setDidCount)
     }
   }, [agent, enqueueSnackbar])
 
   useEffect(() => {
-    setHttpCount(0)
+    setOtherCount(0)
     if (agent.availableMethods().includes('dataStoreORMGetIdentifiersCount')) {
       agent.dataStoreORMGetIdentifiersCount({
-        where: [{ column: 'did', value: ['http%'], op: 'Like' }],
+        where: [
+          { column: 'did', value: ['did%'], op: 'Like', not: true },
+          { column: 'provider', value: [], op: 'IsNull' },
+        ],
       })
-        .then(setHttpCount)
+        .then(setOtherCount)
     }
   }, [agent, enqueueSnackbar])
 
@@ -73,7 +82,7 @@ function IdentitiesView(props: any) {
           textColor="primary"
         >
           <Tab label={`DID (${didCount})`}/>
-          <Tab label={`HTTP (${httpCount})`}/>
+          <Tab label={`Other (${otherCount})`}/>
         </Tabs>
       </AppBar>
       {loading && <LinearProgress />}

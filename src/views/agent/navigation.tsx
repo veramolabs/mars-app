@@ -31,7 +31,7 @@ export function AgentSwitch(props: any) {
 
   return (
     <Switch>
-      <Route exact path="/agent" render={() => <Redirect to="/agent/resolver" />} />
+      <Route exact path="/agent" render={() => <Redirect to="/agent/discover" />} />
       <Route path="/agent/api" component={ApiView} />
       <Route path="/agent/verify" component={VerifyView} />
       <Route path="/agent/messages" component={Messages} />
@@ -154,7 +154,7 @@ export function AgentDrawer(props: any) {
   const apiMatch = useRouteMatch('/agent/api')
   const importMatch = useRouteMatch('/agent/verify')
   const messagesMatch = useRouteMatch('/agent/messages')
-  const resolverMatch = useRouteMatch('/agent/resolver')
+  const resolverMatch = useRouteMatch('/agent/discover')
   const credentialsMatch = useRouteMatch('/agent/credentials')
   const identitiesMatch = useRouteMatch('/agent/identifiers')
   const ManagedDIDsMatch = useRouteMatch('/agent/managed-dids')

@@ -1,4 +1,4 @@
-import { Grid, Card, CardContent, Box, List, ListItem, ListItemAvatar, ListItemText, ListSubheader, TextField, CardActions, makeStyles } from '@material-ui/core'
+import { Box, List, ListItem, ListItemAvatar, ListItemText, ListSubheader, TextField, CardActions, makeStyles } from '@material-ui/core'
 import { ToggleButtonGroup, ToggleButton } from '@material-ui/lab'
 import { DIDDocument } from 'did-resolver'
 import React from 'react'
@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme) => ({
   cardActions: {
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'flex-end',
+    justifyContent: 'flex-start',
     flex: 1
   }
 }))
@@ -25,15 +25,15 @@ function DIDDocumentCard ({ didDoc } : {didDoc: DIDDocument}) {
   const [cardType, setCardType] = React.useState<'preview' | 'source'>('preview')
 
   return (
-    <Grid item xs={12}>
-            <Card variant="outlined">
-              <CardContent>
+
+            <Box >
+
 
                 {cardType === 'preview' && <Box>
 
 
                   <List>
-                    <ListItem>
+                    <ListItem dense>
                       <ListItemAvatar >
                         <CheckCircleIcon />
                       </ListItemAvatar>
@@ -45,13 +45,13 @@ function DIDDocumentCard ({ didDoc } : {didDoc: DIDDocument}) {
                   </List>
 
 
-                  <List subheader={
+                  {didDoc.service && didDoc.service?.length > 0 && <List subheader={
                     <ListSubheader>
                       Services
                   </ListSubheader>
                   }>
-                    {didDoc.service?.map(service => (
-                      <ListItem>
+                    {didDoc.service?.map((service, index) => (
+                      <ListItem key={index} dense>
                         <ListItemAvatar >
                           {service.type === 'Messaging' ? <MessageIcon /> : <SettingsIcon />}
                         </ListItemAvatar>
@@ -61,7 +61,7 @@ function DIDDocumentCard ({ didDoc } : {didDoc: DIDDocument}) {
                         />
                       </ListItem>
                     ))}
-                  </List>
+                  </List>}
 
 
                   <List subheader={
@@ -69,14 +69,14 @@ function DIDDocumentCard ({ didDoc } : {didDoc: DIDDocument}) {
                       Public keys
                   </ListSubheader>
                   }>
-                    {didDoc.publicKey.map(key => (
-                      <ListItem>
+                    {didDoc.publicKey.map((key, index) => (
+                      <ListItem key={index} dense>
                         <ListItemAvatar >
                           <VpnKeyIcon />
                         </ListItemAvatar>
                         <ListItemText
                           primary={`${key.type}`}
-                          secondary={`${key.publicKeyHex?.substr(0, 10)}...${key.publicKeyHex?.substr(-10)}${key.controller ? ', controller: ' + key.controller : ''}`}
+                          secondary={`${key.controller ? 'Controller: ' + key.controller : ''}`}
                         />
                       </ListItem>
                     ))}
@@ -87,14 +87,14 @@ function DIDDocumentCard ({ didDoc } : {didDoc: DIDDocument}) {
                       Authentication
                   </ListSubheader>
                   }>
-                    {didDoc.authentication?.map((auth: any) => (
-                      <ListItem>
+                    {didDoc.authentication?.map((auth: any, index) => (
+                      <ListItem key={index} dense>
                         <ListItemAvatar >
                           <VpnKeyIcon />
                         </ListItemAvatar>
                         <ListItemText
                           primary={`${auth?.type}`}
-                          secondary={`${auth?.publicKey?.substr(0, 50)}...${auth?.publicKey?.substr(-10)}`}
+                          secondary={`${auth?.publicKey?.substr(0, 10)}...${auth?.publicKey?.substr(-10)}`}
                         />
                       </ListItem>
                     ))}
@@ -111,7 +111,7 @@ function DIDDocumentCard ({ didDoc } : {didDoc: DIDDocument}) {
                   variant="outlined"
                   inputProps={{ style: { fontFamily: 'monospace' } }}
                 />}
-              </CardContent>
+
               <CardActions className={classes.cardActions}>
                 
 
@@ -131,8 +131,8 @@ function DIDDocumentCard ({ didDoc } : {didDoc: DIDDocument}) {
                   </ToggleButtonGroup>
 
               </CardActions>
-            </Card>
-          </Grid>
+            </Box>
+
   )
 }
 export default DIDDocumentCard

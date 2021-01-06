@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react'
 import Container from '@material-ui/core/Container'
 import AppBar from '../../components/nav/AppBar'
 import { useAgent } from '../../agent'
-import { Grid, LinearProgress} from '@material-ui/core'
+import { Grid, LinearProgress } from '@material-ui/core'
 import { DIDDocument } from '@veramo/core'
 import { useSnackbar } from 'notistack'
 import { makeStyles } from '@material-ui/core/styles'
@@ -64,7 +64,7 @@ function DiscoverView() {
       <AppBar title="Discover" />
       <MissingMethodsAlert methods={['resolveDid']} />
 
-      <Grid container spacing={2} justify="center">
+      <Grid container spacing={2} >
         <Grid item xs={12}>
           <Paper
             component="form"
@@ -93,7 +93,9 @@ function DiscoverView() {
         )}
 
         {didDoc && (
-          <DIDDocumentCard didDoc={didDoc} />
+          <Grid item xs={12}>
+            <DIDDocumentCard didDoc={didDoc} />
+          </Grid>
         )}
       </Grid>
     </Container>

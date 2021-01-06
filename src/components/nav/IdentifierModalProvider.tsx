@@ -24,18 +24,19 @@ const IdModalProvider: React.FC = ({ children }) => {
   const fullScreen = useMediaQuery(theme.breakpoints.down('xs'))
   const { agent } = useAgent()
   const [identity, setIdentity] = useState<IdentityProfile | undefined>(undefined)
-  const [tab, setTab] = React.useState(0)
+  const isDid = did?.substr(0,3) === 'did'
+  const [tab, setTab] = React.useState(isDid ? 0 : 1)
   const [didDoc, setDidDoc] = React.useState<DIDDocument | undefined>(undefined)
   const [loading, setLoading] = useState(false)
   const { enqueueSnackbar } = useSnackbar()
 
-  useEffect(()=>{
+  useEffect(() => {
     if (tab === 2 && did) {
       setLoading(true)
-      agent.resolveDid({didUrl: did})
-      .then(setDidDoc)
-      .finally(() => setLoading(false))
-      .catch((e) => enqueueSnackbar(e.message, { variant: 'error' }))
+      agent.resolveDid({ didUrl: did })
+        .then(setDidDoc)
+        .finally(() => setLoading(false))
+        .catch((e) => enqueueSnackbar(e.message, { variant: 'error' }))
 
 
     }
@@ -65,39 +66,48 @@ const IdModalProvider: React.FC = ({ children }) => {
         maxWidth="sm"
         fullWidth
       >
+        <Tabs value={tab} onChange={handleChange} indicatorColor="primary" textColor="primary" variant='fullWidth'>
+          <Tab label={`Profile`} />
+          <Tab label={`Credentials`} />
+          {isDid && <Tab label={`DID`} />}
+        </Tabs>
+
+
+
+
+        {did && <DialogContent dividers>
+          {tab === 0 && <IdentifierProfileView did={did} />}
+          {tab === 1 && <IdentifierCredentialsView did={did} />}
+          {tab === 2 && loading && <LinearProgress />}
+          {isDid && tab === 2 && !loading && didDoc && <DIDDocumentCard didDoc={didDoc} />}
+        </DialogContent>}
+
         <DialogActions>
 
-        {tab !== 0 && <Box display='flex' flexDirection='row' flex={1}>
-          <ListItemAvatar>
-            <Avatar src={identity?.picture} />
-          </ListItemAvatar>
-          <Box display='block'>
+          {isDid && tab !== 0 && <Box display='flex' flexDirection='row' flex={1} marginLeft={1}>
+            <ListItemAvatar>
+              <Avatar src={identity?.picture} />
+            </ListItemAvatar>
+            <Box display='block'>
+              <Typography variant='body1' noWrap>{`${identity?.name}`}</Typography>
+              <Typography variant='caption' noWrap color='textSecondary'>{identity?.nickname}</Typography>
+            </Box>
 
-            <Typography variant='body1' noWrap>{`${identity?.name} (${identity?.nickname})`}</Typography>
-            <Typography variant='caption' noWrap color='textSecondary'>{identity?.did}</Typography>
-          </Box>
+          </Box>}
+          {!isDid && <Box display='flex' flexDirection='row' flex={1} marginLeft={1}>
+            <Box display='block'>
+              <Typography variant='body1' noWrap>{`${identity?.name}`}</Typography>
+              <Typography variant='caption' noWrap color='textSecondary'>{identity?.nickname}</Typography>
+            </Box>
 
-        </Box>}
+          </Box>}
 
           <Button autoFocus onClick={() => showDid(undefined)} color="default">
             Close
         </Button>
         </DialogActions>
 
-        
 
-        {did && <DialogContent>
-          {tab === 0 && <IdentifierProfileView did={did} />}
-          {tab === 1 && <IdentifierCredentialsView did={did} />}
-          {tab === 2 && loading && <LinearProgress />}
-          {tab === 2 && !loading && didDoc && <DIDDocumentCard didDoc={didDoc} />}
-        </DialogContent>}
-
-        <Tabs value={tab} onChange={handleChange} indicatorColor="primary" textColor="primary" variant='fullWidth'>
-          <Tab label={`Profile`} />
-          <Tab label={`Credentials`} />
-          <Tab label={`DID Document`} />
-        </Tabs>
       </Dialog>
 
 

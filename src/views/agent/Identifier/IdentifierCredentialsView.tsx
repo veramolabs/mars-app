@@ -48,7 +48,7 @@ function IdentifierCredentialsView(props: { did: string }) {
   const { enqueueSnackbar } = useSnackbar()
   const [loading, setLoading] = useState(false)
   const [credentials, setCredentials] = useState<Array<UniqueVerifiableCredential>>([])
-  const [tab, setTab] = React.useState(did.substr(0, 3) === 'did' ? 0 : 1)
+  const [tab, setTab] = React.useState(0)
 
   const [issuerCredentialCount, setIssuerCredentialCount] = useState<number>(0)
   const [subjectCredentialCount, setSubjectCredentialCount] = useState<number>(0)

@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import { CircularProgress, ListItemAvatar, ListItemText } from '@material-ui/core'
+import { CircularProgress, ListItem, ListItemAvatar, ListItemText } from '@material-ui/core'
 import Avatar from '@material-ui/core/Avatar'
 import { IdentityProfile } from '../../types'
 import { useAgent } from '../../agent'
-import ListItemLink from './ListItemLink'
 import { useIdModal } from './IdentifierModalProvider'
 
 interface Props {
@@ -29,13 +28,13 @@ function IdentityListItemLink(props: Props) {
   }, [agent, did])
 
   return (
-    <ListItemLink divider onClick={() => showDid(did)}>
+    <ListItem dense divider button onClick={() => showDid(did)}>
       <ListItemAvatar>
       {loading ? <CircularProgress /> : <Avatar src={identity.picture} />}
         
       </ListItemAvatar>
       <ListItemText primary={identity.name} secondary={identity.nickname} />
-    </ListItemLink>
+    </ListItem>
   )
 }
 

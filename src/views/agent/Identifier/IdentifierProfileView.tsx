@@ -75,29 +75,19 @@ function IdentifierProfileView(props: { did: string }) {
       {loading && <LinearProgress />}
       <MissingMethodsAlert methods={['dataStoreORMGetVerifiableCredentials']} />
       {profileItems.filter(i => i.type === 'picture').map((item) => (
-        <ListItem divider button key={item.type} onClick={() => showCredential(item.credential.hash)}>
+        <ListItem dense button key={item.type} onClick={() => showCredential(item.credential.hash)}>
           <ListItemIcon>
             <VerifiedUserIcon />
           </ListItemIcon>
           <Avatar src={item.value} className={classes.avatar} variant='rounded' />
         </ListItem>
       ))}
-      {profileItems.filter(i => i.type === 'id').map((item) => (
-        <ListItem divider button key={item.type} onClick={() => showCredential(item.credential.hash)}>
-          <ListItemIcon>
-            <VerifiedUserIcon />
-          </ListItemIcon>
-          <ListItemText
-              primary={item.value}
-              secondary={item.type}
-            />
-        </ListItem>
-      ))}
+
       <List style={{ flex: 1 }}>
         {filteredItems.map((item, key) => (
           <ListItem
             button
-            divider={key < filteredItems.length - 1}
+            // divider={key < filteredItems.length - 1}
             dense key={item.type} onClick={() => showCredential(item.credential.hash)}>
             <ListItemIcon>
               <VerifiedUserIcon />

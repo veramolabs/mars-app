@@ -1,6 +1,7 @@
 import { IAgentPlugin, IPluginMethodMap, IAgentContext } from '@veramo/core'
 import { IDataStoreORM } from '@veramo/data-store'
 import { IdentityProfile } from '../types'
+import parse from 'url-parse'
 
 type IContext = IAgentContext<IDataStoreORM>
 
@@ -25,6 +26,15 @@ export class IdentityProfileManager implements IAgentPlugin {
     context: IContext,
   ): Promise<IdentityProfile> {
     if (!args.did) return Promise.reject('DID Required')
+
+    if (args.did.substr(0, 3) !== 'did') {
+      const parsed = parse(args.did)
+      return {
+        did: args.did,
+        name: parsed.hostname,
+        nickname: parsed.pathname
+      }
+    }
     if (!context.agent.availableMethods().includes('dataStoreORMGetVerifiableCredentials')) {
       return { did: args.did, name: args.did }
     }

@@ -15,7 +15,7 @@ import CodeIcon from '@material-ui/icons/Code'
 import ApiView from './ApiView'
 import VerifyView from './VerifyView'
 import Messages from './MessagesView'
-import Resolver from './ResolverView'
+import DiscoverView from './DiscoverView'
 import Credentials from './CredentialsView'
 import Identifiers from './IdentifiersView'
 import ManagedDIDs from './ManagedDIDsView'
@@ -35,7 +35,7 @@ export function AgentSwitch(props: any) {
       <Route path="/agent/api" component={ApiView} />
       <Route path="/agent/verify" component={VerifyView} />
       <Route path="/agent/messages" component={Messages} />
-      <Route path="/agent/resolver" component={Resolver} />
+      <Route path="/agent/discover" component={DiscoverView} />
       <Route path="/agent/credentials" component={Credentials} />
       <Route path="/agent/identifiers" component={Identifiers} />
       <Route path="/agent/managed-dids" component={ManagedDIDs} />
@@ -174,7 +174,7 @@ export function AgentDrawer(props: any) {
         <Divider />
 
         <ListItemLink
-          to={'/agent/resolver'}
+          to={'/agent/discover'}
           selected={resolverMatch !== null}
           disabled={!agent?.availableMethods().includes('resolveDid')}
         >

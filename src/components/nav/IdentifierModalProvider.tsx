@@ -1,9 +1,12 @@
-import { useTheme, useMediaQuery, Dialog, DialogContent, DialogActions, Button, Tab, Tabs, Avatar, Typography, Box, ListItemAvatar } from '@material-ui/core'
+import { useTheme, useMediaQuery, Dialog, DialogContent, DialogActions, Button, Tab, Tabs, Avatar, Typography, Box, ListItemAvatar, LinearProgress } from '@material-ui/core'
+import { DIDDocument } from 'did-resolver'
 import React, { useContext, useEffect, useState } from 'react'
 import { useAgent } from '../../agent'
 import { IdentityProfile } from '../../types'
 import IdentifierCredentialsView from '../../views/agent/Identifier/IdentifierCredentialsView'
 import IdentifierProfileView from '../../views/agent/Identifier/IdentifierProfileView'
+import DIDDocumentCard from '../cards/DIDDocumentCard'
+import { useSnackbar } from 'notistack'
 
 
 interface IdModalContextValue {
@@ -22,6 +25,21 @@ const IdModalProvider: React.FC = ({ children }) => {
   const { agent } = useAgent()
   const [identity, setIdentity] = useState<IdentityProfile | undefined>(undefined)
   const [tab, setTab] = React.useState(0)
+  const [didDoc, setDidDoc] = React.useState<DIDDocument | undefined>(undefined)
+  const [loading, setLoading] = useState(false)
+  const { enqueueSnackbar } = useSnackbar()
+
+  useEffect(()=>{
+    if (tab === 2 && did) {
+      setLoading(true)
+      agent.resolveDid({didUrl: did})
+      .then(setDidDoc)
+      .finally(() => setLoading(false))
+      .catch((e) => enqueueSnackbar(e.message, { variant: 'error' }))
+
+
+    }
+  }, [agent, did, tab, enqueueSnackbar])
 
 
   useEffect(() => {
@@ -47,32 +65,39 @@ const IdModalProvider: React.FC = ({ children }) => {
         maxWidth="sm"
         fullWidth
       >
-          <Box display='flex' flexDirection='row' margin={2}>
-            <ListItemAvatar>
-              <Avatar src={identity?.picture} />
-            </ListItemAvatar>
-            <Box display='block'>
-              
+        <DialogActions>
+
+        {tab !== 0 && <Box display='flex' flexDirection='row' flex={1}>
+          <ListItemAvatar>
+            <Avatar src={identity?.picture} />
+          </ListItemAvatar>
+          <Box display='block'>
+
             <Typography variant='body1' noWrap>{`${identity?.name} (${identity?.nickname})`}</Typography>
             <Typography variant='caption' noWrap color='textSecondary'>{identity?.did}</Typography>
-            </Box>
-
           </Box>
 
-          <Tabs value={tab} onChange={handleChange} indicatorColor="primary" textColor="primary">
-            <Tab label={`Profile`} />
-            <Tab label={`Credentials`} />
-          </Tabs>
-        {did && <DialogContent dividers>
-          {tab === 0 && <IdentifierProfileView did={did} />}
-          {tab === 1 && <IdentifierCredentialsView did={did} />}
-        </DialogContent>}
+        </Box>}
 
-        <DialogActions>
           <Button autoFocus onClick={() => showDid(undefined)} color="default">
             Close
         </Button>
         </DialogActions>
+
+        
+
+        {did && <DialogContent>
+          {tab === 0 && <IdentifierProfileView did={did} />}
+          {tab === 1 && <IdentifierCredentialsView did={did} />}
+          {tab === 2 && loading && <LinearProgress />}
+          {tab === 2 && !loading && didDoc && <DIDDocumentCard didDoc={didDoc} />}
+        </DialogContent>}
+
+        <Tabs value={tab} onChange={handleChange} indicatorColor="primary" textColor="primary" variant='fullWidth'>
+          <Tab label={`Profile`} />
+          <Tab label={`Credentials`} />
+          <Tab label={`DID Document`} />
+        </Tabs>
       </Dialog>
 
 

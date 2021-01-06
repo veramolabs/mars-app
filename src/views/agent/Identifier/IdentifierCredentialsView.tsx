@@ -85,7 +85,7 @@ function IdentifierCredentialsView(props: { did: string }) {
       setCredentials([])
       agent
         .dataStoreORMGetVerifiableCredentials({
-          where: [{ column: tab === 0 ? 'issuer' : 'subject', value: [did] }],
+          where: [{ column: tab === 0 ? 'subject' : 'issuer', value: [did] }],
         })
         .then(setCredentials)
         .finally(() => setLoading(false))
@@ -106,10 +106,10 @@ function IdentifierCredentialsView(props: { did: string }) {
           onChange={handleChange}
         >
           <ToggleButton value={0}>
-            <Typography variant='caption'>{`Issuer (${issuerCredentialCount})`} </Typography>
+            <Typography variant='caption'>{`Subject (${subjectCredentialCount})`} </Typography>
           </ToggleButton>
           <ToggleButton value={1}>
-            <Typography variant='caption'>{`Subject (${subjectCredentialCount})`} </Typography>
+            <Typography variant='caption'>{`Issuer (${issuerCredentialCount})`} </Typography>
           </ToggleButton>
         </ToggleButtonGroup>
       </Box>}

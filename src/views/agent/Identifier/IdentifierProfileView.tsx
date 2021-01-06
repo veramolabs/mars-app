@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react'
-import { makeStyles, List, ListItemText, Box, ListItem } from '@material-ui/core'
+import { makeStyles, List, ListItemText, Box, ListItem, ListItemIcon } from '@material-ui/core'
 import Avatar from '@material-ui/core/Avatar'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import { UniqueVerifiableCredential } from '@veramo/data-store'
 import { useAgent } from '../../../agent'
 import { useSnackbar } from 'notistack'
 import MissingMethodsAlert from '../../../components/nav/MissingMethodsAlert'
-import ListItemLink from '../../../components/nav/ListItemLink'
 import { useCredentialModal } from '../../../components/nav/CredentialModalProvider'
 import ProfileCredentialButton from '../../../components/nav/ProfileCredentialButton'
+import VerifiedUserIcon from '@material-ui/icons/VerifiedUser'
 
 const useStyles = makeStyles(() => ({
   avatar: {
-    width: 100,
-    height: 100,
+    width: 150,
+    height: 150,
   },
 }))
 
@@ -74,29 +74,42 @@ function IdentifierProfileView(props: { did: string }) {
     <Box>
       {loading && <LinearProgress />}
       <MissingMethodsAlert methods={['dataStoreORMGetVerifiableCredentials']} />
-        <Box flexDirection='row' display='flex'>
-          <Box>
-            {profileItems.filter(i => i.type === 'picture').map((item) => (
-              <ListItemLink key={item.type} onClick={() => showCredential(item.credential.hash)}>
-                <Avatar src={item.value} className={classes.avatar} variant='rounded'/>
-              </ListItemLink>
-            ))}
-          </Box>
-          <List style={{ flex: 1 }}>
-            {filteredItems.map((item, key) => (
-              <ListItem
-                button
-                divider={key < filteredItems.length - 1}
-                dense key={item.type} onClick={() => showCredential(item.credential.hash)}>
-                <ListItemText
-                  primary={item.value}
-                  secondary={item.type}
-                />
-              </ListItem>
-            ))}
-          </List>
-        </Box>
-        <ProfileCredentialButton subject={did}/>
+      {profileItems.filter(i => i.type === 'picture').map((item) => (
+        <ListItem divider button key={item.type} onClick={() => showCredential(item.credential.hash)}>
+          <ListItemIcon>
+            <VerifiedUserIcon />
+          </ListItemIcon>
+          <Avatar src={item.value} className={classes.avatar} variant='rounded' />
+        </ListItem>
+      ))}
+      {profileItems.filter(i => i.type === 'id').map((item) => (
+        <ListItem divider button key={item.type} onClick={() => showCredential(item.credential.hash)}>
+          <ListItemIcon>
+            <VerifiedUserIcon />
+          </ListItemIcon>
+          <ListItemText
+              primary={item.value}
+              secondary={item.type}
+            />
+        </ListItem>
+      ))}
+      <List style={{ flex: 1 }}>
+        {filteredItems.map((item, key) => (
+          <ListItem
+            button
+            divider={key < filteredItems.length - 1}
+            dense key={item.type} onClick={() => showCredential(item.credential.hash)}>
+            <ListItemIcon>
+              <VerifiedUserIcon />
+            </ListItemIcon>
+            <ListItemText
+              primary={item.value}
+              secondary={item.type}
+            />
+          </ListItem>
+        ))}
+      </List>
+      <ProfileCredentialButton subject={did} />
 
     </Box>
   )

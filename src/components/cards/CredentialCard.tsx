@@ -19,6 +19,7 @@ import {
   useMediaQuery,
   useTheme,
   ListItem,
+  TextField,
 } from '@material-ui/core'
 import Card from '@material-ui/core/Card'
 import CardActionAreaLink from '../nav/CardActionAreaLink'
@@ -340,13 +341,21 @@ function CredentialPostCard(props: Props) {
         }}
         maxWidth="md"
         fullWidth
+        scroll='paper'
         aria-labelledby="responsive-dialog-title"
       >
-        <DialogTitle id="responsive-dialog-title">Code</DialogTitle>
         <DialogContent>
-          <Box fontFamily="Monospace" fontSize="body2.fontSize" m={1}>
-            <pre>{JSON.stringify(verifiableCredential, null, 2)}</pre>
-          </Box>
+          <TextField
+            label="Source"
+            multiline
+            rows={30}
+            value={JSON.stringify(verifiableCredential, null, 2)}
+            fullWidth
+            margin="normal"
+            variant="outlined"
+            inputProps={{ style: { fontFamily: 'monospace' } }}
+          />
+
         </DialogContent>
         <DialogActions>
           <Button
@@ -354,8 +363,8 @@ function CredentialPostCard(props: Props) {
             onClick={() => {
               setShowCode(false)
             }}
-            color="primary"
-            variant="contained"
+            color="default"
+            
           >
             Close
           </Button>

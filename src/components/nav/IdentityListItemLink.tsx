@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { LinearProgress, ListItemAvatar, ListItemText } from '@material-ui/core'
+import { CircularProgress, ListItemAvatar, ListItemText } from '@material-ui/core'
 import Avatar from '@material-ui/core/Avatar'
 import { IdentityProfile } from '../../types'
 import { useAgent } from '../../agent'
@@ -30,9 +30,9 @@ function IdentityListItemLink(props: Props) {
 
   return (
     <ListItemLink divider onClick={() => showDid(did)}>
-      {loading && <LinearProgress />}
       <ListItemAvatar>
-        <Avatar src={identity.picture} />
+      {loading ? <CircularProgress /> : <Avatar src={identity.picture} />}
+        
       </ListItemAvatar>
       <ListItemText primary={identity.name} secondary={identity.nickname} />
     </ListItemLink>

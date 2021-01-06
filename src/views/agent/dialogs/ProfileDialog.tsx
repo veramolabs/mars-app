@@ -236,7 +236,7 @@ function ProfileDialog(props: Props) {
       fullWidth
       aria-labelledby="responsive-dialog-title"
     >
-      <DialogTitle id="responsive-dialog-title">Issue profile information credential</DialogTitle>
+      <DialogTitle id="responsive-dialog-title">New profile information credential</DialogTitle>
       {loading && <LinearProgress />}
       <DialogContent>
         <form className={classes.form}>
@@ -350,7 +350,7 @@ function ProfileDialog(props: Props) {
         <Button onClick={saveProfileInfo} color="primary" autoFocus
           disabled={saveCredentialInAgents.length === 0}
         >
-          Issue
+          Create credential
         </Button>
       </DialogActions>
     </Dialog>

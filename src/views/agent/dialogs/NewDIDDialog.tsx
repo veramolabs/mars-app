@@ -17,7 +17,6 @@ import {
 import { useSnackbar } from 'notistack'
 import { useAgent } from '../../../agent'
 import { IDIDManagerCreateArgs } from '@veramo/core'
-import { useHistory } from 'react-router-dom'
 import MissingMethodsAlert from '../../../components/nav/MissingMethodsAlert'
 
 interface Props {
@@ -41,7 +40,6 @@ const useStyles = makeStyles(() => ({
 function NewAgentDialog(props: Props) {
   const { agent } = useAgent()
   const classes = useStyles()
-  const history = useHistory()
   const { enqueueSnackbar } = useSnackbar()
   const [loading, setLoading] = useState(false)
   const [alias, setAlias] = useState<string>('')
@@ -77,7 +75,6 @@ function NewAgentDialog(props: Props) {
       .then((identifier) => {
         props.onClose()
         enqueueSnackbar(identifier.did + ' created', { variant: 'success' })
-        history.push('/agent/id/' + identifier.did)
       })
       .finally(() => setLoading(false))
       .catch((e) => enqueueSnackbar(e.message, { variant: 'error' }))

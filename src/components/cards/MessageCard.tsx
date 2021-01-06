@@ -36,6 +36,7 @@ import MoreIcon from '@material-ui/icons/MoreVert'
 import DownloadIcon from '@material-ui/icons/CloudDownload'
 import CodeIcon from '@material-ui/icons/Code'
 import { useSnackbar } from 'notistack'
+import { useIdModal } from '../nav/IdentifierModalProvider'
 const { blake2bHex } = require('blakejs')
 
 const useStyles = makeStyles((theme) => ({
@@ -77,6 +78,7 @@ function MessageCard(props: Props) {
   const theme = useTheme()
   const fullScreen = useMediaQuery(theme.breakpoints.down('xs'))
   const [anchorEl, setAnchorEl] = React.useState(null)
+  const { showDid } = useIdModal()
 
   const handleExpandClick = () => {
     setExpanded(!expanded)
@@ -146,7 +148,7 @@ function MessageCard(props: Props) {
       </CardContent>
 
       {from && (
-        <CardActionAreaLink to={'/agent/id/' + from.did}>
+        <CardActionAreaLink onClick={()=>showDid(from.did)}>
           <CardHeader
             avatar={<Avatar src={from?.picture} />}
             title={`From: ${from?.name}`}
@@ -155,7 +157,7 @@ function MessageCard(props: Props) {
         </CardActionAreaLink>
       )}
       {to && (
-        <CardActionAreaLink to={'/agent/id/' + to.did}>
+        <CardActionAreaLink onClick={()=>showDid(to.did)}>
           <CardHeader
             avatar={<Avatar src={to?.picture} />}
             title={`To: ${to?.name}`}

@@ -158,7 +158,7 @@ export function AgentDrawer(props: any) {
   const credentialsMatch = useRouteMatch('/agent/credentials')
   const identitiesMatch = useRouteMatch('/agent/identifiers')
   const ManagedDIDsMatch = useRouteMatch('/agent/managed-dids')
-  const identityMatch = useRouteMatch('/agent/id/:did')
+
 
   return (
     <Box className={classes.mainDrawerContent}>
@@ -224,7 +224,7 @@ export function AgentDrawer(props: any) {
 
         <ListItemLink
           to={'/agent/identifiers'}
-          selected={identitiesMatch !== null || identityMatch !== null}
+          selected={identitiesMatch !== null}
           disabled={!agent?.availableMethods().includes('dataStoreORMGetIdentifiers')}
         >
           <ListItemIcon>

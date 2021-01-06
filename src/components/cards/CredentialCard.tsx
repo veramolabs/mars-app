@@ -45,6 +45,7 @@ import CodeIcon from '@material-ui/icons/Code'
 import LinkIcon from '@material-ui/icons/Link'
 import AvatarLink from '../nav/AvatarLink'
 import { useCredentialModal } from '../nav/CredentialModalProvider'
+import { useIdModal } from '../nav/IdentifierModalProvider'
 const QRCode = require('qrcode-react')
 
 interface Props {
@@ -110,6 +111,7 @@ function CredentialPostCard(props: Props) {
   const theme = useTheme()
   const fullScreen = useMediaQuery(theme.breakpoints.down('xs'))
   const { showCredential } = useCredentialModal()
+  const { showDid } = useIdModal()
 
   const handleClickCopyButton = (event: any) => {
     setAnchorEl(event.currentTarget)
@@ -185,22 +187,16 @@ function CredentialPostCard(props: Props) {
   return (
     <Card elevation={props.type === 'summary' ? 1 : 4}>
       {loading && <LinearProgress />}
-      {props.type === 'details' && <CardActionAreaLink
-        onClick={() => showCredential(hash)}
-        // to={props.type === 'summary' ? '/agent/credential/' + hash : '/agent/id/' + subject?.did}
-      >
-        {contents}
-      </CardActionAreaLink>}
+
       <CardActions disableSpacing>
         <Box className={classes.footer}>
           <AvatarLink
             src={issuer.picture}
-            to={'/agent/id/' + issuer.did}
-            onClick={() => showCredential(undefined)}
+            onClick={() => showDid(issuer.did)}
             className={classes.footerAvatar}
           />
 
-       
+
           <ListItem button onClick={() => showCredential(hash)} className={classes.footerDetails}>
             <Box className={classes.footerBottom}>
               <Typography noWrap display='block' variant="body2" color="textSecondary" title={issuer.nickname}>
@@ -214,7 +210,7 @@ function CredentialPostCard(props: Props) {
               <Icon fontSize="small" color="disabled" className={classes.icon} />
               <Typography variant="caption" color="textSecondary">{`${formatDistanceToNow(
                 Date.parse(verifiableCredential.issuanceDate),
-                )} ago`}</Typography>
+              )} ago`}</Typography>
             </Box>
           </ListItem>
 
@@ -224,6 +220,11 @@ function CredentialPostCard(props: Props) {
           </IconButton>
         </Box>
       </CardActions>
+      {props.type === 'details' && <CardActionAreaLink
+        onClick={() => showCredential(hash)}
+      >
+        {contents}
+      </CardActionAreaLink>}
       <Menu id="lock-menu" anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleClose}>
         {verifiableCredential.credentialSubject.id?.substr(0, 4) === 'http' && (
           <MenuItem

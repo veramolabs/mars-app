@@ -44,12 +44,11 @@ function CredentialsView(props: any) {
           exclusive
           size="small"
           onChange={(event, newCardType) => { setCardType(newCardType) }}
-          aria-label="text alignment"
         >
-          <ToggleButton value="summary" aria-label="summary">
+          <ToggleButton value="summary">
             <ListIcon />
           </ToggleButton>
-          <ToggleButton value="details" aria-label="details">
+          <ToggleButton value="details">
             <ViewAgendaIcon />
           </ToggleButton>
 

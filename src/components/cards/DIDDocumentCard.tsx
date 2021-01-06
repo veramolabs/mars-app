@@ -281,7 +281,7 @@ function DIDDocumentCard({ didDoc, isManaged }: { didDoc: DIDDocument, isManaged
             autoFocus
             onClick={addService}
             color="primary"
-
+            disabled={loading}
           >
             Add
           </Button>

@@ -1,4 +1,4 @@
-import { Box, List, ListItem, ListItemAvatar, ListItemText, ListSubheader, TextField, CardActions, makeStyles } from '@material-ui/core'
+import { Box, List, ListItem, ListItemAvatar, ListItemText, ListSubheader, TextField, CardActions, makeStyles, ListItemSecondaryAction, IconButton } from '@material-ui/core'
 import { ToggleButtonGroup, ToggleButton } from '@material-ui/lab'
 import { DIDDocument } from 'did-resolver'
 import React from 'react'
@@ -9,6 +9,8 @@ import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import VpnKeyIcon from '@material-ui/icons/VpnKey'
 import ListIcon from '@material-ui/icons/List'
 import CodeIcon from '@material-ui/icons/Code'
+import DeleteIcon from '@material-ui/icons/Delete'
+import MoreIcon from '@material-ui/icons/MoreVert'
 
 const useStyles = makeStyles((theme) => ({
   cardActions: {
@@ -19,119 +21,132 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-function DIDDocumentCard ({ didDoc } : {didDoc: DIDDocument}) {
+function DIDDocumentCard({ didDoc, isManaged }: { didDoc: DIDDocument, isManaged?: boolean }) {
   const classes = useStyles()
 
   const [cardType, setCardType] = React.useState<'preview' | 'source'>('preview')
 
   return (
 
-            <Box >
+    <Box >
 
 
-                {cardType === 'preview' && <Box>
+      {cardType !== 'source' && <Box>
 
 
-                  <List>
-                    <ListItem dense>
-                      <ListItemAvatar >
-                        <CheckCircleIcon />
-                      </ListItemAvatar>
-                      <ListItemText
-                        primary={`${didDoc.id}`}
-                        secondary={`${didDoc['@context']}`}
-                      />
-                    </ListItem>
-                  </List>
+        <List>
+          <ListItem dense>
+            <ListItemAvatar >
+              <CheckCircleIcon />
+            </ListItemAvatar>
+            <ListItemText
+              primary={`${didDoc.id}`}
+              secondary={`${didDoc['@context']}`}
+            />
+            {isManaged && <ListItemSecondaryAction>
+              <IconButton edge="end">
+                <MoreIcon />
+              </IconButton>
+            </ListItemSecondaryAction>}
+
+          </ListItem>
+        </List>
 
 
-                  {didDoc.service && didDoc.service?.length > 0 && <List subheader={
-                    <ListSubheader>
-                      Services
+        {didDoc.service && didDoc.service?.length > 0 && <List subheader={
+          <ListSubheader>
+            Services
                   </ListSubheader>
-                  }>
-                    {didDoc.service?.map((service, index) => (
-                      <ListItem key={index} dense>
-                        <ListItemAvatar >
-                          {service.type === 'Messaging' ? <MessageIcon /> : <SettingsIcon />}
-                        </ListItemAvatar>
-                        <ListItemText
-                          primary={`${service.type}: ${service.serviceEndpoint}`}
-                          secondary={`${service.description}`}
-                        />
-                      </ListItem>
-                    ))}
-                  </List>}
+        }>
+          {didDoc.service?.map((service, index) => (
+            <ListItem key={index} dense>
+              <ListItemAvatar >
+                {service.type === 'Messaging' ? <MessageIcon /> : <SettingsIcon />}
+              </ListItemAvatar>
+              <ListItemText
+                primary={`${service.type}: ${service.serviceEndpoint}`}
+                secondary={`${service.description}`}
+              />
+              {isManaged && <ListItemSecondaryAction>
+                <IconButton edge="end" aria-label="delete">
+                  <DeleteIcon />
+                </IconButton>
+              </ListItemSecondaryAction>}
+            </ListItem>
+          ))}
+        </List>}
 
 
-                  <List subheader={
-                    <ListSubheader>
-                      Public keys
+        <List subheader={
+          <ListSubheader>
+            Public keys
                   </ListSubheader>
-                  }>
-                    {didDoc.publicKey.map((key, index) => (
-                      <ListItem key={index} dense>
-                        <ListItemAvatar >
-                          <VpnKeyIcon />
-                        </ListItemAvatar>
-                        <ListItemText
-                          primary={`${key.type}`}
-                          secondary={`${key.controller ? 'Controller: ' + key.controller : ''}`}
-                        />
-                      </ListItem>
-                    ))}
-                  </List>
+        }>
+          {didDoc.publicKey.map((key, index) => (
+            <ListItem key={index} dense>
+              <ListItemAvatar >
+                <VpnKeyIcon />
+              </ListItemAvatar>
+              <ListItemText
+                primary={`${key.type}`}
+                secondary={`${key.controller ? 'Controller: ' + key.controller : ''}`}
+              />
+              {isManaged && <ListItemSecondaryAction>
+                <IconButton edge="end" aria-label="delete">
+                  <DeleteIcon />
+                </IconButton>
+              </ListItemSecondaryAction>}
+            </ListItem>
+          ))}
+        </List>
 
-                  <List subheader={
-                    <ListSubheader>
-                      Authentication
+        <List subheader={
+          <ListSubheader>
+            Authentication
                   </ListSubheader>
-                  }>
-                    {didDoc.authentication?.map((auth: any, index) => (
-                      <ListItem key={index} dense>
-                        <ListItemAvatar >
-                          <VpnKeyIcon />
-                        </ListItemAvatar>
-                        <ListItemText
-                          primary={`${auth?.type}`}
-                          secondary={`${auth?.publicKey?.substr(0, 10)}...${auth?.publicKey?.substr(-10)}`}
-                        />
-                      </ListItem>
-                    ))}
-                  </List>
-                </Box>}
+        }>
+          {didDoc.authentication?.map((auth: any, index) => (
+            <ListItem key={index} dense>
+              <ListItemAvatar >
+                <VpnKeyIcon />
+              </ListItemAvatar>
+              <ListItemText
+                primary={`${auth?.type}`}
+                secondary={`${auth?.publicKey?.substr(0, 10)}...${auth?.publicKey?.substr(-10)}`}
+              />
+            </ListItem>
+          ))}
+        </List>
+      </Box>}
 
-                {cardType === 'source' && <TextField
-                  label="DID Document"
-                  multiline
-                  rows={30}
-                  value={JSON.stringify(didDoc, null, 2)}
-                  fullWidth
-                  margin="normal"
-                  variant="outlined"
-                  inputProps={{ style: { fontFamily: 'monospace' } }}
-                />}
+      {cardType === 'source' && <TextField
+        label="DID Document"
+        multiline
+        rows={30}
+        value={JSON.stringify(didDoc, null, 2)}
+        fullWidth
+        margin="normal"
+        variant="outlined"
+        inputProps={{ style: { fontFamily: 'monospace' } }}
+      />}
 
-              <CardActions className={classes.cardActions}>
-                
+      <CardActions className={classes.cardActions}>
 
-                  <ToggleButtonGroup
-                    value={cardType}
-                    exclusive
-                    size="small"
-                    onChange={(event, newCardType) => { setCardType(newCardType) }}
-                  >
-                    <ToggleButton value="preview">
-                      <ListIcon />
-                    </ToggleButton>
-                    <ToggleButton value="source">
-                      <CodeIcon />
-                    </ToggleButton>
 
-                  </ToggleButtonGroup>
+        <ToggleButtonGroup
+          value={cardType}
+          exclusive
+          size="small"
+          onChange={(event, newCardType) => { setCardType(newCardType) }}
+        >
+          <ToggleButton value="source">
+            <CodeIcon />
+          </ToggleButton>
 
-              </CardActions>
-            </Box>
+        </ToggleButtonGroup>
+
+      </CardActions>
+    </Box>
 
   )
 }

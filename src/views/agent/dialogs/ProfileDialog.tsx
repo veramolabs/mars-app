@@ -19,6 +19,10 @@ import {
   Select,
   LinearProgress,
   ListSubheader,
+  Checkbox,
+  FormControlLabel,
+  FormGroup,
+  FormLabel,
 } from '@material-ui/core'
 import { IdentityProfile } from '../../../types'
 import shortId from 'shortid'
@@ -77,6 +81,17 @@ function ProfileDialog(props: Props) {
   const [subject, setSubject] = useState<string>('')
   const [issuers, setIssuers] = useState<AgentWithManagedDids[]>([])
   const [knownIdentifiers, setKnownIdentifiers] = useState<AgentWithManagedDids[]>([])
+  const [saveCredentialInAgents, setSaveCredentialInAgents] = useState<number[]>([activeAgentIndex])
+
+  const handleChange = (event: any) => {
+    const val = parseInt(event.target.value, 10)
+    if (event.target.checked) {
+      setSaveCredentialInAgents(saveCredentialInAgents.concat([val]))
+    } else {
+      setSaveCredentialInAgents(saveCredentialInAgents.filter((m) => m !== val))
+    }
+  }
+
 
   useEffect(() => {
     setLoading(true)
@@ -92,6 +107,11 @@ function ProfileDialog(props: Props) {
           result.push({
             agentConfig,
             profiles,
+          })
+        } else {
+          result.push({
+            agentConfig,
+            profiles: [],
           })
         }
       }
@@ -119,6 +139,12 @@ function ProfileDialog(props: Props) {
           result.push({
             agentConfig,
             profiles,
+          })
+        } else {
+
+          result.push({
+            agentConfig,
+            profiles: [],
           })
         }
       }
@@ -168,21 +194,26 @@ function ProfileDialog(props: Props) {
       if (picture) credentialSubject['picture'] = picture
       const uniqId = shortId.generate()
 
-      const split = issuer.split('|')
+      const [agentIndex, issuerDid] = issuer.split('|')
 
-      await agentList[parseInt(split[0], 10)].agent.createVerifiableCredential({
+      const verifiableCredential = await agentList[parseInt(agentIndex, 10)].agent.createVerifiableCredential({
         credential: {
-          issuer: { id: split[1] },
+          issuer: { id: issuerDid },
           '@context': ['https://www.w3.org/2018/credentials/v1'],
           type: ['VerifiableCredential', 'Profile'],
           issuanceDate: new Date().toISOString(),
           id: uniqId,
           credentialSubject,
         },
-        save: true,
         proofFormat: 'jwt',
       })
       enqueueSnackbar('Profile credential created', { variant: 'success' })
+
+      for (const index of saveCredentialInAgents) {
+        await agentList[index].agent.dataStoreSaveVerifiableCredential({ verifiableCredential })
+        enqueueSnackbar('Credential saved to ' + agentList[index].name, { variant: 'success' })
+      }
+
       props.onClose()
     } catch (error) {
       enqueueSnackbar(error.message, { variant: 'error' })
@@ -205,7 +236,7 @@ function ProfileDialog(props: Props) {
       fullWidth
       aria-labelledby="responsive-dialog-title"
     >
-      <DialogTitle id="responsive-dialog-title">Issue contact information credential</DialogTitle>
+      <DialogTitle id="responsive-dialog-title">Issue profile information credential</DialogTitle>
       {loading && <LinearProgress />}
       <DialogContent>
         <form className={classes.form}>
@@ -290,13 +321,35 @@ function ProfileDialog(props: Props) {
             margin="normal"
             fullWidth
           />
+
+          <FormControl component="fieldset" className={classes.formControl}>
+            <FormLabel component="legend">Save to:</FormLabel>
+            <FormGroup>
+              {agentList.map((agent, index) => (
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={saveCredentialInAgents.includes(index)}
+                      disabled={!agent.agent.availableMethods().includes('dataStoreSaveVerifiableCredential')}
+                      onChange={handleChange}
+                      value={index}
+                    />
+                  }
+                  key={index}
+                  label={agent.name}
+                />
+              ))}
+            </FormGroup>
+          </FormControl>
         </form>
       </DialogContent>
       <DialogActions>
         <Button autoFocus onClick={props.onClose} color="default">
           Cancel
         </Button>
-        <Button onClick={saveProfileInfo} color="primary" autoFocus>
+        <Button onClick={saveProfileInfo} color="primary" autoFocus
+          disabled={saveCredentialInAgents.length === 0}
+        >
           Issue
         </Button>
       </DialogActions>

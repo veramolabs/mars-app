@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react'
 import Container from '@material-ui/core/Container'
 import AppBar from '../../components/nav/AppBar'
 import { useAgent } from '../../agent'
-import { Card, CardContent, Grid, LinearProgress, List, TextField, ListItem, ListItemText, ListSubheader, ListItemAvatar } from '@material-ui/core'
+import { Grid, LinearProgress} from '@material-ui/core'
 import { DIDDocument } from '@veramo/core'
 import { useSnackbar } from 'notistack'
 import { makeStyles } from '@material-ui/core/styles'
@@ -10,10 +10,9 @@ import Paper from '@material-ui/core/Paper'
 import InputBase from '@material-ui/core/InputBase'
 import IconButton from '@material-ui/core/IconButton'
 import SearchIcon from '@material-ui/icons/Search'
-import MessageIcon from '@material-ui/icons/Message'
-import SettingsIcon from '@material-ui/icons/Settings'
-import VpnKeyIcon from '@material-ui/icons/VpnKey'
 import MissingMethodsAlert from '../../components/nav/MissingMethodsAlert'
+import DIDDocumentCard from '../../components/cards/DIDDocumentCard'
+
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: '2px 4px',
@@ -31,6 +30,12 @@ const useStyles = makeStyles((theme) => ({
     height: 28,
     margin: 4,
   },
+  cardActions: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    flex: 1
+  }
 }))
 
 function DiscoverView() {
@@ -88,63 +93,7 @@ function DiscoverView() {
         )}
 
         {didDoc && (
-          <Grid item xs={12}>
-            <Card variant="outlined">
-              <CardContent>
-
-
-
-                <List subheader={
-                  <ListSubheader>
-                    Services
-                  </ListSubheader>
-                }>
-                  {didDoc.service?.map(service => (
-                    <ListItem>
-                      <ListItemAvatar >
-                        {service.type === 'Messaging' ? <MessageIcon /> : <SettingsIcon />}
-                      </ListItemAvatar>
-                      <ListItemText
-                        primary={`${service.type}: ${service.serviceEndpoint}`}
-                        secondary={`${service.description}`}
-                      />
-                    </ListItem>
-                  ))}
-                </List>
-
-
-                <List subheader={
-                  <ListSubheader>
-                    Public keys
-                  </ListSubheader>
-                }>
-                  {didDoc.publicKey.map(key => (
-                    <ListItem>
-                      <ListItemAvatar >
-                        <VpnKeyIcon />
-                      </ListItemAvatar>
-                      <ListItemText
-                        primary={`${key.type}`}
-                        secondary={`${key.publicKeyHex}`}
-                      />
-                    </ListItem>
-                  ))}
-                </List>
-
-
-                <TextField
-                  label="DID Document"
-                  multiline
-                  rows={30}
-                  value={JSON.stringify(didDoc, null, 2)}
-                  fullWidth
-                  margin="normal"
-                  variant="outlined"
-                  inputProps={{ style: { fontFamily: 'monospace' } }}
-                />
-              </CardContent>
-            </Card>
-          </Grid>
+          <DIDDocumentCard didDoc={didDoc} />
         )}
       </Grid>
     </Container>

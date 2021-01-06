@@ -1,4 +1,4 @@
-import { Box, List, ListItem, ListItemAvatar, ListItemText, ListSubheader, TextField, CardActions, makeStyles, ListItemSecondaryAction, IconButton } from '@material-ui/core'
+import { Box, List, ListItem, ListItemAvatar, ListItemText, ListSubheader, TextField, CardActions, makeStyles, ListItemSecondaryAction, IconButton, ListItemIcon, Menu, MenuItem, Typography } from '@material-ui/core'
 import { ToggleButtonGroup, ToggleButton } from '@material-ui/lab'
 import { DIDDocument } from 'did-resolver'
 import React from 'react'
@@ -7,7 +7,6 @@ import MessageIcon from '@material-ui/icons/Message'
 import SettingsIcon from '@material-ui/icons/Settings'
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import VpnKeyIcon from '@material-ui/icons/VpnKey'
-import ListIcon from '@material-ui/icons/List'
 import CodeIcon from '@material-ui/icons/Code'
 import DeleteIcon from '@material-ui/icons/Delete'
 import MoreIcon from '@material-ui/icons/MoreVert'
@@ -23,17 +22,22 @@ const useStyles = makeStyles((theme) => ({
 
 function DIDDocumentCard({ didDoc, isManaged }: { didDoc: DIDDocument, isManaged?: boolean }) {
   const classes = useStyles()
+  const [anchorEl, setAnchorEl] = React.useState(null)
 
   const [cardType, setCardType] = React.useState<'preview' | 'source'>('preview')
+  const handleClose = () => {
+    setAnchorEl(null)
+  }
+
+  const handleOpen = (event: any) => {
+    setAnchorEl(event.currentTarget)
+  }
 
   return (
 
     <Box >
 
-
       {cardType !== 'source' && <Box>
-
-
         <List>
           <ListItem dense>
             <ListItemAvatar >
@@ -44,7 +48,7 @@ function DIDDocumentCard({ didDoc, isManaged }: { didDoc: DIDDocument, isManaged
               secondary={`${didDoc['@context']}`}
             />
             {isManaged && <ListItemSecondaryAction>
-              <IconButton edge="end">
+              <IconButton edge="end" onClick={handleOpen}>
                 <MoreIcon />
               </IconButton>
             </ListItemSecondaryAction>}
@@ -56,7 +60,7 @@ function DIDDocumentCard({ didDoc, isManaged }: { didDoc: DIDDocument, isManaged
         {didDoc.service && didDoc.service?.length > 0 && <List subheader={
           <ListSubheader>
             Services
-                  </ListSubheader>
+          </ListSubheader>
         }>
           {didDoc.service?.map((service, index) => (
             <ListItem key={index} dense>
@@ -64,8 +68,8 @@ function DIDDocumentCard({ didDoc, isManaged }: { didDoc: DIDDocument, isManaged
                 {service.type === 'Messaging' ? <MessageIcon /> : <SettingsIcon />}
               </ListItemAvatar>
               <ListItemText
-                primary={`${service.type}: ${service.serviceEndpoint}`}
-                secondary={`${service.description}`}
+                secondary={`${service.serviceEndpoint}`}
+                primary={`${service.description}`}
               />
               {isManaged && <ListItemSecondaryAction>
                 <IconButton edge="end" aria-label="delete">
@@ -146,6 +150,28 @@ function DIDDocumentCard({ didDoc, isManaged }: { didDoc: DIDDocument, isManaged
         </ToggleButtonGroup>
 
       </CardActions>
+
+      <Menu id="lock-menu" anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleClose}>
+        <MenuItem onClick={() => { }}>
+          <ListItemIcon>
+            <SettingsIcon />
+          </ListItemIcon>
+          <Typography variant="inherit" noWrap>
+            Add service
+          </Typography>
+        </MenuItem>
+        <MenuItem onClick={() => { }}>
+          <ListItemIcon>
+            <VpnKeyIcon />
+          </ListItemIcon>
+          <Typography variant="inherit" noWrap>
+            Add public key
+          </Typography>
+        </MenuItem>
+
+
+      </Menu>
+
     </Box>
 
   )

@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
   cardActions: {
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'flex-start',
+    justifyContent: 'flex-end',
     flex: 1
   }
 }))

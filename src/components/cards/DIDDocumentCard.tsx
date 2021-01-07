@@ -1,7 +1,7 @@
-import { Box, List, ListItem, ListItemAvatar, ListItemText, ListSubheader, TextField, CardActions, makeStyles, ListItemSecondaryAction, IconButton, ListItemIcon, Menu, MenuItem, Typography, Button, Dialog, DialogActions, DialogContent, useMediaQuery, useTheme, DialogTitle } from '@material-ui/core'
+import { Box, List, ListItem, ListItemAvatar, ListItemText, ListSubheader, TextField, CardActions, makeStyles, ListItemSecondaryAction, IconButton, ListItemIcon, Menu, MenuItem, Typography, Button, Dialog, DialogActions, DialogContent, useMediaQuery, useTheme, DialogTitle, FormControl, InputLabel, Select } from '@material-ui/core'
 import { ToggleButtonGroup, ToggleButton } from '@material-ui/lab'
 import { DIDDocument } from 'did-resolver'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import shortId from 'shortid'
 import MessageIcon from '@material-ui/icons/Message'
 import SettingsIcon from '@material-ui/icons/Settings'
@@ -12,6 +12,7 @@ import DeleteIcon from '@material-ui/icons/Delete'
 import MoreIcon from '@material-ui/icons/MoreVert'
 import { useSnackbar } from 'notistack'
 import { useAgent } from '../../agent'
+import { TKeyType } from '@veramo/core'
 
 const useStyles = makeStyles((theme) => ({
   cardActions: {
@@ -29,14 +30,32 @@ function DIDDocumentCard({ didDoc, isManaged }: { didDoc: DIDDocument, isManaged
   const theme = useTheme()
   const { agent } = useAgent()
   const fullScreen = useMediaQuery(theme.breakpoints.down('xs'))
-  const [showServiceModal, setShowServiceModal] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [showServiceModal, setShowServiceModal] = useState(false)
   const [serviceId, setServiceId] = useState(didDoc.id + '#' + shortId.generate())
   const [serviceType, setServiceType] = useState('')
   const [serviceEndpoint, setServiceEndpoint] = useState('')
   const [serviceDescription, setServiceDescription] = useState('')
+  const [keyManagementSystems, setKeyManagementSystems] = useState<string[]>([])
+  const [showPublicKeyModal, setShowPublicKeyModal] = useState(false)
+  const [keyType, setKeyType] = useState<TKeyType>('Ed25519')
+  const [kms, setKms] = useState('')
 
   const [cardType, setCardType] = React.useState<'preview' | 'source'>('preview')
+
+  useEffect(() => {
+    if (isManaged && agent?.availableMethods().includes('keyManagerGetKeyManagementSystems')) {
+      setLoading(true)
+      agent.keyManagerGetKeyManagementSystems()
+        .then((res) => {
+          setKeyManagementSystems(res)
+          setKms(res[0])
+        })
+        .finally(() => setLoading(false))
+        .catch((e) => enqueueSnackbar(e.message, { variant: 'error' }))
+    }
+  }, [agent, isManaged, enqueueSnackbar])
+
   const handleClose = () => {
     setAnchorEl(null)
   }
@@ -59,6 +78,58 @@ function DIDDocumentCard({ didDoc, isManaged }: { didDoc: DIDDocument, isManaged
       })
       setShowServiceModal(false)
       enqueueSnackbar('Service added', { variant: 'success' })
+    } catch (error) {
+      enqueueSnackbar(error.message, { variant: 'error' })
+    }
+    setLoading(false)
+  }
+
+  const removeService = async (serviceId: string) => {
+    setLoading(true)
+    try {
+      await agent.didManagerRemoveService({
+        did: didDoc.id,
+        id: serviceId
+      })
+      setShowServiceModal(false)
+      enqueueSnackbar('Service removed', { variant: 'success' })
+    } catch (error) {
+      enqueueSnackbar(error.message, { variant: 'error' })
+    }
+    setLoading(false)
+  }
+
+  const removeKey = async (kid: string) => {
+    setLoading(true)
+    try {
+      await agent.didManagerRemoveKey({
+        did: didDoc.id,
+        kid
+      })
+      setShowServiceModal(false)
+      enqueueSnackbar('Key removed', { variant: 'success' })
+    } catch (error) {
+      enqueueSnackbar(error.message, { variant: 'error' })
+    }
+    setLoading(false)
+  }
+
+  const addKey = async () => {
+    setLoading(true)
+    try {
+
+      const newKey = await agent.keyManagerCreate({
+        kms,
+        type: keyType,
+      })
+
+      await agent.didManagerAddKey({
+        did: didDoc.id,
+        key: newKey,
+      })
+
+      setShowPublicKeyModal(false)
+      enqueueSnackbar('Key added', { variant: 'success' })
     } catch (error) {
       enqueueSnackbar(error.message, { variant: 'error' })
     }
@@ -104,7 +175,7 @@ function DIDDocumentCard({ didDoc, isManaged }: { didDoc: DIDDocument, isManaged
                 primary={`${service.description}`}
               />
               {isManaged && <ListItemSecondaryAction>
-                <IconButton edge="end" aria-label="delete">
+                <IconButton edge="end" aria-label="delete"  onClick={()=> removeService(service.id)}>
                   <DeleteIcon />
                 </IconButton>
               </ListItemSecondaryAction>}
@@ -128,7 +199,7 @@ function DIDDocumentCard({ didDoc, isManaged }: { didDoc: DIDDocument, isManaged
                 secondary={`${key.controller ? 'Controller: ' + key.controller : ''}`}
               />
               {isManaged && <ListItemSecondaryAction>
-                <IconButton edge="end" aria-label="delete">
+                <IconButton edge="end" aria-label="delete" onClick={()=> removeKey(key.id)}>
                   <DeleteIcon />
                 </IconButton>
               </ListItemSecondaryAction>}
@@ -192,7 +263,7 @@ function DIDDocumentCard({ didDoc, isManaged }: { didDoc: DIDDocument, isManaged
             Add service
           </Typography>
         </MenuItem>
-        <MenuItem onClick={() => { }}>
+        <MenuItem onClick={() => { setShowPublicKeyModal(true) }}>
           <ListItemIcon>
             <VpnKeyIcon />
           </ListItemIcon>
@@ -280,6 +351,72 @@ function DIDDocumentCard({ didDoc, isManaged }: { didDoc: DIDDocument, isManaged
           <Button
             autoFocus
             onClick={addService}
+            color="primary"
+            disabled={loading}
+          >
+            Add
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        fullScreen={fullScreen}
+        open={showPublicKeyModal}
+        onClose={() => {
+          setShowPublicKeyModal(false)
+        }}
+        maxWidth="sm"
+        fullWidth
+        scroll='paper'
+        aria-labelledby="responsive-dialog-title"
+      >
+        <DialogTitle>Add public key</DialogTitle>
+        <DialogContent>
+          <TextField
+            label="DID"
+            value={didDoc.id}
+            fullWidth
+            margin="normal"
+            variant="outlined"
+            disabled
+            aria-readonly
+          />
+          <Box display='flex' flex={1} flexDirection='column'>
+
+            <FormControl variant="outlined" margin="normal">
+              <InputLabel htmlFor="age-native-simple">Key management system</InputLabel>
+              <Select value={kms} onChange={(e) => setKms(e.target.value as string)}>
+                {keyManagementSystems.map((k) => (
+                  <MenuItem value={k}>{k}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <FormControl variant="outlined" margin="normal">
+              <InputLabel htmlFor="age-native-simple">Key management system</InputLabel>
+              <Select value={keyType} onChange={(e) => setKeyType(e.target.value as any)}>
+                {['Ed25519', 'Secp256k1'].map((k) => (
+                  <MenuItem value={k}>{k}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+
+        </DialogContent>
+        <DialogActions>
+          <Button
+            autoFocus
+            onClick={() => {
+              setShowPublicKeyModal(false)
+            }}
+            color="default"
+
+          >
+            Close
+          </Button>
+          <Button
+            autoFocus
+            onClick={addKey}
             color="primary"
             disabled={loading}
           >

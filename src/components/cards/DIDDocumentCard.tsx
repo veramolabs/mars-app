@@ -87,6 +87,7 @@ function DIDDocumentCard({ didDoc, isManaged }: { didDoc: DIDDocument, isManaged
   const removeService = async (serviceId: string) => {
     setLoading(true)
     try {
+      //FIXME
       await agent.didManagerRemoveService({
         did: didDoc.id,
         id: serviceId
@@ -102,6 +103,7 @@ function DIDDocumentCard({ didDoc, isManaged }: { didDoc: DIDDocument, isManaged
   const removeKey = async (kid: string) => {
     setLoading(true)
     try {
+      //FIXME
       await agent.didManagerRemoveKey({
         did: didDoc.id,
         kid

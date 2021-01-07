@@ -38,6 +38,7 @@ import CredentialIcon from '@material-ui/icons/VerifiedUser'
 import ProfileIcon from '@material-ui/icons/PermContactCalendar'
 import ReactionIcon from '@material-ui/icons/ThumbUp'
 import MessageIcon from '@material-ui/icons/Message'
+import FeedbackIcon from '@material-ui/icons/Feedback'
 import VerifiedUserIcon from '@material-ui/icons/VerifiedUser'
 import MoreIcon from '@material-ui/icons/MoreVert'
 import QrIcon from '@material-ui/icons/CropFree'
@@ -47,6 +48,7 @@ import LinkIcon from '@material-ui/icons/Link'
 import AvatarLink from '../nav/AvatarLink'
 import { useCredentialModal } from '../nav/CredentialModalProvider'
 import { useIdModal } from '../nav/IdentifierModalProvider'
+import { usePresentation } from '../nav/PresentationProvider'
 const QRCode = require('qrcode-react')
 
 interface Props {
@@ -113,6 +115,7 @@ function CredentialPostCard(props: Props) {
   const fullScreen = useMediaQuery(theme.breakpoints.down('xs'))
   const { showCredential } = useCredentialModal()
   const { showDid } = useIdModal()
+  const presentation = usePresentation()
 
   const handleClickCopyButton = (event: any) => {
     setAnchorEl(event.currentTarget)
@@ -242,6 +245,34 @@ function CredentialPostCard(props: Props) {
           </MenuItem>
         )}
 
+        {presentation.credentials.find(c => c.hash === hash) && <MenuItem
+          onClick={() => {
+            presentation.removeCredential({ verifiableCredential, hash })
+            handleClose()
+          }}
+        >
+          <ListItemIcon>
+            <FeedbackIcon />
+          </ListItemIcon>
+          <Typography variant="inherit" noWrap>
+            Remove from presentation
+          </Typography>
+        </MenuItem>}
+
+        {!presentation.credentials.find(c => c.hash === hash) && <MenuItem
+          onClick={() => {
+            presentation.addCredential({ verifiableCredential, hash })
+            handleClose()
+          }}
+        >
+          <ListItemIcon>
+            <MessageIcon />
+          </ListItemIcon>
+          <Typography variant="inherit" noWrap>
+            Share in presentation
+          </Typography>
+        </MenuItem>}
+
         <MenuItem
           onClick={() => {
             setShowQr(true)
@@ -251,7 +282,7 @@ function CredentialPostCard(props: Props) {
             <QrIcon />
           </ListItemIcon>
           <Typography variant="inherit" noWrap>
-            Show QR Code
+              Show QR Code
           </Typography>
         </MenuItem>
 
@@ -264,7 +295,7 @@ function CredentialPostCard(props: Props) {
             <CodeIcon />
           </ListItemIcon>
           <Typography variant="inherit" noWrap>
-            Show source
+              Show source
           </Typography>
         </MenuItem>
 
@@ -273,7 +304,7 @@ function CredentialPostCard(props: Props) {
             <DownloadIcon />
           </ListItemIcon>
           <Typography variant="inherit" noWrap>
-            Export
+              Export
           </Typography>
         </MenuItem>
 
@@ -364,7 +395,7 @@ function CredentialPostCard(props: Props) {
               setShowCode(false)
             }}
             color="default"
-            
+
           >
             Close
           </Button>

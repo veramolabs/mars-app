@@ -19,6 +19,7 @@ import ListItemLink from './components/nav/ListItemLink'
 import { Avatar, Box, IconButton, useMediaQuery } from '@material-ui/core'
 import { useAgentList, AgentConfig, SerializedAgentConfig } from './agent/AgentListProvider'
 import { deepOrange } from '@material-ui/core/colors'
+import PresentationProvider from './components/nav/PresentationProvider'
 
 const drawerWidth = 312
 
@@ -175,61 +176,62 @@ export default function ResponsiveDrawer() {
 
     <CredentialModalProvider>
       <IdentifierModalProvider>
+        <PresentationProvider>
+          <div className={classes.root}>
+            <CssBaseline />
 
-        <div className={classes.root}>
-          <CssBaseline />
-
-          <nav className={classes.drawer} aria-label="mailbox folders">
-            {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
-            <Hidden smUp implementation="css">
-              <Drawer
-                container={container}
-                variant="temporary"
-                anchor={theme.direction === 'rtl' ? 'right' : 'left'}
-                open={mobileOpen}
-                onClose={handleDrawerToggle}
-                classes={{
-                  paper: classes.drawerPaper,
-                }}
-                ModalProps={{
-                  keepMounted: true, // Better open performance on mobile.
-                }}
-              >
-                {drawer}
-              </Drawer>
-            </Hidden>
-            <Hidden xsDown implementation="css">
-              <Drawer
-                classes={{
-                  paper: classes.drawerPaper,
-                }}
-                variant="permanent"
-                open
-              >
-                {drawer}
-              </Drawer>
-            </Hidden>
-          </nav>
-          <main className={classes.content}>
-            <div className={classes.toolbar} />
-            <NewAgentModal
-              fullScreen={fullScreen}
-              open={openNewAgentModal}
-              onClose={handleCloseNewAgentModal}
-              saveAgentConfig={saveAgentConfig}
-            />
-
-            <Switch>
-              <Route
-                exact
-                path="/"
-                render={() => <Redirect to={agentList.length > 0 ? '/agent' : '/settings'} />}
+            <nav className={classes.drawer} aria-label="mailbox folders">
+              {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
+              <Hidden smUp implementation="css">
+                <Drawer
+                  container={container}
+                  variant="temporary"
+                  anchor={theme.direction === 'rtl' ? 'right' : 'left'}
+                  open={mobileOpen}
+                  onClose={handleDrawerToggle}
+                  classes={{
+                    paper: classes.drawerPaper,
+                  }}
+                  ModalProps={{
+                    keepMounted: true, // Better open performance on mobile.
+                  }}
+                >
+                  {drawer}
+                </Drawer>
+              </Hidden>
+              <Hidden xsDown implementation="css">
+                <Drawer
+                  classes={{
+                    paper: classes.drawerPaper,
+                  }}
+                  variant="permanent"
+                  open
+                >
+                  {drawer}
+                </Drawer>
+              </Hidden>
+            </nav>
+            <main className={classes.content}>
+              <div className={classes.toolbar} />
+              <NewAgentModal
+                fullScreen={fullScreen}
+                open={openNewAgentModal}
+                onClose={handleCloseNewAgentModal}
+                saveAgentConfig={saveAgentConfig}
               />
-              <Route path={'/agent'} component={AgentSwitch} />
-              <Route path={'/settings'} component={SettingsSwitch} />
-            </Switch>
-          </main>
-        </div>
+
+              <Switch>
+                <Route
+                  exact
+                  path="/"
+                  render={() => <Redirect to={agentList.length > 0 ? '/agent' : '/settings'} />}
+                />
+                <Route path={'/agent'} component={AgentSwitch} />
+                <Route path={'/settings'} component={SettingsSwitch} />
+              </Switch>
+            </main>
+          </div>
+        </PresentationProvider>
       </IdentifierModalProvider>
     </CredentialModalProvider>
   )

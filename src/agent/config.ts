@@ -10,7 +10,7 @@ import {
 import { ICredentialIssuer, W3cMessageHandler } from '@veramo/credential-w3c'
 import { SdrMessageHandler } from '@veramo/selective-disclosure'
 import { JwtMessageHandler } from '@veramo/did-jwt'
-import { DIDCommMessageHandler } from '@veramo/did-comm'
+import { DIDCommMessageHandler, IDIDComm } from '@veramo/did-comm'
 import { MessageHandler } from '@veramo/message-handler'
 import { DIDResolverPlugin } from '@veramo/did-resolver'
 import { IDataStoreORM } from '@veramo/data-store'
@@ -24,6 +24,7 @@ type AgentInterfaces = IProfileManager &
   IDataStoreORM &
   ICredentialIssuer &
   IDIDManager &
+  IDIDComm &
   IKeyManager &
   IResolver &
   IMessageHandler

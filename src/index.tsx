@@ -23,12 +23,12 @@ ReactDOM.render(
       >
         <MobileProvider>
           <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <AgentListProvider>
-              <AgentListConsumer>
-                {({ agentList }) => (agentList.length === 0 ? <OnboardingView /> : <App />)}
-              </AgentListConsumer>
-            </AgentListProvider>
+              <CssBaseline />
+              <AgentListProvider>
+                <AgentListConsumer>
+                  {({ agentList }) => (agentList.length === 0 ? <OnboardingView /> : <App />)}
+                </AgentListConsumer>
+              </AgentListProvider>
           </ThemeProvider>
         </MobileProvider>
       </SnackbarProvider>

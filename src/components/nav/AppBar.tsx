@@ -1,9 +1,11 @@
 import React from 'react'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
-import { Toolbar, IconButton, AppBar, Typography, Box } from '@material-ui/core'
+import { Toolbar, IconButton, AppBar, Typography, Box, Button, Badge } from '@material-ui/core'
 import MenuIcon from '@material-ui/icons/Menu'
 import clsx from 'clsx'
 import { useMobile } from './MobileProvider'
+import { usePresentation } from './PresentationProvider'
+
 const drawerWidth = 312
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -50,6 +52,7 @@ const AppBarTabs: React.FC<Props> = (props) => {
   const { children } = props
   const classes = useStyles()
   const { mobileOpen, setMobileOpen } = useMobile()
+  const presentation = usePresentation()
 
   return (
     <AppBar position="fixed" className={classes.appBar} color={'inherit'}>
@@ -85,7 +88,20 @@ const AppBarTabs: React.FC<Props> = (props) => {
             </Typography>
           )}
         </Box>
+
         {props.button}
+
+        {presentation.credentials.length > 0 && <Box marginLeft={1}><Badge color="secondary" badgeContent={presentation.credentials.length}>
+          <Button
+            variant='contained'
+            color='primary'
+            onClick={() => presentation.setPresentationOpen(true)}>
+            Share
+        </Button>
+        </Badge></Box>
+        }
+
+
       </Toolbar>
       {children}
     </AppBar>

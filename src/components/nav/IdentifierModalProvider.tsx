@@ -79,7 +79,7 @@ const IdModalProvider: React.FC = ({ children }) => {
           {tab === 0 && <IdentifierProfileView did={did} />}
           {tab === 1 && <IdentifierCredentialsView did={did} />}
           {tab === 2 && loading && <LinearProgress />}
-          {isDid && tab === 2 && !loading && didDoc && <DIDDocumentCard isManaged didDoc={didDoc} />}
+          {isDid && tab === 2 && !loading && didDoc && <DIDDocumentCard didDoc={didDoc} />}
         </DialogContent>}
 
         <DialogActions>

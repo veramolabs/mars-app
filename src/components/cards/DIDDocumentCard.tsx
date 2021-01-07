@@ -12,7 +12,7 @@ import DeleteIcon from '@material-ui/icons/Delete'
 import MoreIcon from '@material-ui/icons/MoreVert'
 import { useSnackbar } from 'notistack'
 import { useAgent } from '../../agent'
-import { TKeyType } from '@veramo/core'
+import { IIdentifier, TKeyType } from '@veramo/core'
 
 const useStyles = makeStyles((theme) => ({
   cardActions: {
@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-function DIDDocumentCard({ didDoc, isManaged }: { didDoc: DIDDocument, isManaged?: boolean }) {
+function DIDDocumentCard({ didDoc }: { didDoc: DIDDocument }) {
   const classes = useStyles()
   const [anchorEl, setAnchorEl] = React.useState(null)
   const { enqueueSnackbar } = useSnackbar()
@@ -40,11 +40,28 @@ function DIDDocumentCard({ didDoc, isManaged }: { didDoc: DIDDocument, isManaged
   const [showPublicKeyModal, setShowPublicKeyModal] = useState(false)
   const [keyType, setKeyType] = useState<TKeyType>('Ed25519')
   const [kms, setKms] = useState('')
+  const [managedIdentifier, setManagedIdentifier] = useState<IIdentifier | undefined>(undefined)
 
   const [cardType, setCardType] = React.useState<'preview' | 'source'>('preview')
 
   useEffect(() => {
-    if (isManaged && agent?.availableMethods().includes('keyManagerGetKeyManagementSystems')) {
+    setManagedIdentifier(undefined)
+    if (agent?.availableMethods().includes('didManagerGet')) {
+      agent
+        .didManagerGet({did: didDoc.id})
+        .then((did) => {
+          // FIXME didManagerGet should return only identifiers that have a provider
+          if (did.provider != null) {
+            setManagedIdentifier(did)
+          }
+        })
+    }
+
+  }, [didDoc, agent])
+
+  console.log({managedIdentifier})
+  useEffect(() => {
+    if (managedIdentifier && agent?.availableMethods().includes('keyManagerGetKeyManagementSystems')) {
       setLoading(true)
       agent.keyManagerGetKeyManagementSystems()
         .then((res) => {
@@ -54,7 +71,7 @@ function DIDDocumentCard({ didDoc, isManaged }: { didDoc: DIDDocument, isManaged
         .finally(() => setLoading(false))
         .catch((e) => enqueueSnackbar(e.message, { variant: 'error' }))
     }
-  }, [agent, isManaged, enqueueSnackbar])
+  }, [agent, managedIdentifier, enqueueSnackbar])
 
   const handleClose = () => {
     setAnchorEl(null)
@@ -152,7 +169,7 @@ function DIDDocumentCard({ didDoc, isManaged }: { didDoc: DIDDocument, isManaged
               primary={`${didDoc.id}`}
               secondary={`${didDoc['@context']}`}
             />
-            {isManaged && <ListItemSecondaryAction>
+            {managedIdentifier && <ListItemSecondaryAction>
               <IconButton edge="end" onClick={handleOpen}>
                 <MoreIcon />
               </IconButton>
@@ -176,7 +193,7 @@ function DIDDocumentCard({ didDoc, isManaged }: { didDoc: DIDDocument, isManaged
                 secondary={`${service.serviceEndpoint}`}
                 primary={`${service.description}`}
               />
-              {isManaged && <ListItemSecondaryAction>
+              {managedIdentifier && <ListItemSecondaryAction>
                 <IconButton edge="end" aria-label="delete"  onClick={()=> removeService(service.id)}>
                   <DeleteIcon />
                 </IconButton>
@@ -200,7 +217,7 @@ function DIDDocumentCard({ didDoc, isManaged }: { didDoc: DIDDocument, isManaged
                 primary={`${key.type}`}
                 secondary={`${key.controller ? 'Controller: ' + key.controller : ''}`}
               />
-              {isManaged && <ListItemSecondaryAction>
+              {managedIdentifier && <ListItemSecondaryAction>
                 <IconButton edge="end" aria-label="delete" onClick={()=> removeKey(key.id)}>
                   <DeleteIcon />
                 </IconButton>

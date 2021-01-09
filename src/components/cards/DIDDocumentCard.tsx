@@ -59,7 +59,6 @@ function DIDDocumentCard({ didDoc }: { didDoc: DIDDocument }) {
 
   }, [didDoc, agent])
 
-  console.log({managedIdentifier})
   useEffect(() => {
     if (managedIdentifier && agent?.availableMethods().includes('keyManagerGetKeyManagementSystems')) {
       setLoading(true)

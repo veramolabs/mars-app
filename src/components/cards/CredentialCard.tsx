@@ -45,6 +45,7 @@ import QrIcon from '@material-ui/icons/CropFree'
 import DownloadIcon from '@material-ui/icons/CloudDownload'
 import CodeIcon from '@material-ui/icons/Code'
 import LinkIcon from '@material-ui/icons/Link'
+import EmailIcon from '@material-ui/icons/Email'
 import AvatarLink from '../nav/AvatarLink'
 import { useCredentialModal } from '../nav/CredentialModalProvider'
 import { useIdModal } from '../nav/IdentifierModalProvider'
@@ -87,7 +88,7 @@ const useStyles = makeStyles((theme) => ({
     // flex: 1
     width: theme.spacing(1.5),
     height: theme.spacing(1.5),
-    color: theme.palette.text.secondary,
+    // color: theme.palette.text.secondary,
     marginRight: 3,
   },
   moreButton: {
@@ -189,7 +190,7 @@ function CredentialPostCard(props: Props) {
   }
 
   return (
-    <Card elevation={props.type === 'summary' ? 1 : 4}>
+    <Card elevation={props.type === 'summary' ? 1 : 4} >
       {loading && <LinearProgress />}
 
       <CardActions disableSpacing>
@@ -210,8 +211,9 @@ function CredentialPostCard(props: Props) {
             </Box>
             <Box className={classes.footerBottom}>
 
-              <VerifiedUserIcon fontSize="small" color="disabled" className={classes.icon} />
-              <Icon fontSize="small" color="disabled" className={classes.icon} />
+              {presentation.credentials.find(c=> c.hash === hash) && <EmailIcon fontSize="small" color="primary" className={classes.icon} />}
+              <VerifiedUserIcon fontSize="small" color="inherit" className={classes.icon} />
+              <Icon fontSize="small" color="action" className={classes.icon} />
               <Typography variant="caption" color="textSecondary">{`${formatDistanceToNow(
                 Date.parse(verifiableCredential.issuanceDate),
               )} ago`}</Typography>

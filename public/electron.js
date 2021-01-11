@@ -12,7 +12,7 @@ getPort({ port: [8880, 8881, 8882, 8883] }).then((port) => {
   process.env.API_KEY = '12345' //FIXME `${Math.floor(Math.random() * 10000000000000)}`
   process.env.API_BASE_PATH = '/agent'
 
-  agentServer = fork('./node_modules/daf-cli/bin/daf.js', [
+  agentServer = fork('./node_modules/@veramo/cli/bin/veramo.js', [
     'server',
     '--config=' + path.join(__dirname, './electron-agent.yml'),
   ])

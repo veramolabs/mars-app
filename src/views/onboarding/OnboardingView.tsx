@@ -40,7 +40,7 @@ function OnboardingView() {
     }
     setActiveAgentIndex(0)
     setOpenNewAgentModal(false)
-    history.push('/agent/resolver')
+    history.push('/agent/discover')
   }
 
   return (

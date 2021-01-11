@@ -32,7 +32,7 @@ function MessagesView(props: any) {
   }, [agent, enqueueSnackbar])
 
   return (
-    <Container maxWidth="sm">
+    <Container maxWidth="md">
       <AppBar title="Messages" />
       {loading && <LinearProgress />}
       <MissingMethodsAlert methods={['dataStoreORMGetMessages']} />

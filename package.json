@@ -3,7 +3,7 @@
   "description": "Mars app",
   "author": "Simonas Karuzas <simonas@not.cat>",
   "license": "Apache-2.0",
-  "version": "0.1.23",
+  "version": "0.1.24",
   "private": true,
   "main": "build/electron.js",
   "build": {

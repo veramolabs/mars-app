@@ -94,7 +94,7 @@ function VerifyView(props: any) {
   }, [agent, data, enqueueSnackbar, importType])
 
   return (
-    <Container maxWidth="sm">
+    <Container maxWidth="md">
       <AppBar title="Verify" />
       <MissingMethodsAlert methods={['handleMessage']} />
 

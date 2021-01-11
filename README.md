@@ -3,7 +3,7 @@
 ## Todo
 
 - [x] keyManagerGetKeyManagementSystems
-- [ ] keyManagerCreateKey
+- [x] keyManagerCreateKey
 - [ ] keyManagerGetKey
 - [ ] keyManagerDeleteKey
 - [ ] keyManagerImportKey
@@ -13,23 +13,23 @@
 - [ ] keyManagerSignEthTX
 - [x] didManagerGetProviders
 - [x] didManagerFind
-- [ ] didManagerGet
+- [x] didManagerGet
 - [ ] didManagerGetByAlias
 - [x] didManagerCreate
 - [ ] didManagerSetAlias
 - [ ] didManagerGetOrCreate
 - [ ] didManagerImport
 - [ ] didManagerDelete
-- [ ] didManagerAddKey
-- [ ] didManagerRemoveKey
-- [ ] didManagerAddService
-- [ ] didManagerRemoveService
+- [x] didManagerAddKey
+- [x] didManagerRemoveKey
+- [x] didManagerAddService
+- [x] didManagerRemoveService
 - [x] resolveDid
 - [x] dataStoreSaveMessage
 - [ ] dataStoreGetMessage
 - [x] dataStoreSaveVerifiableCredential
 - [x] dataStoreGetVerifiableCredential
-- [ ] dataStoreSaveVerifiablePresentation
+- [x] dataStoreSaveVerifiablePresentation
 - [ ] dataStoreGetVerifiablePresentation
 - [x] dataStoreORMGetIdentities
 - [x] dataStoreORMGetIdentitiesCount
@@ -43,7 +43,7 @@
 - [ ] dataStoreORMGetVerifiablePresentationsCount
 - [x] handleMessage
 - [ ] sendMessageDIDCommAlpha1
-- [ ] createVerifiablePresentation
+- [x] createVerifiablePresentation
 - [x] createVerifiableCredential
 - [ ] createSelectiveDisclosureRequest
 - [ ] getVerifiableCredentialsForSdr

@@ -50,8 +50,8 @@ function DIDDocumentCard({ didDoc }: { didDoc: DIDDocument }) {
     setManagedIdentifier(undefined)
     if (agent?.availableMethods().includes('didManagerGet')) {
 
-        agent
-        .didManagerGet({did: didDoc.id})
+      agent
+        .didManagerGet({ did: didDoc.id })
         .then((did) => {
           // FIXME didManagerGet should return only identifiers that have a provider
           if (did.provider != null) {
@@ -128,19 +128,22 @@ function DIDDocumentCard({ didDoc }: { didDoc: DIDDocument }) {
   }
 
   const removeKey = async (kid: string) => {
-    setLoading(true)
-    try {
-      //FIXME
-      await agent.didManagerRemoveKey({
-        did: didDoc.id,
-        kid
-      })
-      setShowServiceModal(false)
-      enqueueSnackbar('Key removed', { variant: 'success' })
-    } catch (error) {
-      enqueueSnackbar(error.message, { variant: 'error' })
+    // eslint-disable-next-line no-restricted-globals
+    if (confirm('Are you sure?')) {
+      setLoading(true)
+      try {
+        //FIXME
+        await agent.didManagerRemoveKey({
+          did: didDoc.id,
+          kid
+        })
+        setShowServiceModal(false)
+        enqueueSnackbar('Key removed', { variant: 'success' })
+      } catch (error) {
+        enqueueSnackbar(error.message, { variant: 'error' })
+      }
+      setLoading(false)
     }
-    setLoading(false)
   }
 
   const addKey = async () => {
@@ -201,11 +204,11 @@ function DIDDocumentCard({ didDoc }: { didDoc: DIDDocument }) {
           </ListSubheader>
         }>
           {didDoc.service?.map((service, index) => (
-            <ListItem 
+            <ListItem
               button
               key={index} dense onClick={() => handleServiceClick(service)}>
               <ListItemAvatar >
-                {service.type === 'Messaging' ? <MessageIcon /> : 
+                {service.type === 'Messaging' ? <MessageIcon /> :
                   service.type === 'VeramoSchema' ? <VerifiedUserIcon /> : <SettingsIcon />}
               </ListItemAvatar>
               <ListItemText
@@ -213,7 +216,7 @@ function DIDDocumentCard({ didDoc }: { didDoc: DIDDocument }) {
                 primary={`${service.description}`}
               />
               {managedIdentifier && <ListItemSecondaryAction>
-                <IconButton edge="end" aria-label="delete"  onClick={()=> removeService(service.id)}>
+                <IconButton edge="end" aria-label="delete" onClick={() => removeService(service.id)}>
                   <DeleteIcon />
                 </IconButton>
               </ListItemSecondaryAction>}
@@ -237,7 +240,7 @@ function DIDDocumentCard({ didDoc }: { didDoc: DIDDocument }) {
                 secondary={`${key.controller ? 'Controller: ' + key.controller : ''}`}
               />
               {managedIdentifier && <ListItemSecondaryAction>
-                <IconButton edge="end" aria-label="delete" onClick={()=> removeKey(key.id)}>
+                <IconButton edge="end" aria-label="delete" onClick={() => removeKey(key.id)}>
                   <DeleteIcon />
                 </IconButton>
               </ListItemSecondaryAction>}

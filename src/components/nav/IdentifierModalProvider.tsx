@@ -25,7 +25,7 @@ const IdModalProvider: React.FC = ({ children }) => {
   const { agent } = useAgent()
   const [identity, setIdentity] = useState<IdentityProfile | undefined>(undefined)
   const isDid = did?.substr(0,3) === 'did'
-  const [tab, setTab] = React.useState(isDid ? 0 : 1)
+  const [tab, setTab] = React.useState(0)
   const [didDoc, setDidDoc] = React.useState<DIDDocument | undefined>(undefined)
   const [loading, setLoading] = useState(false)
   const { enqueueSnackbar } = useSnackbar()
@@ -84,7 +84,7 @@ const IdModalProvider: React.FC = ({ children }) => {
 
         <DialogActions>
 
-          {isDid && tab !== 0 && <Box display='flex' flexDirection='row' flex={1} marginLeft={1}>
+          {isDid && <Box display='flex' flexDirection='row' flex={1} marginLeft={1}>
             <ListItemAvatar>
               <Avatar src={identity?.picture} />
             </ListItemAvatar>

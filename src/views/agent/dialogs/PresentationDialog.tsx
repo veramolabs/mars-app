@@ -84,7 +84,7 @@ function PresentationDialog(props: Props) {
   const [verifier, setVerifier] = useState<string>('')
   const [holders, setHolders] = useState<AgentWithManagedDids[]>([])
   const [knownIdentifiers, setKnownIdentifiers] = useState<AgentWithManagedDids[]>([])
-  const [savePresentationInAgents, setSavePresentationInAgents] = useState<number[]>([activeAgentIndex])
+  const [savePresentationInAgents, setSavePresentationInAgents] = useState<number[]>([])
   const presentation = usePresentation()
 
   const handleChange = (event: any) => {

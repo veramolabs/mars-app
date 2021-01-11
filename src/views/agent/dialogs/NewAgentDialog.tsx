@@ -15,19 +15,36 @@ import {
   RadioGroup,
   Checkbox,
   FormGroup,
+  Collapse,
+  Typography,
 } from '@material-ui/core'
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
+import IconButton from '@material-ui/core/IconButton'
 import { SerializedAgentConfig } from '../../../agent/AgentListProvider'
 import { useSnackbar } from 'notistack'
+import clsx from 'clsx'
 interface Props {
   fullScreen: boolean
   open: boolean
   onClose: any
+  schemaUrl?: string
   saveAgentConfig: (config: SerializedAgentConfig) => void
 }
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
     margin: theme.spacing(1),
+    flex: 1,
+  },
+  expand: {
+    transform: 'rotate(0deg)',
+    // marginLeft: 'auto',
+    transition: theme.transitions.create('transform', {
+      duration: theme.transitions.duration.shortest,
+    }),
+  },
+  expandOpen: {
+    transform: 'rotate(180deg)',
   },
 }))
 
@@ -36,12 +53,14 @@ function NewAgentDialog(props: Props) {
   const { enqueueSnackbar } = useSnackbar()
   const [schemaUrl, setSchemaUrl] = useState<string>('')
   const [validSchema, setValidSchema] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(false)
   const [name, setName] = useState<string>('')
   const [apiUrl, setApiUrl] = useState<string>('')
   const [token, setToken] = useState<string>('')
   const [schema, setSchema] = useState<any>()
   const [enabledMethods, setEnabledMethods] = useState<string[]>([])
   const [availableMethods, setAvailableMethods] = useState<string[]>([])
+  const [expanded, setExpanded] = useState(false)
 
   const handleChange = (event: any) => {
     if (event.target.checked) {
@@ -52,7 +71,14 @@ function NewAgentDialog(props: Props) {
   }
 
   useEffect(() => {
+    if (props.schemaUrl) {
+      setSchemaUrl(props.schemaUrl)
+    }
+  },[props.schemaUrl])
+
+  useEffect(() => {
     if (schemaUrl && schemaUrl !== '') {
+      setLoading(true)
       fetch(schemaUrl)
         .then((res) => res.json())
         .then((schema) => {
@@ -73,6 +99,7 @@ function NewAgentDialog(props: Props) {
           setSchema(undefined)
           setApiUrl('')
         })
+        .finally(() => setLoading(false))
     }
   }, [schemaUrl, enqueueSnackbar])
 
@@ -91,6 +118,10 @@ function NewAgentDialog(props: Props) {
     })
   }
 
+  const handleExpandClick = () => {
+    setExpanded(!expanded)
+  }
+
   return (
     <Dialog
       fullScreen={props.fullScreen}
@@ -100,15 +131,15 @@ function NewAgentDialog(props: Props) {
       fullWidth
       aria-labelledby="responsive-dialog-title"
     >
-      <DialogTitle id="responsive-dialog-title">New Cloud Agent</DialogTitle>
+      <DialogTitle id="responsive-dialog-title">Add Cloud Agent</DialogTitle>
       <DialogContent>
         <TextField
           label="Schema URL"
           margin="normal"
           type="text"
           variant="outlined"
-          error={schemaUrl !== '' && !validSchema}
-          helperText={schemaUrl !== '' && !validSchema ? 'Invalid schema' : ''}
+          error={!loading && schemaUrl !== '' && !validSchema}
+          helperText={!loading && schemaUrl !== '' && !validSchema ? 'Invalid schema' : ''}
           value={schemaUrl}
           onChange={(e) => setSchemaUrl(e.target.value)}
           fullWidth
@@ -159,8 +190,21 @@ function NewAgentDialog(props: Props) {
               />
             )}
 
+              <Box display='flex' flexDirection='row' flex={1} justifyContent='space-between' alignItems='center'>
+                <Typography variant="body1" color='textSecondary'>Enabled methods ({enabledMethods.length} / {availableMethods.length})</Typography>
+                <IconButton
+                  className={clsx(classes.expand, {
+                    [classes.expandOpen]: expanded,
+                  })}
+                  onClick={handleExpandClick}
+                  aria-expanded={expanded}
+                  aria-label="show more"
+                >
+                  <ExpandMoreIcon />
+                </IconButton>
+              </Box>
             <FormControl component="fieldset" className={classes.formControl}>
-              <FormLabel component="legend">Enabled methods</FormLabel>
+              <Collapse in={expanded} timeout="auto" unmountOnExit>
               <FormGroup>
                 {availableMethods.map((method) => (
                   <FormControlLabel
@@ -176,6 +220,7 @@ function NewAgentDialog(props: Props) {
                   />
                 ))}
               </FormGroup>
+              </Collapse>
             </FormControl>
           </Box>
         )}
@@ -185,7 +230,7 @@ function NewAgentDialog(props: Props) {
           Cancel
         </Button>
         <Button onClick={configureAgent} color="primary" autoFocus disabled={!validSchema}>
-          Save
+          Add
         </Button>
       </DialogActions>
     </Dialog>

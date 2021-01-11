@@ -82,7 +82,7 @@ const useStyles = makeStyles((theme) => ({
     flexShrink: 1,
   },
   footerBottom: {
-
+    
   },
   icon: {
     // flex: 1
@@ -209,11 +209,11 @@ function CredentialPostCard(props: Props) {
               </Typography>
 
             </Box>
-            <Box className={classes.footerBottom}>
+            <Box className={classes.footerBottom} display='flex' flexDirection='row' alignItems='center'>
 
               {presentation.credentials.find(c=> c.hash === hash) && <EmailIcon fontSize="small" color="primary" className={classes.icon} />}
               <VerifiedUserIcon fontSize="small" color="inherit" className={classes.icon} />
-              <Icon fontSize="small" color="action" className={classes.icon} />
+              <Icon fontSize="small" color="inherit" className={classes.icon} />
               <Typography variant="caption" color="textSecondary">{`${formatDistanceToNow(
                 Date.parse(verifiableCredential.issuanceDate),
               )} ago`}</Typography>

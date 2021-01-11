@@ -14,6 +14,8 @@ import { DIDResolverPlugin } from '@veramo/did-resolver'
 import { Resolver } from 'did-resolver'
 import { getResolver as ethrDidResolver } from 'ethr-did-resolver'
 import { getResolver as webDidResolver } from 'web-did-resolver'
+import NewAgentDialog from '../views/agent/dialogs/NewAgentDialog'
+import { useMediaQuery, useTheme } from '@material-ui/core'
 export interface SerializedAgentConfig {
   name: string
   schema?: IAgentPluginSchema
@@ -44,6 +46,7 @@ export const AgentListContext = React.createContext<{
   addAgent: (agent: AgentConfig) => void
   addSerializedAgentConfig: (config: SerializedAgentConfig) => void
   removeAgent: (index: number) => void
+  openNewAgentModal: (schemaUrl?: string) => void
 }>({
   agentList: [defaultNamedAgent],
   activeAgentIndex: 0,
@@ -52,11 +55,16 @@ export const AgentListContext = React.createContext<{
   addAgent: (agent: AgentConfig) => {},
   addSerializedAgentConfig: (config: SerializedAgentConfig) => {},
   removeAgent: (index: number) => {},
+  openNewAgentModal: () => {}
 })
 
 export const AgentListProvider: React.FC = ({ children }) => {
   const { enqueueSnackbar } = useSnackbar()
   const [defaultDid, setDefaultDid] = useState<string | undefined>()
+  const theme = useTheme()
+  const fullScreen = useMediaQuery(theme.breakpoints.down('xs'))
+  const [newAgentOpen, setNewAgentOpen] = React.useState(false)
+  const [newAgentSchemaUrl, setNewAgentSchemaUrl] = React.useState<string|undefined>(undefined)
 
   const agentListToJSON = (agentList: AgentConfig[]): string => {
     // Removing agent object from serialized config
@@ -157,10 +165,22 @@ export const AgentListProvider: React.FC = ({ children }) => {
     const newList = [...agentList]
     newList.splice(index, 1)
     setAgentList(newList)
+    setActiveAgentIndex(0)
   }
 
   const addSerializedAgentConfig = (config: SerializedAgentConfig) => {
     addAgent(deserializeAgentConfig(config))
+  }
+
+  const openNewAgentModal = (schemaUrl?: string) => {
+    setNewAgentSchemaUrl(schemaUrl)
+    setNewAgentOpen(true)
+  }
+
+  const saveAgentConfig = (config: SerializedAgentConfig) => {
+    addSerializedAgentConfig(config)
+    setActiveAgentIndex(agentList.length)
+    setNewAgentOpen(false)
   }
 
   return (
@@ -174,9 +194,17 @@ export const AgentListProvider: React.FC = ({ children }) => {
         addAgent,
         removeAgent,
         addSerializedAgentConfig,
+        openNewAgentModal
       }}
     >
       <AgentProvider agent={agentList[activeAgentIndex]?.agent}>{children}</AgentProvider>
+      <NewAgentDialog
+        fullScreen={fullScreen}
+        open={newAgentOpen}
+        onClose={() => setNewAgentOpen(false)}
+        schemaUrl={newAgentSchemaUrl}
+        saveAgentConfig={saveAgentConfig}
+      />
     </AgentListContext.Provider>
   )
 }

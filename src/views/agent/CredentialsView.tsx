@@ -21,6 +21,7 @@ function CredentialsView(props: any) {
   const [cardType, setCardType] = React.useState<'summary' | 'details'>('summary')
 
   useEffect(() => {
+    setCredentials([])
     if (agent?.availableMethods().includes('dataStoreORMGetVerifiableCredentials')) {
       setLoading(true)
       agent
@@ -30,8 +31,6 @@ function CredentialsView(props: any) {
         .then(setCredentials)
         .finally(() => setLoading(false))
         .catch((e) => enqueueSnackbar(e.message, { variant: 'error' }))
-    } else {
-      setCredentials([])
     }
   }, [agent, enqueueSnackbar])
 

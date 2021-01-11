@@ -42,7 +42,7 @@ function DiscoverView() {
   const { enqueueSnackbar } = useSnackbar()
   const { agent } = useAgent()
   const [loading, setLoading] = useState(false)
-  const [didUrl, setDidUrl] = useState<string>('did:web:sun.veramo.io')
+  const [didUrl, setDidUrl] = useState<string>('did:web:simonas.not.cat')
   const [didDoc, setDidDoc] = useState<DIDDocument | undefined>(undefined)
   const classes = useStyles()
 

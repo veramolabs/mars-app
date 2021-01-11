@@ -1,6 +1,6 @@
 import { Box, List, ListItem, ListItemAvatar, ListItemText, ListSubheader, TextField, CardActions, makeStyles, ListItemSecondaryAction, IconButton, ListItemIcon, Menu, MenuItem, Typography, Button, Dialog, DialogActions, DialogContent, useMediaQuery, useTheme, DialogTitle, FormControl, InputLabel, Select } from '@material-ui/core'
 import { ToggleButtonGroup, ToggleButton } from '@material-ui/lab'
-import { DIDDocument } from 'did-resolver'
+import { DIDDocument, ServiceEndpoint } from 'did-resolver'
 import React, { useEffect, useState } from 'react'
 import shortId from 'shortid'
 import MessageIcon from '@material-ui/icons/Message'
@@ -10,8 +10,9 @@ import VpnKeyIcon from '@material-ui/icons/VpnKey'
 import CodeIcon from '@material-ui/icons/Code'
 import DeleteIcon from '@material-ui/icons/Delete'
 import MoreIcon from '@material-ui/icons/MoreVert'
+import VerifiedUserIcon from '@material-ui/icons/VerifiedUser'
 import { useSnackbar } from 'notistack'
-import { useAgent } from '../../agent'
+import { useAgent, useAgentList } from '../../agent'
 import { IIdentifier, TKeyType } from '@veramo/core'
 
 const useStyles = makeStyles((theme) => ({
@@ -41,19 +42,24 @@ function DIDDocumentCard({ didDoc }: { didDoc: DIDDocument }) {
   const [keyType, setKeyType] = useState<TKeyType>('Ed25519')
   const [kms, setKms] = useState('')
   const [managedIdentifier, setManagedIdentifier] = useState<IIdentifier | undefined>(undefined)
+  const { openNewAgentModal } = useAgentList()
 
   const [cardType, setCardType] = React.useState<'preview' | 'source'>('preview')
 
   useEffect(() => {
     setManagedIdentifier(undefined)
     if (agent?.availableMethods().includes('didManagerGet')) {
-      agent
+
+        agent
         .didManagerGet({did: didDoc.id})
         .then((did) => {
           // FIXME didManagerGet should return only identifiers that have a provider
           if (did.provider != null) {
             setManagedIdentifier(did)
           }
+        })
+        .catch(e => {
+          console.log(e)
         })
     }
 
@@ -101,19 +107,24 @@ function DIDDocumentCard({ didDoc }: { didDoc: DIDDocument }) {
   }
 
   const removeService = async (serviceId: string) => {
-    setLoading(true)
-    try {
-      //FIXME
-      await agent.didManagerRemoveService({
-        did: didDoc.id,
-        id: serviceId
-      })
-      setShowServiceModal(false)
-      enqueueSnackbar('Service removed', { variant: 'success' })
-    } catch (error) {
-      enqueueSnackbar(error.message, { variant: 'error' })
+
+    // eslint-disable-next-line no-restricted-globals
+    if (confirm('Are you sure?')) {
+
+      setLoading(true)
+      try {
+        //FIXME
+        await agent.didManagerRemoveService({
+          did: didDoc.id,
+          id: serviceId
+        })
+        setShowServiceModal(false)
+        enqueueSnackbar('Service removed', { variant: 'success' })
+      } catch (error) {
+        enqueueSnackbar(error.message, { variant: 'error' })
+      }
+      setLoading(false)
     }
-    setLoading(false)
   }
 
   const removeKey = async (kid: string) => {
@@ -154,6 +165,12 @@ function DIDDocumentCard({ didDoc }: { didDoc: DIDDocument }) {
     setLoading(false)
   }
 
+  const handleServiceClick = (service: ServiceEndpoint) => {
+    if (service.type === 'VeramoSchema') {
+      openNewAgentModal(service.serviceEndpoint)
+    }
+  }
+
   return (
 
     <Box >
@@ -184,9 +201,12 @@ function DIDDocumentCard({ didDoc }: { didDoc: DIDDocument }) {
           </ListSubheader>
         }>
           {didDoc.service?.map((service, index) => (
-            <ListItem key={index} dense>
+            <ListItem 
+              button
+              key={index} dense onClick={() => handleServiceClick(service)}>
               <ListItemAvatar >
-                {service.type === 'Messaging' ? <MessageIcon /> : <SettingsIcon />}
+                {service.type === 'Messaging' ? <MessageIcon /> : 
+                  service.type === 'VeramoSchema' ? <VerifiedUserIcon /> : <SettingsIcon />}
               </ListItemAvatar>
               <ListItemText
                 secondary={`${service.serviceEndpoint}`}
@@ -414,7 +434,7 @@ function DIDDocumentCard({ didDoc }: { didDoc: DIDDocument }) {
               <InputLabel htmlFor="age-native-simple">Key management system</InputLabel>
               <Select value={keyType} onChange={(e) => setKeyType(e.target.value as any)}>
                 {['Ed25519', 'Secp256k1'].map((k) => (
-                  <MenuItem value={k}>{k}</MenuItem>
+                  <MenuItem value={k} key={k}>{k}</MenuItem>
                 ))}
               </Select>
             </FormControl>

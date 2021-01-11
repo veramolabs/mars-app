@@ -5,7 +5,6 @@ import Hidden from '@material-ui/core/Hidden'
 import SettingsIcon from '@material-ui/icons/Settings'
 import AddIcon from '@material-ui/icons/Add'
 import { useMobile } from './components/nav/MobileProvider'
-import NewAgentModal from './views/agent/dialogs/NewAgentDialog'
 import { useHistory, useRouteMatch } from 'react-router-dom'
 import CredentialModalProvider from './components/nav/CredentialModalProvider'
 import IdentifierModalProvider from './components/nav/IdentifierModalProvider'
@@ -16,8 +15,8 @@ import { Route, Redirect, Switch } from 'react-router-dom'
 import { AgentSwitch, AgentDrawer } from './views/agent/navigation'
 import { SettingsSwitch, SettingsDrawer } from './views/settings/navigation'
 import ListItemLink from './components/nav/ListItemLink'
-import { Avatar, Box, IconButton, useMediaQuery } from '@material-ui/core'
-import { useAgentList, AgentConfig, SerializedAgentConfig } from './agent/AgentListProvider'
+import { Avatar, Box, IconButton } from '@material-ui/core'
+import { useAgentList, AgentConfig } from './agent/AgentListProvider'
 import { deepOrange } from '@material-ui/core/colors'
 import PresentationProvider from './components/nav/PresentationProvider'
 
@@ -103,29 +102,12 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function ResponsiveDrawer() {
   const classes = useStyles()
   const theme = useTheme()
-  const { addSerializedAgentConfig, setActiveAgentIndex, agentList, activeAgentIndex } = useAgentList()
+  const { setActiveAgentIndex, agentList, activeAgentIndex, openNewAgentModal } = useAgentList()
   const { mobileOpen, setMobileOpen } = useMobile()
   const history = useHistory()
   const agentMatch = useRouteMatch("/agent");
   const settingsMatch = useRouteMatch('/settings')
 
-  const fullScreen = useMediaQuery(theme.breakpoints.down('xs'))
-  const [openNewAgentModal, setOpenNewAgentModal] = React.useState(false)
-
-  const saveAgentConfig = (config: SerializedAgentConfig) => {
-    addSerializedAgentConfig(config)
-    setActiveAgentIndex(agentList.length)
-    setOpenNewAgentModal(false)
-    history.push('/agent')
-  }
-
-  const handleOpenNewAgentModal = () => {
-    setOpenNewAgentModal(true)
-  }
-
-  const handleCloseNewAgentModal = () => {
-    setOpenNewAgentModal(false)
-  }
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen)
@@ -153,7 +135,7 @@ export default function ResponsiveDrawer() {
           </IconButton>
         ))}
 
-        <IconButton className={classes.connectionButton} color="inherit" onClick={handleOpenNewAgentModal}>
+        <IconButton className={classes.connectionButton} color="inherit" onClick={() => openNewAgentModal()}>
           <AddIcon />
         </IconButton>
 
@@ -173,7 +155,6 @@ export default function ResponsiveDrawer() {
   const container = window.document.body
 
   return (
-
     <CredentialModalProvider>
       <IdentifierModalProvider>
         <PresentationProvider>
@@ -213,13 +194,6 @@ export default function ResponsiveDrawer() {
             </nav>
             <main className={classes.content}>
               <div className={classes.toolbar} />
-              <NewAgentModal
-                fullScreen={fullScreen}
-                open={openNewAgentModal}
-                onClose={handleCloseNewAgentModal}
-                saveAgentConfig={saveAgentConfig}
-              />
-
               <Switch>
                 <Route
                   exact

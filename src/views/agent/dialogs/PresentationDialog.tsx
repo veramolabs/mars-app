@@ -64,6 +64,9 @@ const useStyles = makeStyles((theme) => ({
   verifier: {
     marginBottom: theme.spacing(2),
   },
+  credentialsLabel: {
+    marginBottom: theme.spacing(1),
+  },
 }))
 
 interface AgentWithManagedDids {
@@ -294,13 +297,15 @@ function PresentationDialog(props: Props) {
               ])}
             </Select>
           </FormControl>
-
-          <Grid container spacing={2} xs={12}>
-            {presentation.credentials.map(c => <Grid item key={c.hash} >
+          
+          <FormControl component="fieldset" className={classes.formControl}>
+            <FormLabel component="legend" className={classes.credentialsLabel}>Credentials</FormLabel>
+          <Grid container spacing={2}>
+            {presentation.credentials.map(c => <Grid item key={c.hash} xs={12}>
               <CredentialCard credential={c} type='details' />
-            </Grid>)}
-            
+            </Grid>)}  
           </Grid>
+          </FormControl>
 
           <FormControl component="fieldset" className={classes.formControl}>
             <FormLabel component="legend">Save to:</FormLabel>
@@ -348,7 +353,7 @@ function PresentationDialog(props: Props) {
           Cancel
         </Button>
         <Button onClick={createPresentation} color="primary" autoFocus
-          disabled={savePresentationInAgents.length === 0 && !send}
+          disabled={(savePresentationInAgents.length === 0 && !send) || presentation.credentials.length === 0}
         >
           Create presentation
         </Button>

@@ -46,10 +46,12 @@ import DownloadIcon from '@material-ui/icons/CloudDownload'
 import CodeIcon from '@material-ui/icons/Code'
 import LinkIcon from '@material-ui/icons/Link'
 import EmailIcon from '@material-ui/icons/Email'
+import StarIcon from '@material-ui/icons/Star'
 import AvatarLink from '../nav/AvatarLink'
 import { useCredentialModal } from '../nav/CredentialModalProvider'
 import { useIdModal } from '../nav/IdentifierModalProvider'
 import { usePresentation } from '../nav/PresentationProvider'
+import MemberCredential from './CredentialCardContent/MemberCredential'
 const QRCode = require('qrcode-react')
 
 interface Props {
@@ -187,6 +189,9 @@ function CredentialPostCard(props: Props) {
   } else if (verifiableCredential.type.includes('GitHubEvent')) {
     Icon = MessageIcon
     contents = <GithubEventCredential {...props} issuer={issuer} subject={subject} />
+  } else if (verifiableCredential.type.includes('Member')) {
+    Icon = StarIcon
+    contents = <MemberCredential {...props} issuer={issuer} subject={subject} />
   }
 
   return (

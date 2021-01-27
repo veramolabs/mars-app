@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
+import { useQuery } from 'react-query'
 import { IconButton, List, useMediaQuery, useTheme } from '@material-ui/core'
 import Container from '@material-ui/core/Container'
 import LinearProgress from '@material-ui/core/LinearProgress'
-import { useAgent } from '../../agent'
+import { useAgent, useAgentList } from '../../agent'
 import { IIdentifier } from '@veramo/core'
 import AppBar from '../../components/nav/AppBar'
 import IdentityListItemLink from '../../components/nav/IdentityListItemLink'
@@ -13,13 +14,12 @@ import MissingMethodsAlert from '../../components/nav/MissingMethodsAlert'
 
 function ManagedDIDs(props: any) {
   const { agent } = useAgent()
-  const [loading, setLoading] = useState(false)
-  const [identities, setIdentities] = useState<Array<IIdentifier>>([])
+  const { activeAgentIndex } = useAgentList()
   const { enqueueSnackbar } = useSnackbar()
   const [openNewIdentifierModal, setOpenNewIdentifierModal] = React.useState(false)
   const theme = useTheme()
   const fullScreen = useMediaQuery(theme.breakpoints.down('xs'))
-  
+
   const handleOpenNewIdentifierModal = () => {
     setOpenNewIdentifierModal(true)
   }
@@ -28,18 +28,11 @@ function ManagedDIDs(props: any) {
     setOpenNewIdentifierModal(false)
   }
 
-  useEffect(() => {
-    if (agent?.availableMethods().includes('didManagerFind')) {
-      setLoading(true)
-      agent
-        .didManagerFind()
-        .then(setIdentities)
-        .finally(() => setLoading(false))
-        .catch((e) => enqueueSnackbar(e.message, { variant: 'error' }))
-    } else {
-      setIdentities([])
-    }
-  }, [agent, enqueueSnackbar])
+  const { isLoading, data } = useQuery<IIdentifier[], Error>({
+    queryKey: ['didManagerFind', activeAgentIndex],
+    queryFn: () => agent.didManagerFind(),
+    onError: (e) => enqueueSnackbar(e.message, { variant: 'error' }),
+  })
 
   return (
     <Container maxWidth="md">
@@ -51,11 +44,11 @@ function ManagedDIDs(props: any) {
           </IconButton>
         }
       />
-      {loading && <LinearProgress />}
+      {isLoading && <LinearProgress />}
       <MissingMethodsAlert methods={['didManagerFind']} />
 
       <List>
-        {identities.map((identity) => (
+        {data?.map((identity) => (
           <IdentityListItemLink key={identity.did} did={identity.did} type="summary" />
         ))}
       </List>

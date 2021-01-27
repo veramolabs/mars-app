@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
+import { useQuery } from 'react-query'
 import { CircularProgress, ListItem, ListItemAvatar, ListItemText } from '@material-ui/core'
 import Avatar from '@material-ui/core/Avatar'
 import { IdentityProfile } from '../../types'
-import { useAgent } from '../../agent'
+import { useAgent, useAgentList } from '../../agent'
 import { useIdModal } from './IdentifierModalProvider'
 
 interface Props {
@@ -13,27 +14,19 @@ interface Props {
 function IdentityListItemLink(props: Props) {
   const { did } = props
   const { agent } = useAgent()
-  const [loading, setLoading] = useState(false)
-  const [identity, setIdentity] = useState<IdentityProfile>({ did, name: did })
+  const { activeAgentIndex } = useAgentList()
   const { showDid } = useIdModal()
-  
-  useEffect(() => {
-    if (did) {
-      setLoading(true)
-      agent
-        .getIdentityProfile({ did })
-        .then(setIdentity)
-        .finally(() => setLoading(false))
-    }
-  }, [agent, did])
+
+  const { isLoading, data } = useQuery<IdentityProfile, Error>({
+    queryKey: ['profile', activeAgentIndex, did],
+    queryFn: () => agent.getIdentityProfile({ did }),
+    initialData: { did, name: did },
+  })
 
   return (
     <ListItem dense divider button onClick={() => showDid(did)}>
-      <ListItemAvatar>
-      {loading ? <CircularProgress /> : <Avatar src={identity.picture} />}
-        
-      </ListItemAvatar>
-      <ListItemText primary={identity.name} secondary={identity.nickname} />
+      <ListItemAvatar>{isLoading ? <CircularProgress /> : <Avatar src={data?.picture} />}</ListItemAvatar>
+      <ListItemText primary={data?.name} secondary={data?.nickname} />
     </ListItem>
   )
 }

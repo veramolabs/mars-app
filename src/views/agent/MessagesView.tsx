@@ -1,44 +1,38 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { Grid } from '@material-ui/core'
 import Container from '@material-ui/core/Container'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import MessageCard from '../../components/cards/MessageCard'
 import AppBar from '../../components/nav/AppBar'
 import MissingMethodsAlert from '../../components/nav/MissingMethodsAlert'
-import { useAgent } from '../../agent'
+import { useAgent, useAgentList } from '../../agent'
 import { IMessage } from '@veramo/core'
 import { useSnackbar } from 'notistack'
 import { Alert } from '@material-ui/lab'
+import { useQuery } from 'react-query'
 
 function MessagesView(props: any) {
   const { agent } = useAgent()
+  const { activeAgentIndex } = useAgentList()
   const { enqueueSnackbar } = useSnackbar()
-  const [loading, setLoading] = useState(false)
-  const [messages, setMessages] = useState<Array<IMessage>>([])
 
-  useEffect(() => {
-    if (agent?.availableMethods().includes('dataStoreORMGetMessages')) {
-      setLoading(true)
-      agent
-        .dataStoreORMGetMessages({
-          order: [{ column: 'createdAt', direction: 'DESC' }],
-        })
-        .then(setMessages)
-        .finally(() => setLoading(false))
-        .catch((e) => enqueueSnackbar(e.message, { variant: 'error' }))
-    } else {
-      setMessages([])
-    }
-  }, [agent, enqueueSnackbar])
+  const { isLoading, data } = useQuery<IMessage[], Error>({
+    queryKey: ['dataStoreORMGetMessages', activeAgentIndex],
+    queryFn: () =>
+      agent.dataStoreORMGetMessages({
+        order: [{ column: 'createdAt', direction: 'DESC' }],
+      }),
+    onError: (e) => enqueueSnackbar(e.message, { variant: 'error' }),
+  })
 
   return (
     <Container maxWidth="md">
       <AppBar title="Messages" />
-      {loading && <LinearProgress />}
+      {isLoading && <LinearProgress />}
       <MissingMethodsAlert methods={['dataStoreORMGetMessages']} />
-      {!loading && messages.length === 0 && <Alert severity="success">There are no messages</Alert>}
+      {!isLoading && data?.length === 0 && <Alert severity="success">There are no messages</Alert>}
       <Grid container spacing={2} justify="center">
-        {messages.map((message) => (
+        {data?.map((message) => (
           <Grid item key={message.id} xs={12}>
             <MessageCard message={message} type={'summary'} />
           </Grid>

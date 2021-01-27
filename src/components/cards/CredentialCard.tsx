@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
+import { useQuery } from 'react-query'
 import {
   CardActions,
   IconButton,
@@ -83,9 +84,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'flex-start',
     flexShrink: 1,
   },
-  footerBottom: {
-    
-  },
+  footerBottom: {},
   icon: {
     // flex: 1
     width: theme.spacing(1.5),
@@ -106,13 +105,8 @@ function CredentialPostCard(props: Props) {
   const { enqueueSnackbar } = useSnackbar()
   const { agent } = useAgent()
   const { agentList, activeAgentIndex } = useAgentList()
-  const [loading, setLoading] = useState(false)
   const [showQr, setShowQr] = useState(false)
   const [showCode, setShowCode] = useState(false)
-  const [issuer, setIssuer] = useState<IdentityProfile>({
-    did: verifiableCredential.issuer.id,
-  })
-  const [subject, setSubject] = useState<IdentityProfile | undefined>(undefined)
   const [anchorEl, setAnchorEl] = React.useState(null)
   const theme = useTheme()
   const fullScreen = useMediaQuery(theme.breakpoints.down('xs'))
@@ -154,23 +148,25 @@ function CredentialPostCard(props: Props) {
     element.click()
   }
 
-  useEffect(() => {
-    setLoading(true)
-    Promise.all<IdentityProfile, IdentityProfile>([
-      agent.getIdentityProfile({ did: verifiableCredential.issuer.id }),
-      verifiableCredential.credentialSubject.id
-        ? agent.getIdentityProfile({
-          did: verifiableCredential.credentialSubject.id,
-        })
-        : Promise.resolve({ did: '' }),
-    ])
-      .then((profiles) => {
-        setIssuer(profiles[0])
-        setSubject(profiles[1])
-      })
-      .finally(() => setLoading(false))
-  }, [agent, verifiableCredential])
+  const { isLoading: isLoadingIssuer, data: issuer } = useQuery<IdentityProfile, Error>(
+    'profile' + verifiableCredential.issuer.id,
+    () => agent.getIdentityProfile({ did: verifiableCredential.issuer.id }),
+    { initialData: { did: verifiableCredential.issuer.id, name: verifiableCredential.issuer.id } },
+  )
 
+  const { isLoading: isLoadingSubject, data: subject } = useQuery<IdentityProfile, Error>(
+    'profile' + verifiableCredential.credentialSubject.id,
+    () =>
+      verifiableCredential.credentialSubject.id
+        ? agent.getIdentityProfile({ did: verifiableCredential.credentialSubject.id })
+        : Promise.resolve({ did: '' }),
+  )
+
+  const loading = isLoadingIssuer || isLoadingSubject
+
+  if (!issuer) {
+    return null
+  }
 
   let contents
   let Icon = CredentialIcon
@@ -195,7 +191,7 @@ function CredentialPostCard(props: Props) {
   }
 
   return (
-    <Card elevation={props.type === 'summary' ? 1 : 4} >
+    <Card elevation={props.type === 'summary' ? 1 : 4}>
       {loading && <LinearProgress />}
 
       <CardActions disableSpacing>
@@ -206,17 +202,22 @@ function CredentialPostCard(props: Props) {
             className={classes.footerAvatar}
           />
 
-
           <ListItem button onClick={() => showCredential(hash)} className={classes.footerDetails}>
             <Box className={classes.footerBottom}>
-              <Typography noWrap display='block' variant="body2" color="textSecondary" title={issuer.nickname}>
+              <Typography
+                noWrap
+                display="block"
+                variant="body2"
+                color="textSecondary"
+                title={issuer.nickname}
+              >
                 {issuer.name || issuer.nickname}
               </Typography>
-
             </Box>
-            <Box className={classes.footerBottom} display='flex' flexDirection='row' alignItems='center'>
-
-              {presentation.credentials.find(c=> c.hash === hash) && <EmailIcon fontSize="small" color="primary" className={classes.icon} />}
+            <Box className={classes.footerBottom} display="flex" flexDirection="row" alignItems="center">
+              {presentation.credentials.find((c) => c.hash === hash) && (
+                <EmailIcon fontSize="small" color="primary" className={classes.icon} />
+              )}
               <VerifiedUserIcon fontSize="small" color="inherit" className={classes.icon} />
               <Icon fontSize="small" color="inherit" className={classes.icon} />
               <Typography variant="caption" color="textSecondary">{`${formatDistanceToNow(
@@ -225,17 +226,14 @@ function CredentialPostCard(props: Props) {
             </Box>
           </ListItem>
 
-
           <IconButton aria-label="More" className={classes.moreButton} onClick={handleClickCopyButton}>
             <MoreIcon />
           </IconButton>
         </Box>
       </CardActions>
-      {props.type === 'details' && <CardActionAreaLink
-        onClick={() => showCredential(hash)}
-      >
-        {contents}
-      </CardActionAreaLink>}
+      {props.type === 'details' && (
+        <CardActionAreaLink onClick={() => showCredential(hash)}>{contents}</CardActionAreaLink>
+      )}
       <Menu id="lock-menu" anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleClose}>
         {verifiableCredential.credentialSubject.id?.substr(0, 4) === 'http' && (
           <MenuItem
@@ -252,33 +250,37 @@ function CredentialPostCard(props: Props) {
           </MenuItem>
         )}
 
-        {presentation.credentials.find(c => c.hash === hash) && <MenuItem
-          onClick={() => {
-            presentation.removeCredential({ verifiableCredential, hash })
-            handleClose()
-          }}
-        >
-          <ListItemIcon>
-            <FeedbackIcon />
-          </ListItemIcon>
-          <Typography variant="inherit" noWrap>
-            Remove from presentation
-          </Typography>
-        </MenuItem>}
+        {presentation.credentials.find((c) => c.hash === hash) && (
+          <MenuItem
+            onClick={() => {
+              presentation.removeCredential({ verifiableCredential, hash })
+              handleClose()
+            }}
+          >
+            <ListItemIcon>
+              <FeedbackIcon />
+            </ListItemIcon>
+            <Typography variant="inherit" noWrap>
+              Remove from presentation
+            </Typography>
+          </MenuItem>
+        )}
 
-        {!presentation.credentials.find(c => c.hash === hash) && <MenuItem
-          onClick={() => {
-            presentation.addCredential({ verifiableCredential, hash })
-            handleClose()
-          }}
-        >
-          <ListItemIcon>
-            <MessageIcon />
-          </ListItemIcon>
-          <Typography variant="inherit" noWrap>
-            Share in presentation
-          </Typography>
-        </MenuItem>}
+        {!presentation.credentials.find((c) => c.hash === hash) && (
+          <MenuItem
+            onClick={() => {
+              presentation.addCredential({ verifiableCredential, hash })
+              handleClose()
+            }}
+          >
+            <ListItemIcon>
+              <MessageIcon />
+            </ListItemIcon>
+            <Typography variant="inherit" noWrap>
+              Share in presentation
+            </Typography>
+          </MenuItem>
+        )}
 
         <MenuItem
           onClick={() => {
@@ -289,7 +291,7 @@ function CredentialPostCard(props: Props) {
             <QrIcon />
           </ListItemIcon>
           <Typography variant="inherit" noWrap>
-              Show QR Code
+            Show QR Code
           </Typography>
         </MenuItem>
 
@@ -302,7 +304,7 @@ function CredentialPostCard(props: Props) {
             <CodeIcon />
           </ListItemIcon>
           <Typography variant="inherit" noWrap>
-              Show source
+            Show source
           </Typography>
         </MenuItem>
 
@@ -311,7 +313,7 @@ function CredentialPostCard(props: Props) {
             <DownloadIcon />
           </ListItemIcon>
           <Typography variant="inherit" noWrap>
-              Export
+            Export
           </Typography>
         </MenuItem>
 
@@ -379,7 +381,7 @@ function CredentialPostCard(props: Props) {
         }}
         maxWidth="md"
         fullWidth
-        scroll='paper'
+        scroll="paper"
         aria-labelledby="responsive-dialog-title"
       >
         <DialogContent>
@@ -393,7 +395,6 @@ function CredentialPostCard(props: Props) {
             variant="outlined"
             inputProps={{ style: { fontFamily: 'monospace' } }}
           />
-
         </DialogContent>
         <DialogActions>
           <Button
@@ -402,7 +403,6 @@ function CredentialPostCard(props: Props) {
               setShowCode(false)
             }}
             color="default"
-
           >
             Close
           </Button>

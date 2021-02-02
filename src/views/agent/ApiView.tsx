@@ -1,12 +1,12 @@
 import React from 'react'
 import { List, ListItem, ListItemText, useMediaQuery, useTheme } from '@material-ui/core'
 import Container from '@material-ui/core/Container'
-import { useAgent } from '../../agent'
+import { useVeramo } from '@veramo-community/veramo-react'
 import AppBar from '../../components/nav/AppBar'
 import MethodDialog from './dialogs/MethodDialog'
 
 function ApiView() {
-  const { agent } = useAgent()
+  const { agent } = useVeramo()
   const [openMethodModal, setOpenMethodModal] = React.useState(false)
   const [method, setMethod] = React.useState('')
   const theme = useTheme()
@@ -21,18 +21,18 @@ function ApiView() {
     setOpenMethodModal(false)
   }
 
-  const schema = agent.getSchema()
+  const schema = agent?.getSchema()
 
   return (
     <Container maxWidth="sm">
       <AppBar title="API" />
       <List>
-        {Object.keys(schema.components.methods).map((method) => (
+        {schema && Object.keys(schema.components.methods).map((method) => (
           <ListItem
             button
             divider
             key={method}
-            disabled={!agent.availableMethods().includes(method)}
+            disabled={!agent?.availableMethods().includes(method)}
             onClick={() => handleOpenMethodModal(method)}
           >
             <ListItemText primary={method} secondary={schema.components.methods[method].description} />

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Typography, CardContent, makeStyles, Card, Box, Avatar } from '@material-ui/core'
 import { UniqueVerifiableCredential } from '@veramo/data-store'
 import { IdentityProfile } from '../../../types'
-import { useAgent } from '../../../agent'
+import { useVeramo } from '@veramo-community/veramo-react'
 
 interface Props {
   credential: UniqueVerifiableCredential
@@ -45,13 +45,12 @@ function ReactionCredential(props: Props) {
     credential: { verifiableCredential },
   } = props
   const classes = useStyles()
-  const { agent } = useAgent()
+  const { agent } = useVeramo()
   const [author, setAuthor] = useState<IdentityProfile | undefined>(undefined)
 
   useEffect(() => {
     if (verifiableCredential?.credentialSubject?.message?.author) {
-      agent
-        .getIdentityProfile({ did: verifiableCredential?.credentialSubject?.message?.author })
+      agent?.getIdentityProfile({ did: verifiableCredential?.credentialSubject?.message?.author })
         .then(setAuthor)
     }
   }, [agent, verifiableCredential])

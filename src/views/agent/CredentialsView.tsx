@@ -5,7 +5,7 @@ import Container from '@material-ui/core/Container'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import CredentialCard from '../../components/cards/CredentialCard'
 import AppBar from '../../components/nav/AppBar'
-import { useAgent, useAgentList } from '../../agent'
+import { useVeramo } from '@veramo-community/veramo-react'
 import { useSnackbar } from 'notistack'
 import { UniqueVerifiableCredential } from '@veramo/data-store'
 import MissingMethodsAlert from '../../components/nav/MissingMethodsAlert'
@@ -16,18 +16,19 @@ import TimelineIcon from '@material-ui/icons/Timeline'
 import TimelineView from './3d/TimelineView'
 
 function CredentialsView(props: any) {
-  const { agent } = useAgent()
-  const { activeAgentIndex } = useAgentList()
+  const { agent } = useVeramo()
   const { enqueueSnackbar } = useSnackbar()
 
   const [cardType, setCardType] = React.useState<'summary' | 'details' | 'timeline'>('timeline')
 
   const { isLoading, data } = useQuery<UniqueVerifiableCredential[], Error>({
-    queryKey: ['dataStoreORMGetVerifiableCredentials', activeAgentIndex],
-    queryFn: () =>
-      agent.dataStoreORMGetVerifiableCredentials({
+    queryKey: ['dataStoreORMGetVerifiableCredentials', agent?.context?.id],
+    queryFn: () => {
+      if (!agent) throw Error ('no agent')
+      return agent.dataStoreORMGetVerifiableCredentials({
         order: [{ column: 'issuanceDate', direction: 'DESC' }],
-      }),
+      })
+    },
     onError: (e) => enqueueSnackbar(e.message, { variant: 'error' }),
   })
 

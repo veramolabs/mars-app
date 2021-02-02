@@ -3,7 +3,7 @@ import { List, makeStyles, Tab, Tabs } from '@material-ui/core'
 import Container from '@material-ui/core/Container'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import AppBar from '../../components/nav/AppBar'
-import { useAgent } from '../../agent'
+import { useVeramo } from '@veramo-community/veramo-react'
 import { IIdentifier } from '@veramo/core'
 import IdentityListItemLink from '../../components/nav/IdentityListItemLink'
 import { useSnackbar } from 'notistack'
@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 function IdentitiesView(props: any) {
-  const { agent } = useAgent()
+  const { agent } = useVeramo()
   const classes = useStyles()
   const { enqueueSnackbar } = useSnackbar()
   const [loading, setLoading] = useState(false)
@@ -46,7 +46,7 @@ function IdentitiesView(props: any) {
 
   useEffect(() => {
     setDidCount(0)
-    if (agent.availableMethods().includes('dataStoreORMGetIdentifiersCount')) {
+    if (agent?.availableMethods().includes('dataStoreORMGetIdentifiersCount')) {
       agent.dataStoreORMGetIdentifiersCount({
         where: [
           { column: 'did', value: ['did%'], op: 'Like' },
@@ -59,7 +59,7 @@ function IdentitiesView(props: any) {
 
   useEffect(() => {
     setOtherCount(0)
-    if (agent.availableMethods().includes('dataStoreORMGetIdentifiersCount')) {
+    if (agent?.availableMethods().includes('dataStoreORMGetIdentifiersCount')) {
       agent.dataStoreORMGetIdentifiersCount({
         where: [
           { column: 'did', value: ['did%'], op: 'Like', not: true },

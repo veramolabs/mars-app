@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Button from '@material-ui/core/Button'
-import { useAgentList } from '../../../agent'
+import { useVeramo } from '@veramo-community/veramo-react'
 // import { useHistory } from "react-router-dom";
 import { useSnackbar } from 'notistack'
 import {
@@ -24,9 +24,8 @@ import {
   FormGroup,
   FormLabel,
 } from '@material-ui/core'
-import { IdentityProfile } from '../../../types'
 import shortId from 'shortid'
-import { AgentConfig } from '../../../agent/AgentListProvider'
+import { AgentWithManagedDids } from '../../../agent/config'
 
 interface Props {
   fullScreen: boolean
@@ -64,15 +63,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-interface AgentWithManagedDids {
-  agentConfig: AgentConfig
-  profiles: IdentityProfile[]
-}
-
 function ProfileDialog(props: Props) {
   const classes = useStyles()
   const { enqueueSnackbar } = useSnackbar()
-  const { agentList, activeAgentIndex } = useAgentList()
+  const { agent, agents, activeAgentId, getAgent } = useVeramo()
   const [loading, setLoading] = useState(false)
   const [name, setName] = useState<string | undefined>('')
   const [nickname, setNickname] = useState<string | undefined>('')
@@ -81,10 +75,10 @@ function ProfileDialog(props: Props) {
   const [subject, setSubject] = useState<string>('')
   const [issuers, setIssuers] = useState<AgentWithManagedDids[]>([])
   const [knownIdentifiers, setKnownIdentifiers] = useState<AgentWithManagedDids[]>([])
-  const [saveCredentialInAgents, setSaveCredentialInAgents] = useState<number[]>([activeAgentIndex])
+  const [saveCredentialInAgents, setSaveCredentialInAgents] = useState<string[]>(activeAgentId ? [activeAgentId] : [])
 
   const handleChange = (event: any) => {
-    const val = parseInt(event.target.value, 10)
+    const val = event.target.value
     if (event.target.checked) {
       setSaveCredentialInAgents(saveCredentialInAgents.concat([val]))
     } else {
@@ -98,21 +92,21 @@ function ProfileDialog(props: Props) {
 
     const getAllManagedIdentifiers = async (): Promise<AgentWithManagedDids[]> => {
       const result: AgentWithManagedDids[] = []
-      for (const agentConfig of agentList) {
-        if (agentConfig.agent.availableMethods().includes('didManagerFind')) {
-          const identities = await agentConfig.agent.didManagerFind()
+      for (const agent of agents) {
+        if (agent.availableMethods().includes('didManagerFind')) {
+          const identities = await agent.didManagerFind()
           const profiles = await Promise.all(
-            identities.map(({ did }) => agentConfig.agent.getIdentityProfile({ did })),
+            identities.map(({ did }) => agent.getIdentityProfile({ did })),
           )
           result.push({
-            agentConfig,
+            agent,
             profiles,
-          })
+          } as any)
         } else {
           result.push({
-            agentConfig,
+            agent,
             profiles: [],
-          })
+          } as any)
         }
       }
       return result
@@ -121,31 +115,31 @@ function ProfileDialog(props: Props) {
     getAllManagedIdentifiers()
       .then(setIssuers)
       .finally(() => setLoading(false))
-  }, [agentList])
+  }, [agents])
 
   useEffect(() => {
     setLoading(true)
 
     const getAllKnownIdentifiers = async (): Promise<AgentWithManagedDids[]> => {
       const result: AgentWithManagedDids[] = []
-      for (const agentConfig of agentList) {
-        if (agentConfig.agent.availableMethods().includes('dataStoreORMGetIdentifiers')) {
-          const identities = await agentConfig.agent.dataStoreORMGetIdentifiers({
+      for (const agent of agents) {
+        if (agent.availableMethods().includes('dataStoreORMGetIdentifiers')) {
+          const identities = await agent.dataStoreORMGetIdentifiers({
             where: [{ column: 'did', value: ['did%'], op: 'Like' }],
           })
           const profiles = await Promise.all(
-            identities.map(({ did }) => agentConfig.agent.getIdentityProfile({ did })),
+            identities.map(({ did }) => agent.getIdentityProfile({ did })),
           )
           result.push({
-            agentConfig,
+            agent,
             profiles,
-          })
+          } as any)
         } else {
 
           result.push({
-            agentConfig,
+            agent,
             profiles: [],
-          })
+          } as any)
         }
       }
       return result
@@ -154,20 +148,19 @@ function ProfileDialog(props: Props) {
     getAllKnownIdentifiers()
       .then(setKnownIdentifiers)
       .finally(() => setLoading(false))
-  }, [agentList])
+  }, [agents])
 
   useEffect(() => {
     setLoading(true)
     if (props.subject) {
-      setSubject(activeAgentIndex + '|' + props.subject)
+      setSubject(activeAgentId + '|' + props.subject)
     }
-  }, [agentList, activeAgentIndex, props.subject])
+  }, [agents, activeAgentId, props.subject])
 
   useEffect(() => {
     setLoading(true)
     if (subject) {
-      agentList[activeAgentIndex].agent
-        .getIdentityProfile({ did: subject.split('|')[1] })
+      agent?.getIdentityProfile({ did: subject.split('|')[1] })
         .then((profile) => {
           setName(profile.name || '')
           setNickname(profile.nickname || '')
@@ -175,7 +168,7 @@ function ProfileDialog(props: Props) {
         })
         .finally(() => setLoading(false))
     }
-  }, [agentList, activeAgentIndex, subject])
+  }, [agent, subject])
 
   const saveProfileInfo = async () => {
     if (!issuer || !subject) throw Error('Issuer not set')
@@ -194,9 +187,9 @@ function ProfileDialog(props: Props) {
       if (picture) credentialSubject['picture'] = picture
       const uniqId = shortId.generate()
 
-      const [agentIndex, issuerDid] = issuer.split('|')
+      const [agentId, issuerDid] = issuer.split('|')
 
-      const verifiableCredential = await agentList[parseInt(agentIndex, 10)].agent.createVerifiableCredential({
+      const verifiableCredential = await getAgent(agentId).createVerifiableCredential({
         credential: {
           issuer: { id: issuerDid },
           '@context': ['https://www.w3.org/2018/credentials/v1'],
@@ -210,8 +203,8 @@ function ProfileDialog(props: Props) {
       enqueueSnackbar('Profile credential created', { variant: 'success' })
 
       for (const index of saveCredentialInAgents) {
-        await agentList[index].agent.dataStoreSaveVerifiableCredential({ verifiableCredential })
-        enqueueSnackbar('Credential saved to ' + agentList[index].name, { variant: 'success' })
+        await getAgent(index).dataStoreSaveVerifiableCredential({ verifiableCredential })
+        enqueueSnackbar('Credential saved to ' + getAgent(index).context.name, { variant: 'success' })
       }
 
       props.onClose()
@@ -250,8 +243,8 @@ function ProfileDialog(props: Props) {
               SelectDisplayProps={SelectDisplayProps}
             >
               {issuers.map((agentWithDids, index) => [
-                <ListSubheader key={agentWithDids.agentConfig.name}>
-                  {agentWithDids.agentConfig.name}
+                <ListSubheader key={agentWithDids.agent.context?.name}>
+                  {agentWithDids.agent.context?.name}
                 </ListSubheader>,
 
                 agentWithDids.profiles.map((identity) => (
@@ -276,8 +269,8 @@ function ProfileDialog(props: Props) {
               SelectDisplayProps={SelectDisplayProps}
             >
               {knownIdentifiers.map((agentWithDids, index) => [
-                <ListSubheader key={agentWithDids.agentConfig.name}>
-                  {agentWithDids.agentConfig.name}
+                <ListSubheader key={agentWithDids.agent.context?.name}>
+                  {agentWithDids.agent.context?.name}
                 </ListSubheader>,
 
                 agentWithDids.profiles.map((identity) => (
@@ -325,18 +318,18 @@ function ProfileDialog(props: Props) {
           <FormControl component="fieldset" className={classes.formControl}>
             <FormLabel component="legend">Save to:</FormLabel>
             <FormGroup>
-              {agentList.map((agent, index) => (
+              {agents.map((agent) => (
                 <FormControlLabel
                   control={
                     <Checkbox
-                      checked={saveCredentialInAgents.includes(index)}
-                      disabled={!agent.agent.availableMethods().includes('dataStoreSaveVerifiableCredential')}
+                      checked={saveCredentialInAgents.includes(agent.context?.id as string)}
+                      disabled={!agent.availableMethods().includes('dataStoreSaveVerifiableCredential')}
                       onChange={handleChange}
-                      value={index}
+                      value={agent.context?.id as string}
                     />
                   }
-                  key={index}
-                  label={agent.name}
+                  key={agent.context?.id as string}
+                  label={agent.context.name}
                 />
               ))}
             </FormGroup>

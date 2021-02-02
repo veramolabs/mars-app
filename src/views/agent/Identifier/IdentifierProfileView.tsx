@@ -3,7 +3,7 @@ import { makeStyles, List, ListItemText, Box, ListItem, ListItemIcon } from '@ma
 import Avatar from '@material-ui/core/Avatar'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import { UniqueVerifiableCredential } from '@veramo/data-store'
-import { useAgent } from '../../../agent'
+import { useVeramo } from '@veramo-community/veramo-react'
 import { useSnackbar } from 'notistack'
 import MissingMethodsAlert from '../../../components/nav/MissingMethodsAlert'
 import { useCredentialModal } from '../../../components/nav/CredentialModalProvider'
@@ -26,7 +26,7 @@ interface ProfileItem {
 function IdentifierProfileView(props: { did: string }) {
   const { did } = props
   const classes = useStyles()
-  const { agent } = useAgent()
+  const { agent } = useVeramo()
   const { enqueueSnackbar } = useSnackbar()
   const [loading, setLoading] = useState(false)
   const [profileItems, setProfileItems] = useState<Array<ProfileItem>>([])

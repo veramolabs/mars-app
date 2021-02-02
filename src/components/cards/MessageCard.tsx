@@ -23,7 +23,7 @@ import CardActionAreaLink from '../nav/CardActionAreaLink'
 import Avatar from '@material-ui/core/Avatar'
 import { formatDistanceToNow } from 'date-fns'
 import { IdentityProfile } from '../../types'
-import { useAgent, useAgentList } from '../../agent'
+import { useVeramo } from '@veramo-community/veramo-react'
 import { IMessage } from '@veramo/core'
 import { makeStyles } from '@material-ui/core/styles'
 import CardActions from '@material-ui/core/CardActions'
@@ -69,8 +69,7 @@ function MessageCard(props: Props) {
   const { enqueueSnackbar } = useSnackbar()
   const classes = useStyles()
   const [expanded, setExpanded] = useState(false)
-  const { agentList, activeAgentIndex } = useAgentList()
-  const { agent } = useAgent()
+  const { agent, agents, activeAgentId, getAgent } = useVeramo()
   const [loading, setLoading] = useState(false)
   const [from, setFrom] = useState<IdentityProfile | undefined>(undefined)
   const [to, setTo] = useState<IdentityProfile | undefined>(undefined)
@@ -102,13 +101,13 @@ function MessageCard(props: Props) {
     element.click()
   }
 
-  const handleMenuItemClick = async (event: any, index: number) => {
+  const handleMenuItemClick = async (event: any, id: string) => {
     // setSelectedIndex(index);
     try {
-      await agentList[index].agent.dataStoreSaveMessage({
+      await getAgent(id).dataStoreSaveMessage({
         message,
       })
-      enqueueSnackbar('Message copied to: ' + agentList[index].name, {
+      enqueueSnackbar('Message copied to: ' + getAgent(id).context?.name, {
         variant: 'success',
       })
     } catch (e) {
@@ -118,16 +117,18 @@ function MessageCard(props: Props) {
   }
 
   useEffect(() => {
-    setLoading(true)
-    Promise.all<IdentityProfile, IdentityProfile>([
-      agent.getIdentityProfile({ did: message.from }),
-      agent.getIdentityProfile({ did: message.to }),
-    ])
-      .then((profiles) => {
-        setFrom(profiles[0])
-        setTo(profiles[1])
-      })
-      .finally(() => setLoading(false))
+    if (agent) {
+      setLoading(true)
+      Promise.all<IdentityProfile, IdentityProfile>([
+        agent.getIdentityProfile({ did: message.from }),
+        agent.getIdentityProfile({ did: message.to }),
+      ])
+        .then((profiles) => {
+          setFrom(profiles[0])
+          setTo(profiles[1])
+        })
+        .finally(() => setLoading(false))
+    }
   }, [agent, message])
 
   if (loading) {
@@ -148,7 +149,7 @@ function MessageCard(props: Props) {
       </CardContent>
 
       {from && (
-        <CardActionAreaLink onClick={()=>showDid(from.did)}>
+        <CardActionAreaLink onClick={() => showDid(from.did)}>
           <CardHeader
             avatar={<Avatar src={from?.picture} />}
             title={`From: ${from?.name}`}
@@ -157,7 +158,7 @@ function MessageCard(props: Props) {
         </CardActionAreaLink>
       )}
       {to && (
-        <CardActionAreaLink onClick={()=>showDid(to.did)}>
+        <CardActionAreaLink onClick={() => showDid(to.did)}>
           <CardHeader
             avatar={<Avatar src={to?.picture} />}
             title={`To: ${to?.name}`}
@@ -217,7 +218,7 @@ function MessageCard(props: Props) {
           </Typography>
         </MenuItem>
 
-        {agentList.length > 0 && (
+        {agents.length > 0 && (
           <MenuList
             subheader={
               <ListSubheader component="div" id="nested-list-subheader">
@@ -225,17 +226,17 @@ function MessageCard(props: Props) {
               </ListSubheader>
             }
           >
-            {agentList.map((option, index) => (
+            {agents.map((option) => (
               <MenuItem
-                key={index}
+                key={ option.context.id}
                 disabled={
-                  !option.agent.availableMethods().includes('dataStoreSaveMessage') ||
-                  index === activeAgentIndex
+                  !option.availableMethods().includes('dataStoreSaveMessage') ||
+                  option.context.id === activeAgentId
                 }
-                onClick={(event) => handleMenuItemClick(event, index)}
+                onClick={(event) => handleMenuItemClick(event, option.context.id as string)}
               >
                 <ListItemIcon>
-                  <Avatar className={classes.small}>{option.name.substr(0, 2)}</Avatar>
+                  <Avatar className={classes.small}>{option.context?.name?.substr(0, 2)}</Avatar>
                 </ListItemIcon>
                 <Typography variant="inherit" noWrap>
                   {option.name}

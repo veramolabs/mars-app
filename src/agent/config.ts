@@ -18,6 +18,7 @@ import { IdentityProfileManager, IProfileManager } from './ProfileManager'
 import { Resolver } from 'did-resolver'
 import { getResolver as ethrDidResolver } from 'ethr-did-resolver'
 import { getResolver as webDidResolver } from 'web-did-resolver'
+import { IdentityProfile } from '../types'
 
 type AgentInterfaces = IProfileManager &
   IDataStore &
@@ -29,6 +30,18 @@ type AgentInterfaces = IProfileManager &
   IResolver &
   IMessageHandler
 export type Agent = TAgent<AgentInterfaces>
+
+
+export interface AgentWithManagedDids {
+  agent: TAgent<AgentInterfaces & IProfileManager> & {
+    context?: {
+      id: string
+      name: string
+    },
+  }
+  profiles: IdentityProfile[]
+}
+
 
 export const enabledMethods = [
   'keyManagerGetKeyManagementSystems',

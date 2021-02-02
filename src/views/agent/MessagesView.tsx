@@ -5,24 +5,26 @@ import LinearProgress from '@material-ui/core/LinearProgress'
 import MessageCard from '../../components/cards/MessageCard'
 import AppBar from '../../components/nav/AppBar'
 import MissingMethodsAlert from '../../components/nav/MissingMethodsAlert'
-import { useAgent, useAgentList } from '../../agent'
+import { useVeramo } from '@veramo-community/veramo-react'
 import { IMessage } from '@veramo/core'
 import { useSnackbar } from 'notistack'
 import { Alert } from '@material-ui/lab'
 import { useQuery } from 'react-query'
 
 function MessagesView(props: any) {
-  const { agent } = useAgent()
-  const { activeAgentIndex } = useAgentList()
+  const { agent } = useVeramo()
   const { enqueueSnackbar } = useSnackbar()
 
   const { isLoading, data } = useQuery<IMessage[], Error>({
-    queryKey: ['dataStoreORMGetMessages', activeAgentIndex],
-    queryFn: () =>
-      agent.dataStoreORMGetMessages({
+    queryKey: ['dataStoreORMGetMessages', agent?.context?.id],
+    queryFn: () => {
+        if (!agent) throw Error ('no agent')
+        return agent.dataStoreORMGetMessages({
         order: [{ column: 'createdAt', direction: 'DESC' }],
-      }),
+      })
+    },
     onError: (e) => enqueueSnackbar(e.message, { variant: 'error' }),
+
   })
 
   return (

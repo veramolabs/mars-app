@@ -3,7 +3,7 @@ import { Grid, makeStyles, Typography, Box } from '@material-ui/core'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import CredentialCard from '../../../components/cards/CredentialCard'
 import { UniqueVerifiableCredential } from '@veramo/data-store'
-import { useAgent } from '../../../agent'
+import { useVeramo } from '@veramo-community/veramo-react'
 import { useSnackbar } from 'notistack'
 import MissingMethodsAlert from '../../../components/nav/MissingMethodsAlert'
 import { ToggleButtonGroup, ToggleButton } from '@material-ui/lab'
@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
 function IdentifierCredentialsView(props: { did: string }) {
   const { did } = props
   const classes = useStyles()
-  const { agent } = useAgent()
+  const { agent } = useVeramo()
   const { enqueueSnackbar } = useSnackbar()
   const [loading, setLoading] = useState(false)
   const [credentials, setCredentials] = useState<Array<UniqueVerifiableCredential>>([])
@@ -56,7 +56,7 @@ function IdentifierCredentialsView(props: { did: string }) {
 
   useEffect(() => {
     setIssuerCredentialCount(0)
-    if (agent.availableMethods().includes('dataStoreORMGetVerifiableCredentialsCount')) {
+    if (agent?.availableMethods().includes('dataStoreORMGetVerifiableCredentialsCount')) {
       agent.dataStoreORMGetVerifiableCredentialsCount({
         where: [{ column: 'issuer', value: [did] }],
       })
@@ -67,7 +67,7 @@ function IdentifierCredentialsView(props: { did: string }) {
 
   useEffect(() => {
     setSubjectCredentialCount(0)
-    if (agent.availableMethods().includes('dataStoreORMGetVerifiableCredentialsCount')) {
+    if (agent?.availableMethods().includes('dataStoreORMGetVerifiableCredentialsCount')) {
       agent.dataStoreORMGetVerifiableCredentialsCount({
         where: [{ column: 'subject', value: [did] }],
       })

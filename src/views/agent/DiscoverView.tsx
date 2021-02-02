@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react'
 import Container from '@material-ui/core/Container'
 import AppBar from '../../components/nav/AppBar'
-import { useAgent } from '../../agent'
+import { useVeramo } from '@veramo-community/veramo-react'
 import { Grid, LinearProgress } from '@material-ui/core'
 import { DIDDocument } from '@veramo/core'
 import { useSnackbar } from 'notistack'
@@ -40,17 +40,16 @@ const useStyles = makeStyles((theme) => ({
 
 function DiscoverView() {
   const { enqueueSnackbar } = useSnackbar()
-  const { agent } = useAgent()
+  const { agent } = useVeramo()
   const [loading, setLoading] = useState(false)
   const [didUrl, setDidUrl] = useState<string>('did:web:sun.veramo.io')
   const [didDoc, setDidDoc] = useState<DIDDocument | undefined>(undefined)
   const classes = useStyles()
 
   const handleResolve = useCallback(() => {
-    if (agent.availableMethods().includes('resolveDid')) {
+    if (agent?.availableMethods().includes('resolveDid')) {
       setLoading(true)
-      agent
-        .resolveDid({ didUrl })
+      agent?.resolveDid({ didUrl })
         .then(setDidDoc)
         .finally(() => setLoading(false))
         .catch((e) => enqueueSnackbar(e.message, { variant: 'error' }))

@@ -1,23 +1,24 @@
 import React from 'react'
 import Container from '@material-ui/core/Container'
-import { useAgentList } from '../../agent'
+import { useVeramo } from '@veramo-community/veramo-react'
 import { Button, Grid, Typography, useMediaQuery } from '@material-ui/core'
 import { useTheme } from '@material-ui/core/styles'
 import NewAgentModal from './../agent/dialogs/NewAgentDialog'
-import { SerializedAgentConfig } from '../../agent/AgentListProvider'
 import { useHistory } from 'react-router-dom'
-import { useElectronDefaultConnection } from '../../electron/default-connection'
+import { ISerializedAgentConfig } from '@veramo-community/veramo-react'
+// import { useElectronDefaultConnection } from '../../electron/default-connection'
 
 function OnboardingView() {
-  const { addSerializedAgentConfig, setActiveAgentIndex } = useAgentList()
+  const { addAgentConfig } = useVeramo()
   const theme = useTheme()
   const history = useHistory()
   const fullScreen = useMediaQuery(theme.breakpoints.down('xs'))
   const [openNewAgentModal, setOpenNewAgentModal] = React.useState(false)
-  const defaultConnection = useElectronDefaultConnection()
-  const saveAgentConfig = (config: SerializedAgentConfig) => {
-    addSerializedAgentConfig(config)
-    setActiveAgentIndex(0)
+  // const defaultConnection = useElectronDefaultConnection()
+  const saveAgentConfig = (config: ISerializedAgentConfig) => {
+
+    addAgentConfig(config)
+
     setOpenNewAgentModal(false)
     history.push('/agent/credentials')
   }
@@ -31,14 +32,14 @@ function OnboardingView() {
   }
 
   const handleSaveLocalAgent = () => {
-    if (defaultConnection) {
-      addSerializedAgentConfig(defaultConnection)
-    } else {
-      addSerializedAgentConfig({
-        name: 'Mars',
-      })
-    }
-    setActiveAgentIndex(0)
+    // FIXME
+    // if (defaultConnection) {
+    //   addSerializedAgentConfig(defaultConnection)
+    // } else {
+    //   addSerializedAgentConfig({
+    //     name: 'Mars',
+    //   })
+    // }
     setOpenNewAgentModal(false)
     history.push('/agent/discover')
   }

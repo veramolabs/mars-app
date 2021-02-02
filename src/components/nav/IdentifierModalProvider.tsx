@@ -1,7 +1,7 @@
 import { useTheme, useMediaQuery, Dialog, DialogContent, DialogActions, Button, Tab, Tabs, Avatar, Typography, Box, ListItemAvatar, LinearProgress } from '@material-ui/core'
 import { DIDDocument } from 'did-resolver'
 import React, { useContext, useEffect, useState } from 'react'
-import { useAgent } from '../../agent'
+import { useVeramo } from '@veramo-community/veramo-react'
 import { IdentityProfile } from '../../types'
 import IdentifierCredentialsView from '../../views/agent/Identifier/IdentifierCredentialsView'
 import IdentifierProfileView from '../../views/agent/Identifier/IdentifierProfileView'
@@ -22,7 +22,7 @@ const IdModalProvider: React.FC = ({ children }) => {
   const [did, showDid] = React.useState<string | undefined>(undefined)
   const theme = useTheme()
   const fullScreen = useMediaQuery(theme.breakpoints.down('xs'))
-  const { agent } = useAgent()
+  const { agent } = useVeramo()
   const [identity, setIdentity] = useState<IdentityProfile | undefined>(undefined)
   const isDid = did?.substr(0,3) === 'did'
   const [tab, setTab] = React.useState(0)
@@ -33,7 +33,7 @@ const IdModalProvider: React.FC = ({ children }) => {
   useEffect(() => {
     if (tab === 2 && did) {
       setLoading(true)
-      agent.resolveDid({ didUrl: did })
+      agent?.resolveDid({ didUrl: did })
         .then(setDidDoc)
         .finally(() => setLoading(false))
         .catch((e) => enqueueSnackbar(e.message, { variant: 'error' }))
@@ -44,7 +44,7 @@ const IdModalProvider: React.FC = ({ children }) => {
 
 
   useEffect(() => {
-    agent.getIdentityProfile({ did }).then(setIdentity)
+    agent?.getIdentityProfile({ did }).then(setIdentity)
   }, [agent, did])
 
   const handleChange = (event: any, newValue: any) => {

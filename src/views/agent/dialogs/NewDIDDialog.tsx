@@ -15,7 +15,7 @@ import {
 } from '@material-ui/core'
 
 import { useSnackbar } from 'notistack'
-import { useAgent } from '../../../agent'
+import { useVeramo } from '@veramo-community/veramo-react'
 import { IDIDManagerCreateArgs } from '@veramo/core'
 import MissingMethodsAlert from '../../../components/nav/MissingMethodsAlert'
 
@@ -38,7 +38,7 @@ const useStyles = makeStyles(() => ({
 }))
 
 function NewAgentDialog(props: Props) {
-  const { agent } = useAgent()
+  const { agent } = useVeramo()
   const classes = useStyles()
   const { enqueueSnackbar } = useSnackbar()
   const [loading, setLoading] = useState(false)
@@ -70,8 +70,7 @@ function NewAgentDialog(props: Props) {
     const args: IDIDManagerCreateArgs = { provider, kms }
     if (alias) args['alias'] = alias
     setLoading(true)
-    agent
-      .didManagerCreate(args)
+    agent?.didManagerCreate(args)
       .then((identifier) => {
         props.onClose()
         enqueueSnackbar(identifier.did + ' created', { variant: 'success' })

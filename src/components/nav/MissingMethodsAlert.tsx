@@ -1,5 +1,5 @@
 import React from 'react'
-import { useAgent } from '../../agent'
+import { useVeramo } from '@veramo-community/veramo-react'
 import { Alert } from '@material-ui/lab'
 
 interface Props {
@@ -8,8 +8,8 @@ interface Props {
 
 function MissingMethodsAlert(props: Props) {
   const { methods } = props
-  const { agent } = useAgent()
-  const availableMethods = agent.availableMethods()
+  const { agent } = useVeramo()
+  const availableMethods = agent?.availableMethods() || []
   const unavailableMethods: string[] = []
   methods.forEach(method => {
     if (!availableMethods.includes(method)) {

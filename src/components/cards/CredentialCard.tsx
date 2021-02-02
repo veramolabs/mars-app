@@ -28,7 +28,7 @@ import Avatar from '@material-ui/core/Avatar'
 import { formatDistanceToNow } from 'date-fns'
 import { UniqueVerifiableCredential } from '@veramo/data-store'
 import { IdentityProfile } from '../../types'
-import { useAgent, useAgentList } from '../../agent'
+import { useVeramo } from '@veramo-community/veramo-react'
 import { useSnackbar } from 'notistack'
 import PostCredential from './CredentialCardContent/PostCredential'
 import ProfileCredential from './CredentialCardContent/ProfileCredential'
@@ -103,8 +103,7 @@ function CredentialPostCard(props: Props) {
   } = props
   const classes = useStyles()
   const { enqueueSnackbar } = useSnackbar()
-  const { agent } = useAgent()
-  const { agentList, activeAgentIndex } = useAgentList()
+  const { agent, agents, getAgent, activeAgentId } = useVeramo()
   const [showQr, setShowQr] = useState(false)
   const [showCode, setShowCode] = useState(false)
   const [anchorEl, setAnchorEl] = React.useState(null)
@@ -118,13 +117,13 @@ function CredentialPostCard(props: Props) {
     setAnchorEl(event.currentTarget)
   }
 
-  const handleMenuItemClick = async (event: any, index: number) => {
+  const handleMenuItemClick = async (event: any, id: string) => {
     // setSelectedIndex(index);
     try {
-      await agentList[index].agent.dataStoreSaveVerifiableCredential({
+      await getAgent(id).dataStoreSaveVerifiableCredential({
         verifiableCredential,
       })
-      enqueueSnackbar('Credential copied to: ' + agentList[index].name, {
+      enqueueSnackbar('Credential copied to: ' + getAgent(id).context?.name, {
         variant: 'success',
       })
     } catch (e) {
@@ -150,16 +149,22 @@ function CredentialPostCard(props: Props) {
 
   const { isLoading: isLoadingIssuer, data: issuer } = useQuery<IdentityProfile, Error>(
     'profile' + verifiableCredential.issuer.id,
-    () => agent.getIdentityProfile({ did: verifiableCredential.issuer.id }),
+    () => {
+      if (!agent) throw Error ('no agent')
+      return agent.getIdentityProfile({ did: verifiableCredential.issuer.id })
+    },
     { initialData: { did: verifiableCredential.issuer.id, name: verifiableCredential.issuer.id } },
   )
 
   const { isLoading: isLoadingSubject, data: subject } = useQuery<IdentityProfile, Error>(
     'profile' + verifiableCredential.credentialSubject.id,
     () =>
-      verifiableCredential.credentialSubject.id
+      {
+        if (!agent) throw Error ('no agent')
+        return verifiableCredential.credentialSubject.id
         ? agent.getIdentityProfile({ did: verifiableCredential.credentialSubject.id })
-        : Promise.resolve({ did: '' }),
+        : Promise.resolve({ did: '' })
+      }
   )
 
   const loading = isLoadingIssuer || isLoadingSubject
@@ -317,7 +322,7 @@ function CredentialPostCard(props: Props) {
           </Typography>
         </MenuItem>
 
-        {agentList.length > 0 && (
+        {agents.length > 0 && (
           <MenuList
             subheader={
               <ListSubheader component="div" id="nested-list-subheader">
@@ -325,20 +330,20 @@ function CredentialPostCard(props: Props) {
               </ListSubheader>
             }
           >
-            {agentList.map((option, index) => (
+            {agents.map((option) => (
               <MenuItem
-                key={index}
+                key={option.context?.id}
                 disabled={
-                  !option.agent.availableMethods().includes('dataStoreSaveVerifiableCredential') ||
-                  index === activeAgentIndex
+                  !option.availableMethods().includes('dataStoreSaveVerifiableCredential') ||
+                  option.context?.id === activeAgentId
                 }
-                onClick={(event) => handleMenuItemClick(event, index)}
+                onClick={(event) => handleMenuItemClick(event, option.context?.id as string)}
               >
                 <ListItemIcon>
-                  <Avatar className={classes.small}>{option.name.substr(0, 2)}</Avatar>
+                  <Avatar className={classes.small}>{option.context?.name?.substr(0, 2)}</Avatar>
                 </ListItemIcon>
                 <Typography variant="inherit" noWrap>
-                  {option.name}
+                  {option.context?.name}
                 </Typography>
               </MenuItem>
             ))}

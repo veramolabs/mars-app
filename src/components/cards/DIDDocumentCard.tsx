@@ -12,8 +12,9 @@ import DeleteIcon from '@material-ui/icons/Delete'
 import MoreIcon from '@material-ui/icons/MoreVert'
 import VerifiedUserIcon from '@material-ui/icons/VerifiedUser'
 import { useSnackbar } from 'notistack'
-import { useAgent, useAgentList } from '../../agent'
+import { useVeramo } from '@veramo-community/veramo-react'
 import { IIdentifier, TKeyType } from '@veramo/core'
+import { useAgentModal } from '../nav/AgentModalProvider'
 
 const useStyles = makeStyles((theme) => ({
   cardActions: {
@@ -29,7 +30,7 @@ function DIDDocumentCard({ didDoc }: { didDoc: DIDDocument }) {
   const [anchorEl, setAnchorEl] = React.useState(null)
   const { enqueueSnackbar } = useSnackbar()
   const theme = useTheme()
-  const { agent } = useAgent()
+  const { agent } = useVeramo()
   const fullScreen = useMediaQuery(theme.breakpoints.down('xs'))
   const [loading, setLoading] = useState(false)
   const [showServiceModal, setShowServiceModal] = useState(false)
@@ -42,7 +43,7 @@ function DIDDocumentCard({ didDoc }: { didDoc: DIDDocument }) {
   const [keyType, setKeyType] = useState<TKeyType>('Ed25519')
   const [kms, setKms] = useState('')
   const [managedIdentifier, setManagedIdentifier] = useState<IIdentifier | undefined>(undefined)
-  const { openNewAgentModal } = useAgentList()
+  const { openNewAgentModal } = useAgentModal()
 
   const [cardType, setCardType] = React.useState<'preview' | 'source'>('preview')
 
@@ -89,7 +90,7 @@ function DIDDocumentCard({ didDoc }: { didDoc: DIDDocument }) {
   const addService = async () => {
     setLoading(true)
     try {
-      await agent.didManagerAddService({
+      await agent?.didManagerAddService({
         did: didDoc.id,
         service: {
           id: serviceId,
@@ -114,7 +115,7 @@ function DIDDocumentCard({ didDoc }: { didDoc: DIDDocument }) {
       setLoading(true)
       try {
         //FIXME
-        await agent.didManagerRemoveService({
+        await agent?.didManagerRemoveService({
           did: didDoc.id,
           id: serviceId
         })
@@ -133,7 +134,7 @@ function DIDDocumentCard({ didDoc }: { didDoc: DIDDocument }) {
       setLoading(true)
       try {
         //FIXME
-        await agent.didManagerRemoveKey({
+        await agent?.didManagerRemoveKey({
           did: didDoc.id,
           kid
         })
@@ -147,25 +148,28 @@ function DIDDocumentCard({ didDoc }: { didDoc: DIDDocument }) {
   }
 
   const addKey = async () => {
-    setLoading(true)
-    try {
+    if (agent) {
+      setLoading(true)
 
-      const newKey = await agent.keyManagerCreate({
-        kms,
-        type: keyType,
-      })
-
-      await agent.didManagerAddKey({
-        did: didDoc.id,
-        key: newKey,
-      })
-
-      setShowPublicKeyModal(false)
-      enqueueSnackbar('Key added', { variant: 'success' })
-    } catch (error) {
-      enqueueSnackbar(error.message, { variant: 'error' })
+      try {
+        
+        const newKey = await agent.keyManagerCreate({
+          kms,
+          type: keyType,
+        })
+        
+        await agent.didManagerAddKey({
+          did: didDoc.id,
+          key: newKey,
+        })
+        
+        setShowPublicKeyModal(false)
+        enqueueSnackbar('Key added', { variant: 'success' })
+      } catch (error) {
+        enqueueSnackbar(error.message, { variant: 'error' })
+      }
+      setLoading(false)
     }
-    setLoading(false)
   }
 
   const handleServiceClick = (service: ServiceEndpoint) => {

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Route, Redirect, Switch, useRouteMatch } from 'react-router-dom'
 // import { useAgent } from '../../agent'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
-import { useAgentList, useAgent } from '../../agent'
+import { useVeramo } from '@veramo-community/veramo-react'
 
 import PeopleIcon from '@material-ui/icons/SupervisorAccount'
 import RecentActorsIcon from '@material-ui/icons/RecentActors'
@@ -106,8 +106,7 @@ const useStyles = makeStyles((theme: Theme) =>
 )
 
 export function AgentDrawer(props: any) {
-  const { agentList, activeAgentIndex } = useAgentList()
-  const { agent } = useAgent()
+  const { agent } = useVeramo()
   const classes = useStyles()
   const { enqueueSnackbar } = useSnackbar()
   const [messageCount, setMessageCount] = useState<number>(0)
@@ -117,8 +116,8 @@ export function AgentDrawer(props: any) {
 
   useEffect(() => {
     setMessageCount(0)
-    if (agent.availableMethods().includes('dataStoreORMGetMessagesCount')) {
-      agent.dataStoreORMGetMessagesCount()
+    if (agent?.availableMethods().includes('dataStoreORMGetMessagesCount')) {
+      agent?.dataStoreORMGetMessagesCount()
         .then(setMessageCount)
         .catch((e) => enqueueSnackbar(e.message, { variant: 'error' }))
     }
@@ -126,8 +125,8 @@ export function AgentDrawer(props: any) {
 
   useEffect(() => {
     setCredentialCount(0)
-    if (agent.availableMethods().includes('dataStoreORMGetVerifiableCredentialsCount')) {
-      agent.dataStoreORMGetVerifiableCredentialsCount()
+    if (agent?.availableMethods().includes('dataStoreORMGetVerifiableCredentialsCount')) {
+      agent?.dataStoreORMGetVerifiableCredentialsCount()
         .then(setCredentialCount)
     }
   }, [agent, enqueueSnackbar])
@@ -135,8 +134,8 @@ export function AgentDrawer(props: any) {
 
   useEffect(() => {
     setIdentifiersCount(0)
-    if (agent.availableMethods().includes('dataStoreORMGetIdentifiersCount')) {
-      agent.dataStoreORMGetIdentifiersCount({
+    if (agent?.availableMethods().includes('dataStoreORMGetIdentifiersCount')) {
+      agent?.dataStoreORMGetIdentifiersCount({
         where: [
           { column: 'provider', value: [], op: 'IsNull' },
         ],
@@ -148,8 +147,8 @@ export function AgentDrawer(props: any) {
 
   useEffect(() => {
     setManagedDIDsCount(0)
-    if (agent.availableMethods().includes('didManagerFind')) {
-      agent.didManagerFind()
+    if (agent?.availableMethods().includes('didManagerFind')) {
+      agent?.didManagerFind()
         .then(dids => dids.length)
         .then(setManagedDIDsCount)
     }
@@ -171,7 +170,7 @@ export function AgentDrawer(props: any) {
         className={classes.list}
         subheader={
           <ListSubheader component="div" id="nested-list-subheader">
-            {agentList[activeAgentIndex]?.name}
+            {agent?.context?.name}
           </ListSubheader>
         }
       >

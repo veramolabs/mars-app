@@ -20,15 +20,15 @@ import {
 } from '@material-ui/core'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import IconButton from '@material-ui/core/IconButton'
-import { SerializedAgentConfig } from '../../../agent/AgentListProvider'
 import { useSnackbar } from 'notistack'
 import clsx from 'clsx'
+import { ISerializedAgentConfig } from '@veramo-community/veramo-react'
 interface Props {
   fullScreen: boolean
   open: boolean
   onClose: any
   schemaUrl?: string
-  saveAgentConfig: (config: SerializedAgentConfig) => void
+  saveAgentConfig: (config: ISerializedAgentConfig) => void
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -105,16 +105,20 @@ function NewAgentDialog(props: Props) {
 
   const configureAgent = () => {
     props.saveAgentConfig({
-      name,
-      schema: {
-        components: {
-          schemas: schema.components.schemas,
-          methods: schema['x-methods'],
-        },
+      context: {
+        name,
       },
-      apiUrl,
-      token,
-      enabledMethods,
+      remoteAgents: [{
+        schema: {
+          components: {
+            schemas: schema.components.schemas,
+            methods: schema['x-methods'],
+          },
+        },
+        url: apiUrl,
+        token,
+        enabledMethods,
+      }]
     })
   }
 

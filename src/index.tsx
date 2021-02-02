@@ -7,13 +7,17 @@ import { BrowserRouter } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { SnackbarProvider } from 'notistack'
 import App from './App'
-import OnboardingView from './views/onboarding/OnboardingView'
+
 import theme from './theme'
 import MobileProvider from './components/nav/MobileProvider'
-import { AgentListProvider, AgentListConsumer } from './agent/AgentListProvider'
+import { AgentModalProvider } from './components/nav/AgentModalProvider'
+import { VeramoProvider } from '@veramo-community/veramo-react'
+import { IdentityProfileManager } from './agent/ProfileManager'
 
+const plugins = [
+  new IdentityProfileManager()
+]
 const queryClient = new QueryClient()
-
 ReactDOM.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
@@ -28,11 +32,11 @@ ReactDOM.render(
           <MobileProvider>
             <ThemeProvider theme={theme}>
               <CssBaseline />
-              <AgentListProvider>
-                <AgentListConsumer>
-                  {({ agentList }) => (agentList.length === 0 ? <OnboardingView /> : <App />)}
-                </AgentListConsumer>
-              </AgentListProvider>
+              <VeramoProvider plugins={plugins}>
+                <AgentModalProvider>
+                  <App />
+                </AgentModalProvider>
+              </VeramoProvider>
             </ThemeProvider>
           </MobileProvider>
         </SnackbarProvider>

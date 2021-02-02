@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Button from '@material-ui/core/Button'
-import { useAgentList } from '../../../agent'
+import { useVeramo, IAgent } from '@veramo-community/veramo-react'
 // import { useHistory } from "react-router-dom";
 import { useSnackbar } from 'notistack'
 import {
@@ -24,11 +24,12 @@ import {
   FormLabel,
   Grid,
 } from '@material-ui/core'
-import { IdentityProfile } from '../../../types'
+
 import shortId from 'shortid'
-import { AgentConfig } from '../../../agent/AgentListProvider'
+import { IProfileManager } from '../../../agent/ProfileManager'
 import { usePresentation } from '../../../components/nav/PresentationProvider'
 import CredentialCard from '../../../components/cards/CredentialCard'
+import { AgentWithManagedDids } from '../../../agent/config'
 
 interface Props {
   fullScreen: boolean
@@ -69,26 +70,21 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-interface AgentWithManagedDids {
-  agentConfig: AgentConfig
-  profiles: IdentityProfile[]
-}
-
 function PresentationDialog(props: Props) {
   const classes = useStyles()
   const { enqueueSnackbar } = useSnackbar()
-  const { agentList, activeAgentIndex } = useAgentList()
+  const { agents, activeAgentId, getAgent } = useVeramo<IAgent & IProfileManager>()
   const [loading, setLoading] = useState(false)
   const [send, setSend] = useState(false)
   const [holder, setHolder] = useState<string>('')
   const [verifier, setVerifier] = useState<string>('')
   const [holders, setHolders] = useState<AgentWithManagedDids[]>([])
   const [knownIdentifiers, setKnownIdentifiers] = useState<AgentWithManagedDids[]>([])
-  const [savePresentationInAgents, setSavePresentationInAgents] = useState<number[]>([])
+  const [savePresentationInAgents, setSavePresentationInAgents] = useState<string[]>([])
   const presentation = usePresentation()
 
   const handleChange = (event: any) => {
-    const val = parseInt(event.target.value, 10)
+    const val = event.target.value
     if (event.target.checked) {
       setSavePresentationInAgents(savePresentationInAgents.concat([val]))
     } else {
@@ -102,21 +98,21 @@ function PresentationDialog(props: Props) {
 
     const getAllManagedIdentifiers = async (): Promise<AgentWithManagedDids[]> => {
       const result: AgentWithManagedDids[] = []
-      for (const agentConfig of agentList) {
-        if (agentConfig.agent.availableMethods().includes('didManagerFind')) {
-          const identities = await agentConfig.agent.didManagerFind()
+      for (const agent of agents) {
+        if (agent.availableMethods().includes('didManagerFind')) {
+          const identities = await agent.didManagerFind()
           const profiles = await Promise.all(
-            identities.map(({ did }) => agentConfig.agent.getIdentityProfile({ did })),
+            identities.map(({ did }) => agent.getIdentityProfile({ did })),
           )
           result.push({
-            agentConfig,
+            agent,
             profiles,
-          })
+          } as any)
         } else {
           result.push({
-            agentConfig,
+            agent,
             profiles: [],
-          })
+          } as any)
         }
       }
       return result
@@ -125,31 +121,31 @@ function PresentationDialog(props: Props) {
     getAllManagedIdentifiers()
       .then(setHolders)
       .finally(() => setLoading(false))
-  }, [agentList])
+  }, [agents])
 
   useEffect(() => {
     setLoading(true)
 
     const getAllKnownIdentifiers = async (): Promise<AgentWithManagedDids[]> => {
       const result: AgentWithManagedDids[] = []
-      for (const agentConfig of agentList) {
-        if (agentConfig.agent.availableMethods().includes('dataStoreORMGetIdentifiers')) {
-          const identities = await agentConfig.agent.dataStoreORMGetIdentifiers({
+      for (const agent of agents) {
+        if (agent.availableMethods().includes('dataStoreORMGetIdentifiers')) {
+          const identities = await agent.dataStoreORMGetIdentifiers({
             where: [{ column: 'did', value: ['did%'], op: 'Like' }],
           })
           const profiles = await Promise.all(
-            identities.map(({ did }) => agentConfig.agent.getIdentityProfile({ did })),
+            identities.map(({ did }) => agent.getIdentityProfile({ did })),
           )
           result.push({
-            agentConfig,
+            agent,
             profiles,
-          })
+          } as any)
         } else {
 
           result.push({
-            agentConfig,
+            agent,
             profiles: [],
-          })
+          } as any)
         }
       }
       return result
@@ -158,26 +154,26 @@ function PresentationDialog(props: Props) {
     getAllKnownIdentifiers()
       .then(setKnownIdentifiers)
       .finally(() => setLoading(false))
-  }, [agentList])
+  }, [agents])
 
   useEffect(() => {
     setLoading(true)
     if (props.verifier) {
-      setVerifier(activeAgentIndex + '|' + props.verifier)
+      setVerifier(activeAgentId + '|' + props.verifier)
     }
-  }, [agentList, activeAgentIndex, props.verifier])
+  }, [agents, activeAgentId, props.verifier])
 
-  useEffect(() => {
-    setLoading(true)
-    if (verifier) {
-      agentList[activeAgentIndex].agent
-        .getIdentityProfile({ did: verifier.split('|')[1] })
-        .then((profile) => {
-          //FIXME
-        })
-        .finally(() => setLoading(false))
-    }
-  }, [agentList, activeAgentIndex, verifier])
+  // useEffect(() => {
+  //   setLoading(true)
+  //   if (verifier) {
+  //     agents.find(a => a.context?.id === activeAgentId)?.agent
+  //       .getIdentityProfile({ did: verifier.split('|')[1] })
+  //       .then((profile) => {
+  //         //FIXME
+  //       })
+  //       .finally(() => setLoading(false))
+  //   }
+  // }, [agentList, activeAgentIndex, verifier])
 
   const createPresentation = async () => {
     if (!holder || !verifier) throw Error('Holder not set')
@@ -187,9 +183,9 @@ function PresentationDialog(props: Props) {
 
       const [agentIndex, holderDid] = holder.split('|')
       const verifierDid = verifier.split('|')[1]
-      const holderAgentIndex = parseInt(agentIndex, 10)
+      const holderAgentIndex = agentIndex
 
-      const verifiablePresentation = await agentList[holderAgentIndex].agent.createVerifiablePresentation({
+      const verifiablePresentation = await getAgent(holderAgentIndex).createVerifiablePresentation({
         presentation: {
           holder: holderDid ,
           verifier: [verifierDid],
@@ -202,12 +198,12 @@ function PresentationDialog(props: Props) {
       enqueueSnackbar('Presentation created', { variant: 'success' })
 
       for (const index of savePresentationInAgents) {
-        await agentList[index].agent.dataStoreSaveVerifiablePresentation({ verifiablePresentation })
-        enqueueSnackbar('Presentation saved to ' + agentList[index].name, { variant: 'success' })
+        await getAgent(index).dataStoreSaveVerifiablePresentation({ verifiablePresentation })
+        enqueueSnackbar('Presentation saved to ' + getAgent(index).context.name, { variant: 'success' })
       }
 
       if (send) {
-        await agentList[holderAgentIndex].agent.sendMessageDIDCommAlpha1({
+        await getAgent(holderAgentIndex).sendMessageDIDCommAlpha1({
           data: {
             from: holderDid,
             to: verifierDid,
@@ -256,8 +252,8 @@ function PresentationDialog(props: Props) {
               SelectDisplayProps={SelectDisplayProps}
             >
               {holders.map((agentWithDids, index) => [
-                <ListSubheader key={agentWithDids.agentConfig.name}>
-                  {agentWithDids.agentConfig.name}
+                <ListSubheader key={agentWithDids.agent.context?.name}>
+                  {agentWithDids.agent.context?.name}
                 </ListSubheader>,
 
                 agentWithDids.profiles.map((identity) => (
@@ -282,8 +278,8 @@ function PresentationDialog(props: Props) {
               SelectDisplayProps={SelectDisplayProps}
             >
               {knownIdentifiers.map((agentWithDids, index) => [
-                <ListSubheader key={agentWithDids.agentConfig.name}>
-                  {agentWithDids.agentConfig.name}
+                <ListSubheader key={agentWithDids.agent.context?.name}>
+                  {agentWithDids.agent.context?.name}
                 </ListSubheader>,
 
                 agentWithDids.profiles.map((identity) => (
@@ -310,18 +306,18 @@ function PresentationDialog(props: Props) {
           <FormControl component="fieldset" className={classes.formControl}>
             <FormLabel component="legend">Save to:</FormLabel>
             <FormGroup>
-              {agentList.map((agent, index) => (
+              {agents.map((agent) => (
                 <FormControlLabel
                   control={
                     <Checkbox
-                      checked={savePresentationInAgents.includes(index)}
-                      disabled={!agent.agent.availableMethods().includes('dataStoreSaveVerifiableCredential')}
+                      checked={savePresentationInAgents.includes(agent.context.id as string)}
+                      disabled={!agent.availableMethods().includes('dataStoreSaveVerifiableCredential')}
                       onChange={handleChange}
-                      value={index}
+                      value={agent.context.id}
                     />
                   }
-                  key={index}
-                  label={agent.name}
+                  key={agent.context.id}
+                  label={agent.context.name}
                 />
               ))}
             </FormGroup>

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import Container from '@material-ui/core/Container'
 import AppBar from '../../components/nav/AppBar'
 import MessageCard from '../../components/cards/MessageCard'
-import { useAgent } from '../../agent'
+import { useVeramo } from '@veramo-community/veramo-react'
 import {
   Button,
   ButtonGroup,
@@ -28,7 +28,7 @@ const QrReader = require('react-qr-reader')
 
 function VerifyView(props: any) {
   const { enqueueSnackbar } = useSnackbar()
-  const { agent } = useAgent()
+  const { agent } = useVeramo()
   const [loading, setLoading] = useState(false)
   const [showScanner, setShowScanner] = useState<boolean>(false)
   const [showUploadDialog, setShowUploadDialog] = useState<boolean>(false)
@@ -79,10 +79,9 @@ function VerifyView(props: any) {
   }
 
   useEffect(() => {
-    if (agent.availableMethods().includes('handleMessage') && data !== undefined) {
+    if (agent?.availableMethods().includes('handleMessage') && data !== undefined) {
       setLoading(true)
-      agent
-        .handleMessage({
+      agent?.handleMessage({
           raw: data,
           metaData: [{ type: importType }],
           save: false,

@@ -1,4 +1,5 @@
 import React from 'react'
+import { useVeramo } from '@veramo-community/veramo-react'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import Drawer from '@material-ui/core/Drawer'
 import Hidden from '@material-ui/core/Hidden'
@@ -6,9 +7,10 @@ import SettingsIcon from '@material-ui/icons/Settings'
 import AddIcon from '@material-ui/icons/Add'
 import { useMobile } from './components/nav/MobileProvider'
 import { useHistory, useRouteMatch } from 'react-router-dom'
+import { useAgentModal } from './components/nav/AgentModalProvider'
 import CredentialModalProvider from './components/nav/CredentialModalProvider'
 import IdentifierModalProvider from './components/nav/IdentifierModalProvider'
-
+import OnboardingView from './views/onboarding/OnboardingView'
 import { makeStyles, useTheme, Theme, createStyles } from '@material-ui/core/styles'
 import { Route, Redirect, Switch } from 'react-router-dom'
 
@@ -16,7 +18,6 @@ import { AgentSwitch, AgentDrawer } from './views/agent/navigation'
 import { SettingsSwitch, SettingsDrawer } from './views/settings/navigation'
 import ListItemLink from './components/nav/ListItemLink'
 import { Avatar, Box, IconButton } from '@material-ui/core'
-import { useAgentList, AgentConfig } from './agent/AgentListProvider'
 import { deepOrange } from '@material-ui/core/colors'
 import PresentationProvider from './components/nav/PresentationProvider'
 
@@ -102,12 +103,14 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function ResponsiveDrawer() {
   const classes = useStyles()
   const theme = useTheme()
-  const { setActiveAgentIndex, agentList, activeAgentIndex, openNewAgentModal } = useAgentList()
+  const { agents, agent, activeAgentId, setActiveAgentId } = useVeramo()
+  const { openNewAgentModal } = useAgentModal()
   const { mobileOpen, setMobileOpen } = useMobile()
   const history = useHistory()
   const agentMatch = useRouteMatch("/agent");
   const settingsMatch = useRouteMatch('/settings')
 
+  console.log({activeAgentId, agent, agents})
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen)
@@ -116,21 +119,21 @@ export default function ResponsiveDrawer() {
   const drawer = (
     <Box className={classes.drawerWrapper}>
       <Box className={classes.sideBar}>
-        {agentList.map((item: AgentConfig, index: number) => (
+        {agents.map((item) => (
           <IconButton
             className={classes.connectionButton}
             color="inherit"
             onClick={() => {
-              setActiveAgentIndex(index)
+              setActiveAgentId(item?.context?.id as string)
               if (!agentMatch) {
                 history.push('/agent')
               }
               if (mobileOpen) setMobileOpen(false)
             }}
-            key={index}
+            key={item?.context.id}
           >
-            <Avatar className={index === activeAgentIndex ? classes.orange : classes.purple}>
-              {item.name.substr(0, 2)}
+            <Avatar className={item?.context.id === activeAgentId ? classes.orange : classes.purple}>
+              {item.context?.name?.substr(0, 2)}
             </Avatar>
           </IconButton>
         ))}
@@ -153,6 +156,10 @@ export default function ResponsiveDrawer() {
   )
 
   const container = window.document.body
+
+  if (agents.length === 0) {
+    return <OnboardingView />
+  }
 
   return (
     <CredentialModalProvider>
@@ -198,7 +205,7 @@ export default function ResponsiveDrawer() {
                 <Route
                   exact
                   path="/"
-                  render={() => <Redirect to={agentList.length > 0 ? '/agent' : '/settings'} />}
+                  render={() => <Redirect to={agents.length > 0 ? '/agent' : '/settings'} />}
                 />
                 <Route path={'/agent'} component={AgentSwitch} />
                 <Route path={'/settings'} component={SettingsSwitch} />

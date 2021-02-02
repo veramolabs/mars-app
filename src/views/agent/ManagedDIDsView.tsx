@@ -3,7 +3,7 @@ import { useQuery } from 'react-query'
 import { IconButton, List, useMediaQuery, useTheme } from '@material-ui/core'
 import Container from '@material-ui/core/Container'
 import LinearProgress from '@material-ui/core/LinearProgress'
-import { useAgent, useAgentList } from '../../agent'
+import { useVeramo } from '@veramo-community/veramo-react'
 import { IIdentifier } from '@veramo/core'
 import AppBar from '../../components/nav/AppBar'
 import IdentityListItemLink from '../../components/nav/IdentityListItemLink'
@@ -13,8 +13,7 @@ import NewDIDDialog from './dialogs/NewDIDDialog'
 import MissingMethodsAlert from '../../components/nav/MissingMethodsAlert'
 
 function ManagedDIDs(props: any) {
-  const { agent } = useAgent()
-  const { activeAgentIndex } = useAgentList()
+  const { agent } = useVeramo()
   const { enqueueSnackbar } = useSnackbar()
   const [openNewIdentifierModal, setOpenNewIdentifierModal] = React.useState(false)
   const theme = useTheme()
@@ -29,8 +28,11 @@ function ManagedDIDs(props: any) {
   }
 
   const { isLoading, data } = useQuery<IIdentifier[], Error>({
-    queryKey: ['didManagerFind', activeAgentIndex],
-    queryFn: () => agent.didManagerFind(),
+    queryKey: ['didManagerFind', agent?.context?.id],
+    queryFn: () => {
+      if (!agent) throw Error ('no agent')
+      return agent.didManagerFind()
+    },
     onError: (e) => enqueueSnackbar(e.message, { variant: 'error' }),
   })
 

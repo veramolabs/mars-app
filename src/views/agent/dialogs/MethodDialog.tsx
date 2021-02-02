@@ -10,7 +10,7 @@ import {
   Typography,
 } from '@material-ui/core'
 import { useSnackbar } from 'notistack'
-import { useAgent } from '../../../agent'
+import { useVeramo } from '@veramo-community/veramo-react'
 interface Props {
   fullScreen: boolean
   open: boolean
@@ -24,7 +24,7 @@ function MethodDialog(props: Props) {
 
   const [args, setArgs] = useState<string>('{}')
   const [result, setResult] = useState<string | undefined>(undefined)
-  const { agent } = useAgent()
+  const { agent } = useVeramo()
 
   useEffect(() => {
     setArgs('{}')
@@ -36,7 +36,7 @@ function MethodDialog(props: Props) {
 
     try {
       const argsObj = JSON.parse(args)
-      const r = await agent.execute(props.method, argsObj)
+      const r = await agent?.execute(props.method, argsObj)
       setResult(JSON.stringify(r, null, 2))
       enqueueSnackbar('Success', { variant: 'success' })
       setLoading(false)

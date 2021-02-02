@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import CredentialCard from '../../components/cards/CredentialCard'
-import { useAgent } from '../../agent'
+import { useVeramo } from '@veramo-community/veramo-react'
 import { UniqueVerifiableCredential } from '@veramo/data-store'
 import { Box, Grid, Typography } from '@material-ui/core'
 import { VerifiableCredential } from '@veramo/core'
@@ -11,7 +11,7 @@ import MissingMethodsAlert from '../../components/nav/MissingMethodsAlert'
 function CredentialView(props: { hash: string }) {
   const { hash } = props
   const { enqueueSnackbar } = useSnackbar()
-  const { agent } = useAgent()
+  const { agent } = useVeramo()
   const [loading, setLoading] = useState(false)
   const [credential, setCredential] = useState<VerifiableCredential | undefined>(undefined)
   const [credentials, setCredentials] = useState<Array<UniqueVerifiableCredential>>([])
